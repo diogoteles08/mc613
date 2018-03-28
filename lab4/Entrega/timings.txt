@@ -1,0 +1,5 @@
+Executando um ripple carry com 4, 8, 16, 32 e 64 full adders obtivemos, respectivamente, um delay de 8.070, 13.289, 12.225, 19.862 e 36.105.
+
+Analizando os resultados podemos julgar que os delays dos ripple carries aumentam de forma aproximada à linear, mas aumentando um sempre um pouco menos. A exceção é a transição entre o ripple carry de 8 para o de 16 full adders, cujo valor diminuiu levemente.
+
+Pode-se explicar esse crescimento imaginando que um ripple carry é uma sequência linear de execução de N full adders com delays semelhantes entre si que se somados e adicionados à operação unitária constante realizada para obter o bit de overflow, dá o delay total do circuito.

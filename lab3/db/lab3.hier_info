@@ -1,0 +1,240 @@
+|mux16_to_1
+data[0] => mux4_to_1:mux0.d0
+data[1] => mux4_to_1:mux0.d1
+data[2] => mux4_to_1:mux0.d2
+data[3] => mux4_to_1:mux0.d3
+data[4] => mux4_to_1:mux1.d0
+data[5] => mux4_to_1:mux1.d1
+data[6] => mux4_to_1:mux1.d2
+data[7] => mux4_to_1:mux1.d3
+data[8] => mux4_to_1:mux2.d0
+data[9] => mux4_to_1:mux2.d1
+data[10] => mux4_to_1:mux2.d2
+data[11] => mux4_to_1:mux2.d3
+data[12] => mux4_to_1:mux3.d0
+data[13] => mux4_to_1:mux3.d1
+data[14] => mux4_to_1:mux3.d2
+data[15] => mux4_to_1:mux3.d3
+sel[0] => mux4_to_1:mux0.sel[0]
+sel[0] => mux4_to_1:mux1.sel[0]
+sel[0] => mux4_to_1:mux2.sel[0]
+sel[0] => mux4_to_1:mux3.sel[0]
+sel[1] => mux4_to_1:mux0.sel[1]
+sel[1] => mux4_to_1:mux1.sel[1]
+sel[1] => mux4_to_1:mux2.sel[1]
+sel[1] => mux4_to_1:mux3.sel[1]
+sel[2] => mux4_to_1:final_mux.sel[0]
+sel[3] => mux4_to_1:final_mux.sel[1]
+output <= mux4_to_1:final_mux.output
+
+
+|mux16_to_1|mux4_to_1:mux0
+d3 => extra_logic:extra.w3
+d2 => extra_logic:extra.w2
+d1 => extra_logic:extra.w1
+d0 => extra_logic:extra.w0
+sel[0] => dec2_to_4:dec.w0
+sel[1] => dec2_to_4:dec.w1
+output <= extra_logic:extra.f
+
+
+|mux16_to_1|mux4_to_1:mux0|dec2_to_4:dec
+en => y[0].OUTPUTSELECT
+en => y[1].OUTPUTSELECT
+en => y[2].OUTPUTSELECT
+en => y[3].IN1
+en => y[3].OUTPUTSELECT
+w1 => Equal0.IN0
+w1 => Equal1.IN1
+w1 => Equal2.IN0
+w1 => Equal3.IN0
+w0 => Equal0.IN1
+w0 => Equal1.IN0
+w0 => Equal2.IN1
+w0 => Equal3.IN1
+y3 <= y[3].DB_MAX_OUTPUT_PORT_TYPE
+y2 <= y[2].DB_MAX_OUTPUT_PORT_TYPE
+y1 <= y[1].DB_MAX_OUTPUT_PORT_TYPE
+y0 <= y[0].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:mux0|extra_logic:extra
+w3 => f.IN0
+w2 => f.IN0
+w1 => f.IN0
+w0 => f.IN0
+y3 => f.IN1
+y2 => f.IN1
+y1 => f.IN1
+y0 => f.IN1
+f <= f.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:mux1
+d3 => extra_logic:extra.w3
+d2 => extra_logic:extra.w2
+d1 => extra_logic:extra.w1
+d0 => extra_logic:extra.w0
+sel[0] => dec2_to_4:dec.w0
+sel[1] => dec2_to_4:dec.w1
+output <= extra_logic:extra.f
+
+
+|mux16_to_1|mux4_to_1:mux1|dec2_to_4:dec
+en => y[0].OUTPUTSELECT
+en => y[1].OUTPUTSELECT
+en => y[2].OUTPUTSELECT
+en => y[3].IN1
+en => y[3].OUTPUTSELECT
+w1 => Equal0.IN0
+w1 => Equal1.IN1
+w1 => Equal2.IN0
+w1 => Equal3.IN0
+w0 => Equal0.IN1
+w0 => Equal1.IN0
+w0 => Equal2.IN1
+w0 => Equal3.IN1
+y3 <= y[3].DB_MAX_OUTPUT_PORT_TYPE
+y2 <= y[2].DB_MAX_OUTPUT_PORT_TYPE
+y1 <= y[1].DB_MAX_OUTPUT_PORT_TYPE
+y0 <= y[0].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:mux1|extra_logic:extra
+w3 => f.IN0
+w2 => f.IN0
+w1 => f.IN0
+w0 => f.IN0
+y3 => f.IN1
+y2 => f.IN1
+y1 => f.IN1
+y0 => f.IN1
+f <= f.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:mux2
+d3 => extra_logic:extra.w3
+d2 => extra_logic:extra.w2
+d1 => extra_logic:extra.w1
+d0 => extra_logic:extra.w0
+sel[0] => dec2_to_4:dec.w0
+sel[1] => dec2_to_4:dec.w1
+output <= extra_logic:extra.f
+
+
+|mux16_to_1|mux4_to_1:mux2|dec2_to_4:dec
+en => y[0].OUTPUTSELECT
+en => y[1].OUTPUTSELECT
+en => y[2].OUTPUTSELECT
+en => y[3].IN1
+en => y[3].OUTPUTSELECT
+w1 => Equal0.IN0
+w1 => Equal1.IN1
+w1 => Equal2.IN0
+w1 => Equal3.IN0
+w0 => Equal0.IN1
+w0 => Equal1.IN0
+w0 => Equal2.IN1
+w0 => Equal3.IN1
+y3 <= y[3].DB_MAX_OUTPUT_PORT_TYPE
+y2 <= y[2].DB_MAX_OUTPUT_PORT_TYPE
+y1 <= y[1].DB_MAX_OUTPUT_PORT_TYPE
+y0 <= y[0].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:mux2|extra_logic:extra
+w3 => f.IN0
+w2 => f.IN0
+w1 => f.IN0
+w0 => f.IN0
+y3 => f.IN1
+y2 => f.IN1
+y1 => f.IN1
+y0 => f.IN1
+f <= f.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:mux3
+d3 => extra_logic:extra.w3
+d2 => extra_logic:extra.w2
+d1 => extra_logic:extra.w1
+d0 => extra_logic:extra.w0
+sel[0] => dec2_to_4:dec.w0
+sel[1] => dec2_to_4:dec.w1
+output <= extra_logic:extra.f
+
+
+|mux16_to_1|mux4_to_1:mux3|dec2_to_4:dec
+en => y[0].OUTPUTSELECT
+en => y[1].OUTPUTSELECT
+en => y[2].OUTPUTSELECT
+en => y[3].IN1
+en => y[3].OUTPUTSELECT
+w1 => Equal0.IN0
+w1 => Equal1.IN1
+w1 => Equal2.IN0
+w1 => Equal3.IN0
+w0 => Equal0.IN1
+w0 => Equal1.IN0
+w0 => Equal2.IN1
+w0 => Equal3.IN1
+y3 <= y[3].DB_MAX_OUTPUT_PORT_TYPE
+y2 <= y[2].DB_MAX_OUTPUT_PORT_TYPE
+y1 <= y[1].DB_MAX_OUTPUT_PORT_TYPE
+y0 <= y[0].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:mux3|extra_logic:extra
+w3 => f.IN0
+w2 => f.IN0
+w1 => f.IN0
+w0 => f.IN0
+y3 => f.IN1
+y2 => f.IN1
+y1 => f.IN1
+y0 => f.IN1
+f <= f.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:final_mux
+d3 => extra_logic:extra.w3
+d2 => extra_logic:extra.w2
+d1 => extra_logic:extra.w1
+d0 => extra_logic:extra.w0
+sel[0] => dec2_to_4:dec.w0
+sel[1] => dec2_to_4:dec.w1
+output <= extra_logic:extra.f
+
+
+|mux16_to_1|mux4_to_1:final_mux|dec2_to_4:dec
+en => y[0].OUTPUTSELECT
+en => y[1].OUTPUTSELECT
+en => y[2].OUTPUTSELECT
+en => y[3].IN1
+en => y[3].OUTPUTSELECT
+w1 => Equal0.IN0
+w1 => Equal1.IN1
+w1 => Equal2.IN0
+w1 => Equal3.IN0
+w0 => Equal0.IN1
+w0 => Equal1.IN0
+w0 => Equal2.IN1
+w0 => Equal3.IN1
+y3 <= y[3].DB_MAX_OUTPUT_PORT_TYPE
+y2 <= y[2].DB_MAX_OUTPUT_PORT_TYPE
+y1 <= y[1].DB_MAX_OUTPUT_PORT_TYPE
+y0 <= y[0].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|mux16_to_1|mux4_to_1:final_mux|extra_logic:extra
+w3 => f.IN0
+w2 => f.IN0
+w1 => f.IN0
+w0 => f.IN0
+y3 => f.IN1
+y2 => f.IN1
+y1 => f.IN1
+y0 => f.IN1
+f <= f.DB_MAX_OUTPUT_PORT_TYPE
+
+

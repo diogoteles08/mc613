@@ -1,0 +1,78 @@
+|ripple_carry
+x[0] => full_adder:G1:0:adder.x
+x[1] => full_adder:G1:1:adder.x
+x[2] => full_adder:G1:2:adder.x
+x[3] => full_adder:G1:3:adder.x
+y[0] => full_adder:G1:0:adder.y
+y[1] => full_adder:G1:1:adder.y
+y[2] => full_adder:G1:2:adder.y
+y[3] => full_adder:G1:3:adder.y
+r[0] <= full_adder:G1:0:adder.r
+r[1] <= full_adder:G1:1:adder.r
+r[2] <= full_adder:G1:2:adder.r
+r[3] <= full_adder:G1:3:adder.r
+cin => full_adder:G1:0:adder.cin
+cout <= full_adder:G1:3:adder.cout
+overflow <= overflow.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ripple_carry|full_adder:\G1:0:adder
+x => r.IN0
+x => cout.IN0
+x => cout.IN0
+y => r.IN1
+y => cout.IN1
+y => cout.IN0
+r <= r.DB_MAX_OUTPUT_PORT_TYPE
+cin => r.IN1
+cin => cout.IN1
+cin => cout.IN1
+cin => cout.IN1
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ripple_carry|full_adder:\G1:1:adder
+x => r.IN0
+x => cout.IN0
+x => cout.IN0
+y => r.IN1
+y => cout.IN1
+y => cout.IN0
+r <= r.DB_MAX_OUTPUT_PORT_TYPE
+cin => r.IN1
+cin => cout.IN1
+cin => cout.IN1
+cin => cout.IN1
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ripple_carry|full_adder:\G1:2:adder
+x => r.IN0
+x => cout.IN0
+x => cout.IN0
+y => r.IN1
+y => cout.IN1
+y => cout.IN0
+r <= r.DB_MAX_OUTPUT_PORT_TYPE
+cin => r.IN1
+cin => cout.IN1
+cin => cout.IN1
+cin => cout.IN1
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|ripple_carry|full_adder:\G1:3:adder
+x => r.IN0
+x => cout.IN0
+x => cout.IN0
+y => r.IN1
+y => cout.IN1
+y => cout.IN0
+r <= r.DB_MAX_OUTPUT_PORT_TYPE
+cin => r.IN1
+cin => cout.IN1
+cin => cout.IN1
+cin => cout.IN1
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+

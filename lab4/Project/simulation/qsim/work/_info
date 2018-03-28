@@ -1,0 +1,186 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/ec2016/ra169966/Documents/MC613/lab4/Project/simulation/qsim
+Efull_adder
+Z1 w1521659056
+Z2 DPx4 ieee 16 vital_primitives 0 22 G>kiXP8Q9dRClKfK1Zn7j1
+Z3 DPx8 cyclonev 18 cyclonev_atom_pack 0 22 YZlobdkPHzE;N99jHfcMc3
+Z4 DPx4 ieee 12 vital_timing 0 22 J>EBealN09f8GzldA[z2>3
+Z5 DPx8 cyclonev 19 cyclonev_components 0 22 WF17oJHHbo`b[5Bl5P6_h0
+Z6 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z7 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z8 DPx12 altera_lnsim 23 altera_lnsim_components 0 22 dfin^_@l97Ngz6cK0kjS62
+R0
+Z9 8lab4.vho
+Z10 Flab4.vho
+l0
+L36
+VNjNhdBe<2QgO`nQAAPY<E2
+!s100 ``^SUTfHAPjnMYFf:3^E[3
+Z11 OV;C;10.5b;63
+32
+Z12 !s110 1521659057
+!i10b 1
+Z13 !s108 1521659056.000000
+Z14 !s90 -work|work|lab4.vho|
+Z15 !s107 lab4.vho|
+!i113 1
+Z16 o-work work
+Z17 tExplicit 1 CvgOpt 0
+Astructure
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+DEx4 work 10 full_adder 0 22 NjNhdBe<2QgO`nQAAPY<E2
+l79
+L54
+VO]Pn7DlZX_J7iF`3G1VWA2
+!s100 YRNfahLW7cZN8m>DLk20h2
+R11
+32
+R12
+!i10b 1
+R13
+R14
+R15
+!i113 1
+R16
+R17
+Efull_adder_vhd_vec_tst
+Z18 w1521659055
+R6
+R7
+R0
+Z19 8full_adder.vwf.vht
+Z20 Ffull_adder.vwf.vht
+l0
+L31
+VoG@bE0dZACf4T^lgA:CW02
+!s100 koYn936Sc=P?eU6;VAm;G0
+R11
+32
+R12
+!i10b 1
+Z21 !s108 1521659057.000000
+Z22 !s90 -work|work|full_adder.vwf.vht|
+Z23 !s107 full_adder.vwf.vht|
+!i113 1
+R16
+R17
+Afull_adder_arch
+R6
+R7
+DEx4 work 22 full_adder_vhd_vec_tst 0 22 oG@bE0dZACf4T^lgA:CW02
+l50
+L33
+VE`>@Rh2jelYmPa1R;X8k@1
+!s100 U_B]Kn1L1^gjAD`;CG?E52
+R11
+32
+R12
+!i10b 1
+R21
+R22
+R23
+!i113 1
+R16
+R17
+Eripple_carry
+Z24 w1522106741
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+R0
+R9
+R10
+l0
+L36
+V7@PGgSMoEGc5jlTR;dLXi1
+!s100 2RgX]JSiIXE>zg?OW@aJ31
+R11
+32
+Z25 !s110 1522106742
+!i10b 1
+Z26 !s108 1522106742.000000
+R14
+R15
+!i113 1
+R16
+R17
+Astructure
+R2
+R3
+R4
+R5
+R6
+R7
+R8
+DEx4 work 12 ripple_carry 0 22 7@PGgSMoEGc5jlTR;dLXi1
+l109
+L65
+VW4N4FR07k4aSgB]hmdMME0
+!s100 BDH3Uk=kVXn8^cX1NOc:R1
+R11
+32
+R25
+!i10b 1
+R26
+R14
+R15
+!i113 1
+R16
+R17
+Eripple_carry_vhd_vec_tst
+Z27 w1522106740
+R6
+R7
+R0
+Z28 8ripple_carry.vwf.vht
+Z29 Fripple_carry.vwf.vht
+l0
+L31
+VcQ[N0kzf`zA:^MPj;7olT1
+!s100 =fhBif57b3:P7HlTSL9W[0
+R11
+32
+R25
+!i10b 1
+R26
+Z30 !s90 -work|work|ripple_carry.vwf.vht|
+Z31 !s107 ripple_carry.vwf.vht|
+!i113 1
+R16
+R17
+Aripple_carry_arch
+R6
+R7
+Z32 DEx4 work 24 ripple_carry_vhd_vec_tst 0 22 cQ[N0kzf`zA:^MPj;7olT1
+l52
+L33
+Z33 VRa_Pc]Tg1e636A[XVZOQf1
+Z34 !s100 a:QclbEOg0:jImhod<@oV2
+R11
+32
+R25
+!i10b 1
+R26
+R30
+R31
+!i113 1
+R16
+R17
