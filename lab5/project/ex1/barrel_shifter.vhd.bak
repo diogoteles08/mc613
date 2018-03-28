@@ -11,7 +11,7 @@ entity barrel_shifter is
   );
 end barrel_shifter;
 
-architecture rtl of barrel_shifter is begin
+architecture rtl of barrel_shifter is
   -- add your code!
 end rtl;
 

@@ -14,7 +14,22 @@ entity cla_8bits is
 end cla_8bits;
 
 architecture rtl of cla_8bits is
+
+	signal c: std_logic_vector(8 downto 0);
+	signal g: std_logic_vector(7 downto 0);
+	signal p: std_logic_vector(7 downto 0);
 begin
-  -- add your code!
+  
+  inicializePG: for i in 0 to 7 generate		
+		g(i) <= x(i) or y(i);
+		p(i) <= x(i) and y(i);
+	end generate inicializePG;
+  
+   c(0) <= cin; 
+	
+	calcCi: for i in 1 to 8 generate
+		c(i) <= (c(i-1) and p(i)) or g(i);
+	end generate calcCi;
+  
 end rtl;
 
