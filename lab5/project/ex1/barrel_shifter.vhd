@@ -11,7 +11,27 @@ entity barrel_shifter is
   );
 end barrel_shifter;
 
-architecture rtl of barrel_shifter is begin
-  -- add your code!
+architecture rtl of barrel_shifter is
+begin
+  y(3) <= w(3) when s = "00" else
+			 w(0) when s = "01" else
+			 w(1) when s = "10" else
+			 w(2) when s = "11";
+			
+   y(2) <= w(2) when s = "00" else
+			 w(3) when s = "01" else
+			 w(0) when s = "10" else
+			 w(1) when s = "11";
+			 
+	y(1) <= w(1) when s = "00" else
+			 w(2) when s = "01" else
+			 w(3) when s = "10" else
+			 w(0) when s = "11";
+			 
+	y(0) <= w(0) when s = "00" else
+			 w(1) when s = "01" else
+			 w(2) when s = "10" else
+			 w(3) when s = "11";
+			 
 end rtl;
 
