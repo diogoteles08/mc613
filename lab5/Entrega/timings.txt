@@ -1,0 +1,5 @@
+Executando o somador carry look-ahead com 4 bits, 8 bits e carry look-ahead parcial de 8 bits obtivemos, respectivamente, um atraso total de 7.778, 8.902, 8.902.
+
+Comparando esses valores com os atrasos para o somador ripple-carry calculados no laboratório anterior, - 8.070 para 4 bits e 12.289 para 8 bits - concluimos que temos um ganho significativo de eficiencia no uso de somadores do estilo carry look-ahead.
+
+Pudemos observar, também, que a estratégia utilizada para desenvolver o carry look-ahead parcial(somadores menores do estilo carry look-ahead conectados entre si em cascata, analogamente ao somador ripple carry) é também bastante válida, pois obteve o mesmo tempo que o carry look-ahead tradicional, ao mesmo tempo que diminui significativamente o número de entradas nas portas lógicas AND.
