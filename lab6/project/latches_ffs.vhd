@@ -21,7 +21,7 @@ begin
   lff1: latch_sr_nand port map (
     S_n => NOT(A),
     R_n => NOT(B),
-    Qa  => Q( ? ), -- << CHANGE HERE
+    Qa  => Q( 6 ), -- << CHANGE HERE
     Qb  => open
   );
   
@@ -29,21 +29,21 @@ begin
     S   => A,
     R   => B,
     Clk => clock,
-    Q   => Q( ? ), -- << CHANGE HERE
+    Q   => Q( 4 ), -- << CHANGE HERE
     Q_n => open
   );
   
   lff3: latch_d_gated port map (
     D   => A,
     Clk => clock,
-    Q   => Q( ? ), -- << CHANGE HERE
+    Q   => Q( 1 ), -- << CHANGE HERE
     Q_n => open
   );
   
   lff4: ff_d port map (
     D      => A,
     Clk    => clock,
-    Q      => Q( ? ), -- << CHANGE HERE
+    Q      => Q( 3 ), -- << CHANGE HERE
     Q_n    => open,
     Preset => preset,
     Clear  => clear
@@ -53,7 +53,7 @@ begin
     J      => A,
     K      => B,
     Clk    => clock,
-    Q      => Q( ? ), -- << CHANGE HERE
+    Q      => Q( 5 ), -- << CHANGE HERE
     Q_n    => open,
     Preset => preset,
     Clear  => clear
@@ -62,7 +62,7 @@ begin
   lff6: ff_t port map (
     T      => A,
     Clk    => clock,
-    Q      => Q( ? ), -- << CHANGE HERE
+    Q      => Q( 2 ), -- << CHANGE HERE
     Q_n    => open,
     Preset => preset,
     Clear  => clear
