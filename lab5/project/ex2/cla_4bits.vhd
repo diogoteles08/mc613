@@ -28,14 +28,14 @@ architecture rtl of cla_4bits is
 begin
 
 	inicializePG: for i in 0 to 3 generate		
-		g(i) <= x(i) or y(i);
-		p(i) <= x(i) and y(i);
+		g(i) <= x(i) and y(i);
+		p(i) <= x(i) or y(i);
 	end generate inicializePG;	
 	
 	c(0) <= cin;
 	
-	calcCi: for i in 1 to 4 generate
-		c(i) <= (c(i-1) and p(i)) or g(i);
+	calcCi: for i in 0 to 3 generate
+		c(i+1) <= g(i) or (c(i) and p(i));
 	end generate calcCi;
   
 	add: for i in 0 to 3 generate
