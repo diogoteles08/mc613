@@ -1,0 +1,9 @@
+Com o push button sendo usado como clock, o sistema funcionou perfeitamente.
+Mas ao utilizar o SW(9) como clock, observamos a ocorrência de alguns fenô-
+menos estranhos, que levaram o grupo a rever o código muitas vezes. Concluimos 
+que uma chave do tipo SW não deve ser usada para essa função, e a suspeita é que
+ao tentarmos ativar um clock, MUITOS clocks seriam dados todos de uma vez. Pois
+o fenômeno encontrado é de que o valor de ser_in era copiado para todos os leds
+ao realizarmos uma operação. Ou seja, se ser_in estava em 1, os multiplos clocks
+da chave tornavam todos os leds acesos; mutatis mutandis, para o ser_in estar em
+0 todos os leds eram apagados. 
