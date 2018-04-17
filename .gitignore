@@ -1,7 +1,9 @@
 *.bak
+*.un~
 db
 incremental_db
 simulation
 output_files
 *.qsf
+*.qws
 *.qpf
