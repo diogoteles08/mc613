@@ -5,7 +5,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity fsm_diag is
   port (
     clk, reset, w : in std_logic;
-    z : in std_logic;
+    z : out std_logic
   );
 end fsm_diag;
 
@@ -17,28 +17,28 @@ begin
   begin
 		if reset = '1' then 
 			state <= A;
-		if clk'EVENT and clk= '1' then
+		elsif clk'EVENT and clk= '1' then
 			CASE state IS
 				WHEN A =>
-					if w = '0'
+					if w = '0' then
 						state <= A;
 					else 
 						state <= B;
 					end if;
 				WHEN B =>
-					if w = '0'
+					if w = '0' then
 						state <= C;
 					else 
 						state <= B;
 					end if;
 				WHEN C =>
-					if w = '0'
+					if w = '0' then
 						state <= C;
 					else 
 						state <= D;
 					end if;
 				WHEN D =>
-					if w = '0'
+					if w = '0' then
 						state <= A;
 					else 
 						state <= D;

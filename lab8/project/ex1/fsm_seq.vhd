@@ -5,7 +5,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity fsm_seg is
   port (
     clk, reset, w : in std_logic;
-    z : in std_logic;
+    z : out std_logic
   );
 end fsm_seg;
 
@@ -17,29 +17,29 @@ begin
   begin
 		if reset = '1' then 
 			state <= A;
-		if clk'EVENT and clk= '1' then
+		elsif clk'EVENT and clk= '1' then
 			z <= '0';
 			CASE state IS
 				WHEN A =>
-					if w = '0' 
+					if w = '0' then
 						state <= B;
 					else 
 						state <= A;
 					end if;
 				WHEN B =>
-					if w = '0' 
+					if w = '0' then
 						state <= A;
 					else 
 						state <= C;
 					end if;
 				WHEN C =>
-					if w = '0'
+					if w = '0' then
 						state <= D;
 					else 
 						state <= A;
 					end if;
 				WHEN D =>
-					if w = '0'
+					if w = '0' then
 						state <= A;
 					else 
 						state <= C;
