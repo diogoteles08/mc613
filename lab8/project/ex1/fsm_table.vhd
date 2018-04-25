@@ -17,6 +17,7 @@ begin
   begin
 		if reset = '1' then 
 			state <= A;
+			z <= '0';
 		elsif clk'EVENT and clk= '1' then
 			CASE state IS
 				WHEN A =>

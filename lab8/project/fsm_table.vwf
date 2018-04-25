@@ -1,12 +1,12 @@
 /*<simulation_settings>
-<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab8 -c lab8 --vector_source="/home/ec2016/ra169966/Documents/mc613/lab8/project/ex1/fsm_table.vwf" --testbench_file="/home/ec2016/ra169966/Documents/mc613/lab8/project/simulation/qsim/ex1/fsm_table..vwfvht"</ftestbench_cmd>
-<ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab8 -c lab8 --vector_source="/home/ec2016/ra169966/Documents/mc613/lab8/project/ex1/fsm_table.vwf" --testbench_file="/home/ec2016/ra169966/Documents/mc613/lab8/project/simulation/qsim/ex1/fsm_table.vwf.vht"</ttestbench_cmd>
+<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab8 -c lab8 --vector_source="/home/ec2016/ra169966/Documents/mc613/lab8/project/fsm_table.vwf" --testbench_file="/home/ec2016/ra169966/Documents/mc613/lab8/project/simulation/qsim/fsm_table.vwf.vht"</ftestbench_cmd>
+<ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab8 -c lab8 --vector_source="/home/ec2016/ra169966/Documents/mc613/lab8/project/fsm_table.vwf" --testbench_file="/home/ec2016/ra169966/Documents/mc613/lab8/project/simulation/qsim/fsm_table.vwf.vht"</ttestbench_cmd>
 <fnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=on --flatten_buses=off --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra169966/Documents/mc613/lab8/project/simulation/qsim/" lab8 -c lab8</fnetlist_cmd>
 <tnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=off --flatten_buses=off --timescale=1ps --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra169966/Documents/mc613/lab8/project/simulation/qsim/" lab8 -c lab8</tnetlist_cmd>
 <modelsim_script>onerror {exit -code 1}
 vlib work
 vcom -work work lab8.vho
-vcom -work work ex1/fsm_table.vwf.vht
+vcom -work work fsm_table.vwf.vht
 vsim -novopt -c -t 1ps -L cyclonev -L altera -L altera_mf -L 220model -L sgate -L altera_lnsim work.fsm_table_vhd_vec_tst
 vcd file -direction lab8.msim.vcd
 vcd add -internal fsm_table_vhd_vec_tst/*
@@ -24,7 +24,7 @@ quit -f
 <modelsim_script_timing>onerror {exit -code 1}
 vlib work
 vcom -work work lab8.vho
-vcom -work work ex1/fsm_table.vwf.vht
+vcom -work work fsm_table.vwf.vht
 vsim -novopt -c -t 1ps -sdfmax fsm_table_vhd_vec_tst/i1=lab8_vhd.sdo -L cyclonev -L altera -L altera_mf -L 220model -L sgate -L altera_lnsim work.fsm_table_vhd_vec_tst
 vcd file -direction lab8.msim.vcd
 vcd add -internal fsm_table_vhd_vec_tst/*
