@@ -27,6 +27,7 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity vga_ball is
   port (    
@@ -90,6 +91,10 @@ architecture comportamento of vga_ball is
   signal timer_rstn, timer_enable : std_logic;
   
   signal sync, blank: std_logic;
+
+  signal cor_atual : std_logic_vector(2 downto 0) := "001";
+  signal limpa : std_logic := '0';
+  signal inic : std_logic := '0';
 
 begin  -- comportamento
 
@@ -241,17 +246,65 @@ begin  -- comportamento
   -----------------------------------------------------------------------------
   -- Brilho do pixel
   -----------------------------------------------------------------------------
-  -- O brilho do pixel é branco quando os contadores de linha e coluna, que
+  -- O brilho do pixel é branco quando os contadores deatualiza_pos_y linha e coluna, que
   -- indicam o endereço do pixel sendo escrito para o quadro atual, casam com a
   -- posição da bola (sinais pos_x e pos_y). Caso contrário,
   -- o pixel é preto.
+  
+  process(CLOCK_50)
+		variable na_quina : std_logic := '0';
+  begin
+		if CLOCK_50'event and CLOCK_50 = '1' then
+			if line = pos_y and col = pos_x then	
+				if inic = '1' then
+					cor_atual <= "001";			
+				elsif (line = 95 or line = 0) and (col = 127 or col = 0) then
+					if na_quina = '0' then
+						na_quina := '1';
+						if cor_atual = "111" then 
+							cor_atual <= "010";	
+						elsif cor_atual = "110" then
+							cor_atual <= "001";
+						else
+							cor_atual <= cor_atual + "010";
+						end if;			
+					end if;
+				elsif (line = 95 or line = 0 or col = 127 or col = 0) then
+					if na_quina = '0' then
+						na_quina := '1';
+						if cor_atual = "111" then 
+							cor_atual <= "001";				
+						else
+							cor_atual <= cor_atual + "001";
+						end if;			
+					end if;										
+				else
+					na_quina := '0';					
+				end if;
+			end if;
+		end if;
+  end process;
+  
+  process (CLOCK_50, rstn)
+		variable temp: std_logic := '0';
+  begin
+    if rstn = '0' then  -- rising clock edge
+		temp := '1';
+		inic <= '1';
+	 elsif CLOCK_50'event and CLOCK_50 = '1' then
+		inic <= '0';
+		 if fim_escrita = '1' then
+			temp := '0';
+		 end if;
+	 end if;
+	 limpa <= temp;
+  end process;
 
-  pixel_bit <= '1' when (col = pos_x) and (line = pos_y) else '0';
-  pixel <= (others => pixel_bit);
+  pixel <= cor_atual when line = pos_y and col = pos_x and limpa = '0' else "000";
   
   -- O endereço de memória pode ser construído com essa fórmula simples,
   -- a partir da linha e coluna atual
-  addr  <= col + (128 * line);
+  addr  <= col + (128 * line) when (line = pos_y and col = pos_x) or limpa = '1' else 2;
 
   -----------------------------------------------------------------------------
   -- Processos que definem a FSM (finite state machine), nossa máquina
@@ -358,7 +411,7 @@ begin  -- comportamento
     end if;
   end process p_contador;
 
-  -- purpose: Calcula o sinal "timer" que indica quando o contador chegou ao
+  -- purpose: Calcula o sinal "timer" que indica quando o contador chegou aotemp := KEY(0);
   --          final
   -- type   : combinational
   -- inputs : contador
@@ -385,7 +438,7 @@ begin  -- comportamento
     variable temp : std_logic;          -- flipflop intermediario
   begin  -- process build_rstn
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-      rstn <= temp;
+      rstn <= temp;      
       temp := KEY(0);      
     end if;
   end process build_rstn;
