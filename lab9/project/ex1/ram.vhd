@@ -29,24 +29,42 @@ port (
 		 Q		: out std_logic_vector((DATA_WIDTH -1) downto 0)
 );
 
-	signal WrEn_V : std_logic_vector(7 downto 0) := "1111111";
+	signal true_addr : std_logic_vector(6 downto
+	signal WrEn_V : std_logic_vector(1 downto 0) := "11";
+	signal true_addr: std_logic_vector(6 downto 0) := "0000000";
+	
 end component;
 
 begin
-  ram_b1: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(0); );
-  ram_b2: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(1); );
-  ram_b3: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(2); );
-  ram_b4: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(3); );
-  ram_b5: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(4); );
-  ram_b6: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(5); );
-  ram_b7: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(6); );
-  ram_b8: ram_block port map (Clock <= Clock; Address <= ; Data <= DataIn; Q <= DataOut; WrEn <= WrEn_V(7); );
+  ram_b11: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(31 downto 24); Q <= DataOut(31 downto 24); WrEn <= WrEn_V(0); );
+  ram_b12: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(23 downto 16); Q <= DataOut(23 downto 16); WrEn <= WrEn_V(0); );
+  ram_b13: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(15 downto 8); Q <= DataOut(15 downto 8); WrEn <= WrEn_V(0); );
+  ram_b14: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(7 downto 0); Q <= DataOut(7 downto 0); WrEn <= WrEn_V(0); );
+  ram_b21: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(31 downto 24); Q <= DataOut(31 downto 24); WrEn <= WrEn_V(1); );
+  ram_b22: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(23 downto 16); Q <= DataOut(23 downto 16); WrEn <= WrEn_V(1); );
+  ram_b23: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(15 downto 8); Q <= DataOut(15 downto 8); WrEn <= WrEn_V(1); );
+  ram_b24: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(7 downto 0); Q <= DataOut(7 downto 0); WrEn <= WrEn_V(1); );
   
   process (Clock)
   begin 
 		if(rising_edge(Clock)) then
 			if WrEn = '1' then
-			
+				if Address(9) = '1' or Address(8) = '1' then
+					-- endereco invalido
+					-- todo: assim ? alta impedancia em DataOut
+					WrEn_v(1 downto 0) <= "00";
+					-- todo: isso aqui acho que vai dar problema
+					DataOut <= (others => '1');
+					true_addr <= "0000000";
+				elsif Address(7) = '1' then
+					-- endereco valido de 128 a 255
+					WrEn_v(1 downto 0) <= "10";
+					true_addr <= Address(6 downto 0);
+				else
+					-- endereco valido de 0 a 127
+					WrEn_v(1 downto 0) <= "01";
+					true_addr <= Address(6 downto 0);
+				end if;
 			end if;
 		end if;
   end process;

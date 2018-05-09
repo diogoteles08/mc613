@@ -15,6 +15,7 @@
 			port 
 			(
 				 Clock		: in std_logic;
+				 -- isso aqui vai dar merda na conversao para std_logic_vector
 				 Address	: in natural range 0 to 2**ADDR_WIDTH - 1;
 				 Data	: in std_logic_vector((DATA_WIDTH-1) downto 0);
 				 WrEn		: in std_logic := '1';
