@@ -3,6 +3,7 @@
 
  library ieee;
  use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
  entity ram_block is
 
@@ -15,12 +16,12 @@
 			port 
 			(
 				 Clock		: in std_logic;
-				 -- isso aqui vai dar merda na conversao para std_logic_vector
-				 Address	: in natural range 0 to 2**ADDR_WIDTH - 1;
+				 Address : in std_logic_vector(ADDR_WIDTH -1 downto 0);
 				 Data	: in std_logic_vector((DATA_WIDTH-1) downto 0);
 				 WrEn		: in std_logic := '1';
 				 Q		: out std_logic_vector((DATA_WIDTH -1) downto 0)
 			);
+				 --Address	: in natural range 0 to 2**ADDR_WIDTH - 1;
 
  end entity;
 
@@ -35,18 +36,18 @@
 
 			-- Register to hold the address 
 			signal addr_reg : natural range 0 to 2**ADDR_WIDTH-1;
-
+	
  begin
 
 			process(Clock)
 			begin
 			if(rising_edge(Clock)) then
 				 if(WrEn = '1') then
-							ram(Address) <= Data;
+							ram(to_integer(unsigned(Address))) <= Data;
 				 end if;
 
 				 -- Register the address for reading
-				 addr_reg <= Address;
+				 addr_reg <= to_integer(unsigned(Address));
 			end if;
 			end process;
 

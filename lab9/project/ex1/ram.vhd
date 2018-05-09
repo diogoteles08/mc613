@@ -23,27 +23,31 @@ generic (
 
 port (
 		 Clock		: in std_logic;
-		 Address	: in natural range 0 to 2**ADDR_WIDTH - 1;
+		 Address : in std_logic_vector(ADDR_WIDTH -1 downto 0);
 		 Data	: in std_logic_vector((DATA_WIDTH-1) downto 0);
 		 WrEn		: in std_logic := '1';
 		 Q		: out std_logic_vector((DATA_WIDTH -1) downto 0)
 );
 
-	signal true_addr : std_logic_vector(6 downto
+end component;
+
 	signal WrEn_V : std_logic_vector(1 downto 0) := "11";
 	signal true_addr: std_logic_vector(6 downto 0) := "0000000";
 	
-end component;
-
 begin
-  ram_b11: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(31 downto 24); Q <= DataOut(31 downto 24); WrEn <= WrEn_V(0); );
-  ram_b12: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(23 downto 16); Q <= DataOut(23 downto 16); WrEn <= WrEn_V(0); );
-  ram_b13: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(15 downto 8); Q <= DataOut(15 downto 8); WrEn <= WrEn_V(0); );
-  ram_b14: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(7 downto 0); Q <= DataOut(7 downto 0); WrEn <= WrEn_V(0); );
-  ram_b21: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(31 downto 24); Q <= DataOut(31 downto 24); WrEn <= WrEn_V(1); );
-  ram_b22: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(23 downto 16); Q <= DataOut(23 downto 16); WrEn <= WrEn_V(1); );
-  ram_b23: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(15 downto 8); Q <= DataOut(15 downto 8); WrEn <= WrEn_V(1); );
-  ram_b24: ram_block port map (Clock <= Clock; Address <= true_addr; Data <= DataOut(7 downto 0); Q <= DataOut(7 downto 0); WrEn <= WrEn_V(1); );
+  ram_b11: ram_block port map (Clock => Clock,
+										  Address => true_addr, 
+										  Data => DataIn(31 downto 24), 
+										  Q => DataOut(31 downto 24), 
+										  WrEn => WrEn_V(0)
+  );
+  ram_b12: ram_block port map (Clock => Clock, Address => true_addr, Data => DataIn(23 downto 16), Q => DataOut(23 downto 16), WrEn => WrEn_V(0) );
+  ram_b13: ram_block port map (Clock => Clock, Address => true_addr, Data => DataIn(15 downto 8), Q => DataOut(15 downto 8), WrEn => WrEn_V(0) );
+  ram_b14: ram_block port map (Clock => Clock, Address => true_addr, Data => DataIn(7 downto 0), Q => DataOut(7 downto 0), WrEn => WrEn_V(0) );
+  ram_b21: ram_block port map (Clock => Clock, Address => true_addr, Data => DataIn(31 downto 24), Q => DataOut(31 downto 24), WrEn => WrEn_V(1) );
+  ram_b22: ram_block port map (Clock => Clock, Address => true_addr, Data => DataIn(23 downto 16), Q => DataOut(23 downto 16), WrEn => WrEn_V(1) );
+  ram_b23: ram_block port map (Clock => Clock, Address => true_addr, Data => DataIn(15 downto 8), Q => DataOut(15 downto 8), WrEn => WrEn_V(1) );
+  ram_b24: ram_block port map (Clock => Clock, Address => true_addr, Data => DataIn(7 downto 0), Q => DataOut(7 downto 0), WrEn => WrEn_V(1) );
   
   process (Clock)
   begin 
