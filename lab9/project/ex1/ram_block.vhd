@@ -1,35 +1,55 @@
-library ieee;
-use ieee.std_logic_1164.all;
+ -- Quartus Prime VHDL Template
+ -- Single port RAM with single read/write address 
 
-entity ram_block is
-  port (
-    Clock : in std_logic;
-    Address : in std_logic_vector(6 downto 0);
-    Data : in std_logic_vector(7 downto 0);
-    Q : out std_logic_vector(7 downto 0);
-    WrEn : in std_logic
-  );
-end ram_block;
+ library ieee;
+ use ieee.std_logic_1164.all;
 
-architecture direct of ram_block is
-	signal memoria : std_logic_vector(511 downto 0);
-begin
-	-- todo: Clock eh o nosso Clock?
-	process (Clock)
-	begin
-		if Clock'EVENT and Clock = '1' then
-		-- escritura sincrona com o clock
-			if WrEn = '1' then
-				-- verificando se escrita esta enabled
-				-- todo: arrumar (Address) eh assim que escreve em enderecos de vetor?
-				memoria(Address) <= Data;
+ entity ram_block is
+
+			generic 
+			(
+				 DATA_WIDTH : natural := 8;
+				 ADDR_WIDTH : natural := 7 
+			);
+
+			port 
+			(
+				 Clock		: in std_logic;
+				 Address	: in natural range 0 to 2**ADDR_WIDTH - 1;
+				 Data	: in std_logic_vector((DATA_WIDTH-1) downto 0);
+				 WrEn		: in std_logic := '1';
+				 Q		: out std_logic_vector((DATA_WIDTH -1) downto 0)
+			);
+
+ end entity;
+
+ architecture rtl of ram_block is
+
+			-- Build a 2-D array type for the RAM
+			subtype word_t is std_logic_vector((DATA_WIDTH-1) downto 0);
+			type memory_t is array(2**ADDR_WIDTH-1 downto 0) of word_t;
+
+			-- Declare the RAM signal.	
+			signal ram : memory_t;
+
+			-- Register to hold the address 
+			signal addr_reg : natural range 0 to 2**ADDR_WIDTH-1;
+
+ begin
+
+			process(Clock)
+			begin
+			if(rising_edge(Clock)) then
+				 if(WrEn = '1') then
+							ram(Address) <= Data;
+				 end if;
+
+				 -- Register the address for reading
+				 addr_reg <= Address;
 			end if;
-		end if;
-	end process;
-  
-    
-	-- leitura assincrona
-	-- todo: sempre fica lendo assim mesmo?
-	-- todo: arrumar (Address) eh assim que escreve em enderecos de vetor?
-	Q <= memoria(Address);
-end direct;
+			end process;
+
+			-- leitura sincrona
+			Q <= ram(addr_reg);
+
+end rtl;
