@@ -31,43 +31,27 @@ port (
 
 end component;
 
-	signal WrEn_V : std_logic_vector(1 downto 0) := "11";
+	signal WrEn_0 : std_logic := '0';
+	signal WrEn_1 : std_logic := '0';
 	signal Data_0 : std_logic_vector(31 downto 0);
 	signal Data_1 : std_logic_vector(31 downto 0);
+	signal out_aux : std_logic_vector(31 downto 0);
 	
 begin
-ram_b11: ram_block port map (Clock => Clock,
-										  Address => Address(6 downto 0), 
-										  Data => DataIn(31 downto 24), 
-										  Q => Data_1(31 downto 24), 
-										  WrEn => WrEn_V(1)
-  );
-  ram_b12: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(23 downto 16), Q => Data_1(23 downto 16), WrEn => WrEn_V(1) );
-  ram_b13: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(15 downto 8), Q => Data_1(15 downto 8), WrEn => WrEn_V(1) );
-  ram_b14: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(7 downto 0), Q => Data_1(7 downto 0), WrEn => WrEn_V(1) );
-  ram_b21: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(31 downto 24), Q => Data_0(31 downto 24), WrEn => WrEn_V(0) );
-  ram_b22: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(23 downto 16), Q => Data_0(23 downto 16), WrEn => WrEn_V(0) );
-  ram_b23: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(15 downto 8), Q => Data_0(15 downto 8), WrEn => WrEn_V(0) );
-  ram_b24: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(7 downto 0), Q => Data_0(7 downto 0), WrEn => WrEn_V(0) );
+  ram_b11: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(31 downto 24), Q => Data_1(31 downto 24), WrEn => WrEn_1 );
+  ram_b12: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(23 downto 16), Q => Data_1(23 downto 16), WrEn => WrEn_1 );
+  ram_b13: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(15 downto 8), Q => Data_1(15 downto 8), WrEn => WrEn_1 );
+  ram_b14: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(7 downto 0), Q => Data_1(7 downto 0), WrEn => WrEn_1 );
+  ram_b21: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(31 downto 24), Q => Data_0(31 downto 24), WrEn => WrEn_0 );
+  ram_b22: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(23 downto 16), Q => Data_0(23 downto 16), WrEn => WrEn_0 );
+  ram_b23: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(15 downto 8), Q => Data_0(15 downto 8), WrEn => WrEn_0 );
+  ram_b24: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(7 downto 0), Q => Data_0(7 downto 0), WrEn => WrEn_0 );
   
-  process (Clock)
-  begin 
-		if(rising_edge(Clock)) then
-			if WrEn = '1' then
-				if Address(9) = '1' or Address(8) = '1' then
-					WrEn_v(1 downto 0) <= "00";
-				elsif Address(7) = '1' then
-					-- endereco valido de 128 a 255
-					WrEn_v(1 downto 0) <= "10";
-				else
-					-- endereco valido de 0 a 127
-					WrEn_v(1 downto 0) <= "01";
-				end if;
-			end if;
-		end if;
-  end process;
+
+  WrEn_0 <= '1' when Address(9) = '0' and Address(8) = '0' and Address(7) = '0' and WrEn = '1' else '0';
+  WrEn_1 <= '1' when Address(9) = '0' and Address(8) = '0' and Address(7) = '1' and WrEn = '1' else '0';
   
-  DataOut <= Data_1 when Address(9 downto 7) = "001" else
-				 Data_0 when Address(9 downto 7) = "000" else
+  out_aux <= Data_1 when Address(9) = '0' and Address(8) = '0' and Address(7) = '1' else
+				 Data_0 when Address(9) = '0' and Address(8) = '0' and Address(7) = '0'  else
 				 "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
 end rtl;

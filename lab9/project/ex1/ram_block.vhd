@@ -41,7 +41,7 @@ use ieee.numeric_std.all;
 
 			process(Clock)
 			begin
-			if(rising_edge(Clock)) then
+			if(Clock'EVENT and Clock = '1') then
 				 if(WrEn = '1') then
 							ram(to_integer(unsigned(Address))) <= Data;
 				 end if;
