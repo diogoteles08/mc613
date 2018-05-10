@@ -48,10 +48,18 @@ begin
   ram_b24: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(7 downto 0), Q => Data_0(7 downto 0), WrEn => WrEn_0 );
   
 
-  WrEn_0 <= '1' when Address(9) = '0' and Address(8) = '0' and Address(7) = '0' and WrEn = '1' else '0';
-  WrEn_1 <= '1' when Address(9) = '0' and Address(8) = '0' and Address(7) = '1' and WrEn = '1' else '0';
+  WrEn_0 <= '1' when Address(9 downto 8) = "00" and WrEn = '1' and Address(7) = '0' else '0';
+  WrEn_1 <= '1' when Address(9 downto 8) = "00" and WrEn = '1' and Address(7) = '1' else '0';
   
-  out_aux <= Data_1 when Address(9) = '0' and Address(8) = '0' and Address(7) = '1' else
-				 Data_0 when Address(9) = '0' and Address(8) = '0' and Address(7) = '0'  else
-				 "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
+  process(Clock)
+  begin 
+    if (Address(9 downto 8) = "00") then
+		case Address(7) is
+		  when '1' => DataOut <= Data_1;
+		  when '0' => DataOut <= Data_0;
+		end case;
+	 else
+		DataOut <= (others => 'Z');
+	 end if;
+  end process;		      
 end rtl;

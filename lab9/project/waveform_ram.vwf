@@ -1,8 +1,8 @@
 /*<simulation_settings>
-<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra172358/mc613/lab9/project/waveform_ram.vwf" --testbench_file="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/waveform_ram.vwf.vht"</ftestbench_cmd>
-<ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra172358/mc613/lab9/project/waveform_ram.vwf" --testbench_file="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/waveform_ram.vwf.vht"</ttestbench_cmd>
-<fnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=on --flatten_buses=off --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/" lab9 -c lab9</fnetlist_cmd>
-<tnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=off --flatten_buses=off --timescale=1ps --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/" lab9 -c lab9</tnetlist_cmd>
+<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra169966/Documents/613mc/lab9/project/waveform_ram.vwf" --testbench_file="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/waveform_ram.vwf.vht"</ftestbench_cmd>
+<ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra169966/Documents/613mc/lab9/project/waveform_ram.vwf" --testbench_file="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/waveform_ram.vwf.vht"</ttestbench_cmd>
+<fnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=on --flatten_buses=off --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/" lab9 -c lab9</fnetlist_cmd>
+<tnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=off --flatten_buses=off --timescale=1ps --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/" lab9 -c lab9</tnetlist_cmd>
 <modelsim_script>onerror {exit -code 1}
 vlib work
 vcom -work work lab9.vho
@@ -900,8 +900,8 @@ TRANSITION_LIST("Address[9]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 100.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 105.0;
 		LEVEL 1 FOR 20.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 20.0;
@@ -914,11 +914,11 @@ TRANSITION_LIST("Address[8]")
 	NODE
 	{
 		REPEAT = 1;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
+		LEVEL 0 FOR 100.0;
 		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 80.0;
-		LEVEL 1 FOR 40.0;
 		LEVEL 0 FOR 20.0;
 	}
 }
@@ -928,11 +928,11 @@ TRANSITION_LIST("Address[7]")
 	NODE
 	{
 		REPEAT = 1;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 25.0;
 		LEVEL 0 FOR 80.0;
 		LEVEL 1 FOR 20.0;
 	}
@@ -943,12 +943,12 @@ TRANSITION_LIST("Address[6]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 60.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 20.0;
 		LEVEL 0 FOR 60.0;
+		LEVEL 1 FOR 40.0;
+		LEVEL 0 FOR 40.0;
 	}
 }
 
@@ -968,8 +968,8 @@ TRANSITION_LIST("Address[4]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 160.0;
-		LEVEL 0 FOR 20.0;
+		LEVEL 1 FOR 140.0;
+		LEVEL 0 FOR 40.0;
 		LEVEL 1 FOR 20.0;
 	}
 }
@@ -979,15 +979,13 @@ TRANSITION_LIST("Address[3]")
 	NODE
 	{
 		REPEAT = 1;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 25.0;
 		LEVEL 0 FOR 20.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 40.0;
+		LEVEL 0 FOR 80.0;
 	}
 }
 
@@ -996,11 +994,11 @@ TRANSITION_LIST("Address[2]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
+		LEVEL 1 FOR 15.0;
 		LEVEL 0 FOR 60.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 60.0;
-		LEVEL 1 FOR 20.0;
+		LEVEL 1 FOR 25.0;
+		LEVEL 0 FOR 40.0;
+		LEVEL 1 FOR 40.0;
 		LEVEL 0 FOR 20.0;
 	}
 }
@@ -1010,10 +1008,12 @@ TRANSITION_LIST("Address[1]")
 	NODE
 	{
 		REPEAT = 1;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 25.0;
 		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
+		LEVEL 1 FOR 80.0;
 		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 140.0;
+		LEVEL 1 FOR 40.0;
 	}
 }
 
@@ -1022,14 +1022,14 @@ TRANSITION_LIST("Address[0]")
 	NODE
 	{
 		REPEAT = 1;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 25.0;
 		LEVEL 0 FOR 20.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 60.0;
+		LEVEL 0 FOR 40.0;
+		LEVEL 1 FOR 40.0;
 	}
 }
 
@@ -1041,7 +1041,21 @@ TRANSITION_LIST("Clock")
 		LEVEL 1 FOR 10.0;
 		NODE
 		{
-			REPEAT = 9;
+			REPEAT = 4;
+			LEVEL 0 FOR 10.0;
+			LEVEL 1 FOR 10.0;
+		}
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 5.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 5.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 5.0;
+		LEVEL 0 FOR 10.0;
+		LEVEL 1 FOR 10.0;
+		NODE
+		{
+			REPEAT = 1;
 			LEVEL 0 FOR 10.0;
 			LEVEL 1 FOR 10.0;
 		}
@@ -1054,8 +1068,8 @@ TRANSITION_LIST("DataIn[31]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 40.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 45.0;
 		LEVEL 1 FOR 40.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 40.0;
@@ -1093,8 +1107,8 @@ TRANSITION_LIST("DataIn[28]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 40.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 45.0;
 		LEVEL 1 FOR 40.0;
 		LEVEL 0 FOR 40.0;
 		LEVEL 1 FOR 60.0;
@@ -1106,8 +1120,8 @@ TRANSITION_LIST("DataIn[27]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 40.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 45.0;
 		LEVEL 1 FOR 60.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 60.0;
@@ -1130,8 +1144,8 @@ TRANSITION_LIST("DataIn[25]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 40.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 45.0;
 		LEVEL 0 FOR 40.0;
 		LEVEL 1 FOR 40.0;
 		LEVEL 0 FOR 40.0;
@@ -1157,8 +1171,8 @@ TRANSITION_LIST("DataIn[23]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 140.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 145.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 20.0;
 	}
@@ -1169,8 +1183,8 @@ TRANSITION_LIST("DataIn[22]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 40.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 45.0;
 		LEVEL 0 FOR 60.0;
 		LEVEL 1 FOR 20.0;
 		LEVEL 0 FOR 40.0;
@@ -1183,8 +1197,8 @@ TRANSITION_LIST("DataIn[21]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 60.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 65.0;
 		LEVEL 1 FOR 60.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 40.0;
@@ -1196,8 +1210,8 @@ TRANSITION_LIST("DataIn[20]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 60.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 40.0;
@@ -1238,8 +1252,8 @@ TRANSITION_LIST("DataIn[17]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 40.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 20.0;
@@ -1266,8 +1280,8 @@ TRANSITION_LIST("DataIn[15]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 40.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 45.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 20.0;
 		LEVEL 0 FOR 60.0;
@@ -1294,8 +1308,8 @@ TRANSITION_LIST("DataIn[13]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 40.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 45.0;
 		LEVEL 1 FOR 60.0;
 		LEVEL 0 FOR 80.0;
 	}
@@ -1316,8 +1330,8 @@ TRANSITION_LIST("DataIn[11]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 20.0;
+		LEVEL 1 FOR 15.0;
+		LEVEL 0 FOR 25.0;
 		LEVEL 1 FOR 20.0;
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 40.0;
@@ -1427,8 +1441,8 @@ TRANSITION_LIST("DataIn[3]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 20.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 25.0;
 		LEVEL 0 FOR 40.0;
 		LEVEL 1 FOR 40.0;
 		LEVEL 0 FOR 80.0;
@@ -1470,8 +1484,8 @@ TRANSITION_LIST("DataIn[0]")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 20.0;
-		LEVEL 1 FOR 60.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 65.0;
 		LEVEL 0 FOR 60.0;
 		LEVEL 1 FOR 20.0;
 		LEVEL 0 FOR 40.0;
@@ -1771,11 +1785,15 @@ TRANSITION_LIST("WrEn")
 	NODE
 	{
 		REPEAT = 1;
-		LEVEL 0 FOR 20.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 25.0;
+		LEVEL 0 FOR 35.0;
 		LEVEL 1 FOR 20.0;
-		LEVEL 0 FOR 40.0;
-		LEVEL 1 FOR 15.0;
-		LEVEL 0 FOR 105.0;
+		LEVEL 0 FOR 25.0;
+		LEVEL 1 FOR 10.0;
+		LEVEL 0 FOR 15.0;
+		LEVEL 1 FOR 5.0;
+		LEVEL 0 FOR 50.0;
 	}
 }
 
