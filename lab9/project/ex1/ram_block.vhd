@@ -39,20 +39,18 @@ use ieee.numeric_std.all;
  begin
 
 			process(Clock)
-				variable numero : natural range 0 to 2**ADDR_WIDTH - 1;
+				variable numero: natural range 0 to 2**ADDR_WIDTH - 1;
 			begin
 			if(Clock'EVENT and Clock = '1') then
 				 numero := to_integer(unsigned(Address));
 				 if(WrEn = '1') then
 							ram(numero) <= Data;
 				 end if;
-
-				 -- Register the address for reading
 				 addr_reg <= numero;
 			end if;
 			end process;
 
-			-- leitura sincrona
+			-- leitura sincrona, pois addr_reg so muda com o Clock
 			Q <= ram(addr_reg);
 
 end rtl;
