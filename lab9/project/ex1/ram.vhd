@@ -7,7 +7,9 @@ entity ram is
     Address : in std_logic_vector(9 downto 0);
     DataIn : in std_logic_vector(31 downto 0);
     DataOut : out std_logic_vector(31 downto 0);
-    WrEn : in std_logic
+	 Data0_aux : out std_logic_vector(31 downto 0);
+    Data1_aux : out std_logic_vector(31 downto 0);
+	 WrEn : in std_logic
   );
 end ram;
 
@@ -35,7 +37,6 @@ end component;
 	signal WrEn_1 : std_logic := '0';
 	signal Data_0 : std_logic_vector(31 downto 0);
 	signal Data_1 : std_logic_vector(31 downto 0);
-	signal out_aux : std_logic_vector(31 downto 0);
 	
 begin
   ram_b11: ram_block port map (Clock => Clock, Address => Address(6 downto 0), Data => DataIn(31 downto 24), Q => Data_1(31 downto 24), WrEn => WrEn_1 );
@@ -51,7 +52,16 @@ begin
   WrEn_0 <= '1' when Address(9) = '0' and Address(8) = '0' and Address(7) = '0' and WrEn = '1' else '0';
   WrEn_1 <= '1' when Address(9) = '0' and Address(8) = '0' and Address(7) = '1' and WrEn = '1' else '0';
   
-  out_aux <= Data_1 when Address(9) = '0' and Address(8) = '0' and Address(7) = '1' else
-				 Data_0 when Address(9) = '0' and Address(8) = '0' and Address(7) = '0'  else
-				 "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
+  Data0_aux <= Data_0;
+  Data1_aux <= Data_1;
+  
+  process (Clock)
+  begin 
+		if (Clock'EVENT and Clock = '1') then
+			DataOut <= Data_1 when Address(9) = '0' and Address(8) = '0' and Address(7) = '1' else
+						  Data_0 when Address(9) = '0' and Address(8) = '0' and Address(7) = '0'  else
+						  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
+		end process;
+  end process;
+  
 end rtl;

@@ -18,10 +18,9 @@ use ieee.numeric_std.all;
 				 Clock		: in std_logic;
 				 Address : in std_logic_vector(ADDR_WIDTH -1 downto 0);
 				 Data	: in std_logic_vector((DATA_WIDTH-1) downto 0);
-				 WrEn		: in std_logic := '1';
+				 WrEn		: in std_logic := '0';
 				 Q		: out std_logic_vector((DATA_WIDTH -1) downto 0)
 			);
-				 --Address	: in natural range 0 to 2**ADDR_WIDTH - 1;
 
  end entity;
 
@@ -40,14 +39,16 @@ use ieee.numeric_std.all;
  begin
 
 			process(Clock)
+				variable numero : natural range 0 to 2**ADDR_WIDTH - 1;
 			begin
 			if(Clock'EVENT and Clock = '1') then
+				 numero := to_integer(unsigned(Address));
 				 if(WrEn = '1') then
-							ram(to_integer(unsigned(Address))) <= Data;
+							ram(numero) <= Data;
 				 end if;
 
 				 -- Register the address for reading
-				 addr_reg <= to_integer(unsigned(Address));
+				 addr_reg <= numero;
 			end if;
 			end process;
 
