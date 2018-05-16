@@ -22,6 +22,8 @@ use ieee.numeric_std.all;
 
  end entity;
 
+-- todo: modifique-o para que ele siga as especificações da Memória de Instrução (IM) e da
+-- Memória de Dados (DM) do processador m1ps
  architecture rtl of memory is
 
 ---- Build a 2-D array type for the RAM
