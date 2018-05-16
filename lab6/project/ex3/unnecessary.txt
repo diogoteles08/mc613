@@ -1,0 +1,13 @@
+Tecla   Code errado     Code certo
+\       5D              61
+PRN     E0,7C           E0,12
+SCR
+[       54              5B
+KP .    71              6D
+]       5B              5D
+;       4C              4A
+'       52              0E
+/       4A              51
+
+O pause apresentaria varios codigos, mas ele pisca e aparece 00,00.
+
