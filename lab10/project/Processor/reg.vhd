@@ -1,29 +1,30 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
 
-ENTITY reg IS
-	GENERIC (
-		WORDSIZE	: NATURAL := 32
-	);
-	PORT (
-		clock,
-		load,
-		clear	: IN	STD_LOGIC;
-		datain	: IN	STD_LOGIC_VECTOR(WORDSIZE-1 DOWNTO 0);
-		dataout : OUT	STD_LOGIC_VECTOR(WORDSIZE-1 DOWNTO 0)
-	);
-END ENTITY;
+entity reg is
+  generic (
+    N : integer := 4
+  );
+  port (
+    clock : in std_logic;
+    DATA_IN : in std_logic_vector(N-1 downto 0);
+    DATA_OUT : out std_logic_vector(N-1 downto 0);
+    load : in std_logic; --write enable
+    clear : in std_logic
+  );
+end reg;
 
-ARCHITECTURE Behavior OF reg IS
-BEGIN
-	PROCESS (clock, load, clear, datain)
-	BEGIN
-		IF clear = '1' THEN
-			dataout <= (OTHERS => '0');
-		ELSIF (clock'event AND clock = '1') THEN
-			IF (load = '1') THEN
-				dataout <= datain;
+architecture rtl of reg is
+
+begin
+  process(clock, clear) 
+  begin
+		IF clear = '0' THEN
+			DATA_OUT <= "0000";		
+		ELSIF clock'EVENT AND clock = '1' THEN
+			IF load = '1' THEN
+				DATA_OUT <= DATA_IN;
 			END IF;
 		END IF;
-	END PROCESS;
-END ARCHITECTURE;
+  end process;
+end rtl;
