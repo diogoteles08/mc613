@@ -20,7 +20,7 @@ begin
   process(clock, clear) 
   begin
 		IF clear = '0' THEN
-			DATA_OUT <= "0000";		
+			DATA_OUT <= (others => '0');		
 		ELSIF clock'EVENT AND clock = '1' THEN
 			IF load = '1' THEN
 				DATA_OUT <= DATA_IN;

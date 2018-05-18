@@ -24,7 +24,6 @@ architecture structural of bank is
 			DATA_IN : in std_logic_vector(N-1 downto 0);
 			DATA_OUT : out std_logic_vector(N-1 downto 0);
 			load : in std_logic; --write enable
-			readEn : in std_logic;
 			clear : in std_logic
       );
 	end component;
@@ -49,8 +48,9 @@ architecture structural of bank is
 	signal writeAddressDecoded: std_logic_vector(31 downto 0);
 	signal readAddress1Decoded: std_logic_vector(31 downto 0);
 	signal readAddress2Decoded: std_logic_vector(31 downto 0);
-	signal output_vector1: std_logic_vector (WORDSIZE*32 downto 0);
-	signal output_vector2: std_logic_vector (WORDSIZE*32 downto 0);
+	signal out_aux1: std_logic_vector(WORDSIZE-1 downto 0);
+	signal out_aux2: std_logic_vector(WORDSIZE-1 downto 0);
+	signal reg_values_vector: std_logic_vector (WORDSIZE*32 downto 0);
 begin
 	
    inputSelection: dec5_to_32 port map (
@@ -69,46 +69,44 @@ begin
 		en => '1',
 		Xin => RG_ADDR2,
 		Xout => readAddress2Decoded
-	);
-	
-	
-	
+	);		
 
-	create_regs: for i in 1 to 31 generate
+	create_regs1: for i in 1 to 31 generate
 		regis: reg port map (
 			clock => clock,
 			DATA_IN => DATA_IN,
-			DATA_OUT => output_vector1(i*4+31 downto i*4),
-			load => WR_EN and writeAddressDecoded(i),
-			readEn => RD_EN and readAddress1Decoded(i),
+			DATA_OUT => reg_values_vector(i*WORDSIZE+31 downto i*WORDSIZE),
+			load => WR_EN and writeAddressDecoded(i),			
 			clear => clear
 		);
-	end generate;
+	end generate;	
 	
-	create_regs: for i in 1 to 31 generate
-		regis: reg port map (
-			clock => clock,
-			DATA_IN => open,
-			DATA_OUT => output_vector2(i*4+31 downto i*4),
-			load => '0',
-			readEn => RD_EN and readAddress2Decoded(i),
-			clear => clear
-		);
-	end generate;
-	
-	filter_output: for i in 0 to 7 generate
-		buffer_t_state: zbuffer port map (
-			enable => readAddress1Decoded(i),
-			Xin => output_vector1(i*4+3 downto i*4),
+	filter_output1: for i in 1 to 31 generate
+		buffer_t_state1: zbuffer port map (
+			enable => RD_EN and readAddress1Decoded(i),
+			Xin => reg_values_vector(i*WORDSIZE+31 downto i*WORDSIZE),
 			Xout => DATA_OUT1
 		);
 	end generate;
 	
-	filter_output: for i in 0 to 7 generate
-		buffer_t_state: zbuffer port map (
-			enable => readAddress2Decoded(i),
-			Xin => output_vector2(i*4+3 downto i*4),
+	filter_output2: for i in 1 to 31 generate
+		buffer_t_state2: zbuffer port map (
+			enable => RD_EN and readAddress2Decoded(i),
+			Xin => reg_values_vector(i*WORDSIZE+31 downto i*WORDSIZE),
 			Xout => DATA_OUT2
 		);
 	end generate;
+	
+	buffer_t_state_r0_1: zbuffer port map (
+		enable => RD_EN and readAddress1Decoded(0),
+		Xin => (others => '0'),
+		Xout => DATA_OUT1
+	);
+	
+	buffer_t_state_r0_2: zbuffer port map (
+		enable => RD_EN and readAddress2Decoded(0),
+		Xin => (others => '0'),
+		Xout => DATA_OUT2
+	);
+	
 end structural;
