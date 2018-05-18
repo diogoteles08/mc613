@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity zbuffer is 
-	generic (N : INTEGER := 4);
+	generic (N : INTEGER := 32);
 	port (
 		enable: in std_logic;
 		Xin: in std_logic_vector(N-1 downto 0);

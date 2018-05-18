@@ -22,39 +22,28 @@ use ieee.numeric_std.all;
 
  end entity;
 
--- todo: modifique-o para que ele siga as especificações da Memória de Instrução (IM) e da
--- Memória de Dados (DM) do processador m1ps
  architecture rtl of memory is
 
----- Build a 2-D array type for the RAM
---subtype word_t is std_logic_vector((WORDSIZE-1) downto 0);
---type memory_t is array(2**BITS_OF_ADDR-1 downto 0) of word_t;
---
----- Declare the RAM signal.	
---signal ram : memory_t;
---
----- Register to hold the address 
---signal addr_reg : natural range 0 to 2**BITS_OF_ADDR-1;
     type memoria is array (0 to 2**BITS_OF_ADDR -1) of std_logic_vector(WORDSIZE -1  downto 0);
-    signal ram : memoria;
+
+	 signal ram : memoria;
 	 attribute ram_init_file : string;
 	 attribute ram_init_file of ram: signal is MIF_FILE;
-	 
-    signal endereco : integer := 0;
- begin
+	 signal addr_reg : natural range 0 to 2**BITS_OF_ADDR-1;
 
-    endereco <= to_integer(unsigned(address));
+ begin
 
     process(clock)
     begin
         if(clock'EVENT and clock = '1') then
              if(we = '1') then
-                ram(endereco) <= datain;
+                ram(to_integer(unsigned(address))) <= datain;
              end if;
+				 addr_reg <= to_integer(unsigned(address));
+
         end if;
     end process;
 
-    -- leitura assincrona
-    dataout <= ram(endereco);
+	 dataout <= ram(addr_reg);
 
 end rtl;

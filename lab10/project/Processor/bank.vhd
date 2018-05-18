@@ -71,7 +71,7 @@ begin
 		Xout => readAddress2Decoded
 	);		
 
-	create_regs1: for i in 1 to 31 generate
+	create_regs1: for i in 0 to 31 generate
 		regis: reg port map (
 			clock => clock,
 			datain => DATA_IN,
