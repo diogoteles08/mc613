@@ -8,8 +8,8 @@ entity bank is
     clear : in std_logic;
     clock : in std_logic;
     WR_ADDR : in std_logic_vector(4 downto 0);
-    RG_ADDR1 : in std_logic_vector(4 downto 0);
-    RG_ADDR2 : in std_logic_vector(4 downto 0);
+    RD_ADDR1 : in std_logic_vector(4 downto 0);
+    RD_ADDR2 : in std_logic_vector(4 downto 0);
     DATA_IN : in std_logic_vector(WORDSIZE-1 downto 0);
     DATA_OUT1 : out std_logic_vector(WORDSIZE-1 downto 0);
     DATA_OUT2 : out std_logic_vector(WORDSIZE-1 downto 0)
@@ -61,13 +61,13 @@ begin
 	
 	outputSelection1: dec5_to_32 port map (
 		en => '1',
-		Xin => RG_ADDR1,
+		Xin => RD_ADDR1,
 		Xout => readAddress1Decoded
 	);
 	
 	outputSelection2: dec5_to_32 port map (
 		en => '1',
-		Xin => RG_ADDR2,
+		Xin => RD_ADDR2,
 		Xout => readAddress2Decoded
 	);		
 

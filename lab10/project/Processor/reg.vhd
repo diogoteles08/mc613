@@ -7,8 +7,8 @@ entity reg is
   );
   port (
     clock : in std_logic;
-    DATA_IN : in std_logic_vector(N-1 downto 0);
-    DATA_OUT : out std_logic_vector(N-1 downto 0);
+    datain : in std_logic_vector(N-1 downto 0);
+    dataout : out std_logic_vector(N-1 downto 0);
     load : in std_logic; --write enable
     clear : in std_logic
   );
@@ -20,10 +20,10 @@ begin
   process(clock, clear) 
   begin
 		IF clear = '0' THEN
-			DATA_OUT <= (others => '0');		
+			dataout <= (others => '0');		
 		ELSIF clock'EVENT AND clock = '1' THEN
 			IF load = '1' THEN
-				DATA_OUT <= DATA_IN;
+				dataout <= datain;
 			END IF;
 		END IF;
   end process;
