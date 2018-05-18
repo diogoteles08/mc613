@@ -21,8 +21,8 @@ architecture structural of bank is
 		generic (N : INTEGER := WORDSIZE);
 		port (
 			clock : in std_logic;
-			DATA_IN : in std_logic_vector(N-1 downto 0);
-			DATA_OUT : out std_logic_vector(N-1 downto 0);
+			datain : in std_logic_vector(N-1 downto 0);
+			dataout : out std_logic_vector(N-1 downto 0);
 			load : in std_logic; --write enable
 			clear : in std_logic
       );
@@ -74,8 +74,8 @@ begin
 	create_regs1: for i in 1 to 31 generate
 		regis: reg port map (
 			clock => clock,
-			DATA_IN => DATA_IN,
-			DATA_OUT => reg_values_vector(i*WORDSIZE+31 downto i*WORDSIZE),
+			datain => DATA_IN,
+			dataout => reg_values_vector(i*WORDSIZE+31 downto i*WORDSIZE),
 			load => WR_EN and writeAddressDecoded(i),			
 			clear => clear
 		);

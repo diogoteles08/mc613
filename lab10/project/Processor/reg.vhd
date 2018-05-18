@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity reg is
   generic (
-    N : integer := 4
+    N : integer := 32
   );
   port (
     clock : in std_logic;

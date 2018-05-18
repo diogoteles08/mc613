@@ -38,7 +38,7 @@ use ieee.numeric_std.all;
     type memoria is array (0 to 2**BITS_OF_ADDR -1) of std_logic_vector(WORDSIZE -1  downto 0);
     signal ram : memoria;
 	 attribute ram_init_file : string;
-	 attribute ram_init_file of ram signal is MIF_FILE;
+	 attribute ram_init_file of ram: signal is MIF_FILE;
 	 
     signal endereco : integer := 0;
  begin
