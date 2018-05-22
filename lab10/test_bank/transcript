@@ -1,0 +1,92 @@
+# do run.do
+# 
+#   Processor Processor/pack.vhd
+#   Processor Processor/reg.vhd
+#   Processor Processor/bank.vhd
+#   Processor Processor/zbuffer.vhd
+#   Processor Processor/dec5_to_32.vhd
+#   Processor Processor/testbench.vhd
+# 
+# Processor.testbench
+# ** Warning: (vlib-34) Library already exists at "Processor".
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:46:53 on May 18,2018
+# vcom -work Processor -2008 Processor/pack.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling package Processor_pack
+# End time: 00:46:53 on May 18,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:46:53 on May 18,2018
+# vcom -work Processor -2008 Processor/reg.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity reg
+# -- Compiling architecture Behavior of reg
+# End time: 00:46:53 on May 18,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:46:53 on May 18,2018
+# vcom -work Processor -2008 Processor/bank.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity bank
+# -- Compiling architecture structural of bank
+# End time: 00:46:53 on May 18,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:46:53 on May 18,2018
+# vcom -work Processor -2008 Processor/zbuffer.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity zbuffer
+# -- Compiling architecture implement of zbuffer
+# End time: 00:46:53 on May 18,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:46:53 on May 18,2018
+# vcom -work Processor -2008 Processor/dec5_to_32.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity dec5_to_32
+# -- Compiling architecture implement of dec5_to_32
+# End time: 00:46:53 on May 18,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 00:46:53 on May 18,2018
+# vcom -work Processor -2008 Processor/testbench.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Loading package std_logic_textio
+# -- Loading package ENV
+# -- Compiling entity testbench
+# -- Compiling architecture behave of testbench
+# -- Loading entity bank
+# ** Warning: Processor/testbench.vhd(86): (vcom-1207) An abstract literal and an identifier must have a separator between them.
+# End time: 00:46:53 on May 18,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 1
+# vsim Processor.testbench 
+# Start time: 00:46:53 on May 18,2018
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading ieee.std_logic_textio(body)
+# Loading std.env(body)
+# Loading Processor.testbench(behave)
+# Loading Processor.bank(structural)
+# Loading Processor.dec5_to_32(implement)
+# Loading Processor.reg(behavior)
+# Loading Processor.zbuffer(implement)
+# ** Warning: (vsim-3116) Problem reading symbols from linux-gate.so.1 : can not open ELF file.
+# End time: 00:46:55 on May 18,2018, Elapsed time: 0:00:02
+# Errors: 0, Warnings: 1

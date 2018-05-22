@@ -1,0 +1,235 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/ec2016/ra172358/mc613/lab10/test_bank
+Ebank
+Z1 w1526615211
+Z2 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z3 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+R0
+Z4 8Processor/bank.vhd
+Z5 FProcessor/bank.vhd
+l0
+L4
+VUd^N:`EknXzB;Qn0eDYZo1
+!s100 T8YbJoi35^bd1MK3oBBM82
+Z6 OV;C;10.5b;63
+33
+Z7 !s110 1526615213
+!i10b 1
+Z8 !s108 1526615213.000000
+Z9 !s90 -work|Processor|-2008|Processor/bank.vhd|
+Z10 !s107 Processor/bank.vhd|
+!i113 1
+Z11 o-work Processor -2008
+Z12 tExplicit 1 CvgOpt 0
+Astructural
+R2
+R3
+Z13 DEx4 work 4 bank 0 22 Ud^N:`EknXzB;Qn0eDYZo1
+l54
+L19
+V:1ai_]NNKSQT>63ga2]<00
+!s100 ?deRS;He89B2AiYL1?oEz1
+R6
+33
+R7
+!i10b 1
+R8
+R9
+R10
+!i113 1
+R11
+R12
+Edec5_to_32
+Z14 w1526609961
+Z15 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+R2
+R3
+R0
+Z16 8Processor/dec5_to_32.vhd
+Z17 FProcessor/dec5_to_32.vhd
+l0
+L5
+VGnmZL7U<;0zg`2=D2J]PG3
+!s100 jbA`Hon?4flj:_lGfioTL1
+R6
+33
+R7
+!i10b 1
+R8
+Z18 !s90 -work|Processor|-2008|Processor/dec5_to_32.vhd|
+Z19 !s107 Processor/dec5_to_32.vhd|
+!i113 1
+R11
+R12
+Aimplement
+R15
+R2
+R3
+DEx4 work 10 dec5_to_32 0 22 GnmZL7U<;0zg`2=D2J]PG3
+l14
+L13
+VD7BU4cf:lhWP;QhDOYbTG3
+!s100 ETdf4i^24cnXLHEShJ4hb2
+R6
+33
+R7
+!i10b 1
+R8
+R18
+R19
+!i113 1
+R11
+R12
+Pprocessor_pack
+R2
+R3
+w1526612983
+R0
+8Processor/pack.vhd
+FProcessor/pack.vhd
+l0
+L4
+VHoR4z0^>aWWkzgEB;?2M52
+!s100 48M?YD]WRRhTP<X]PzOcf0
+R6
+33
+R7
+!i10b 1
+R8
+!s90 -work|Processor|-2008|Processor/pack.vhd|
+!s107 Processor/pack.vhd|
+!i113 1
+R11
+R12
+Ereg
+Z20 w1526613005
+R2
+R3
+R0
+Z21 8Processor/reg.vhd
+Z22 FProcessor/reg.vhd
+l0
+L4
+Va]hEFnY@Jf11>j]m3SbXg1
+!s100 R5lkCJHDlj_hHeVhhHjn33
+R6
+33
+R7
+!i10b 1
+R8
+Z23 !s90 -work|Processor|-2008|Processor/reg.vhd|
+Z24 !s107 Processor/reg.vhd|
+!i113 1
+R11
+R12
+Abehavior
+R2
+R3
+DEx4 work 3 reg 0 22 a]hEFnY@Jf11>j]m3SbXg1
+l18
+L17
+VkzT;l1ljE@1GT64zOBmma0
+!s100 _iK9gKRSVK2OX7>2]OmLE2
+R6
+33
+R7
+!i10b 1
+R8
+R23
+R24
+!i113 1
+R11
+R12
+Etestbench
+Z25 w1526613021
+Z26 DPx3 std 3 env 0 22 d?`1ck@NdeD@H3RZG7FgZ2
+Z27 DPx4 ieee 16 std_logic_textio 0 22 V5TSK`;aJKC<l]CEg1>mz1
+R15
+R2
+R3
+R0
+Z28 8Processor/testbench.vhd
+Z29 FProcessor/testbench.vhd
+l0
+L10
+V98hTFgOj@5N^kD2Gh]Qo^2
+!s100 G90GBa8g93XggP2Mi=0ZB1
+R6
+33
+R7
+!i10b 1
+R8
+Z30 !s90 -work|Processor|-2008|Processor/testbench.vhd|
+Z31 !s107 Processor/testbench.vhd|
+!i113 1
+R11
+R12
+Abehave
+R13
+R26
+R27
+R15
+R2
+R3
+Z32 DEx4 work 9 testbench 0 22 98hTFgOj@5N^kD2Gh]Qo^2
+l24
+L13
+Z33 VTSPbQ5MRDS<oA;MVlPSV03
+Z34 !s100 5Z`zPZfM9>d90k:_4SUbS2
+R6
+33
+R7
+!i10b 1
+R8
+R30
+R31
+!i113 1
+R11
+R12
+Ezbuffer
+R14
+R2
+R3
+R0
+Z35 8Processor/zbuffer.vhd
+Z36 FProcessor/zbuffer.vhd
+l0
+L4
+VZ3DDd:I1^fm949BPZn_n?2
+!s100 ?i;L_V@2h2o9dFKQKC85M1
+R6
+33
+R7
+!i10b 1
+R8
+Z37 !s90 -work|Processor|-2008|Processor/zbuffer.vhd|
+Z38 !s107 Processor/zbuffer.vhd|
+!i113 1
+R11
+R12
+Aimplement
+R2
+R3
+DEx4 work 7 zbuffer 0 22 Z3DDd:I1^fm949BPZn_n?2
+l14
+L13
+V^a;Z9]zdPDKCmbcL=;dLU0
+!s100 MlMi8;cKGU@3<2H[i0IC70
+R6
+33
+R7
+!i10b 1
+R8
+R37
+R38
+!i113 1
+R11
+R12

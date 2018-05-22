@@ -1,0 +1,295 @@
+# ERROR: No extended dataflow license exists
+# do go.do
+# 
+#   Processor Processor/ALU.vhd
+#   Processor Processor/bank.vhd
+#   Processor Processor/CPU.vhd
+#   Processor Processor/memory.vhd
+#   Processor Processor/mux_0.vhd
+#   Processor Processor/mux2.vhd
+#   Processor Processor/pack.vhd
+#   Processor Processor/PC.vhd
+#   Processor Processor/reg.vhd
+#   Processor Processor/UC.vhd
+#   Processor Processor/testbench.vhd
+# 
+# Processor.testbench
+# ** Warning: (vlib-34) Library already exists at "Processor".
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/ALU.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package std_logic_arith
+# -- Loading package STD_LOGIC_UNSIGNED
+# -- Compiling entity ALU
+# -- Compiling architecture Behavior of ALU
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/bank.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Loading package Processor_pack
+# -- Compiling entity bank
+# -- Compiling architecture Behavior of bank
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/CPU.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity CPU
+# -- Compiling architecture bdf_type of CPU
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/memory.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity memory
+# -- Compiling architecture RTL of memory
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/mux_0.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity mux_0
+# -- Compiling architecture bdf_type of mux_0
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/mux2.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity mux2
+# -- Compiling architecture a_mux2 of mux2
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/pack.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling package Processor_pack
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/PC.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package std_logic_arith
+# -- Loading package STD_LOGIC_UNSIGNED
+# -- Loading package NUMERIC_STD
+# -- Compiling entity PC
+# -- Compiling architecture Behavior of PC
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/reg.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity reg
+# -- Compiling architecture Behavior of reg
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/UC.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package Processor_pack
+# -- Compiling entity UC
+# -- Compiling architecture Behavior of UC
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 19:38:21 on May 17,2018
+# vcom -reportprogress 300 -work Processor -2008 Processor/testbench.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Compiling entity testbench
+# -- Compiling architecture rtl of testbench
+# -- Loading entity CPU
+# End time: 19:38:21 on May 17,2018, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim Processor.testbench 
+# Start time: 19:38:21 on May 17,2018
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading Processor.testbench(rtl)
+# Loading Processor.cpu(bdf_type)
+# Loading ieee.std_logic_arith(body)
+# Loading ieee.std_logic_unsigned(body)
+# Loading Processor.alu(behavior)
+# Loading ieee.numeric_std(body)
+# Loading Processor.memory(rtl)
+# Loading Processor.pc(behavior)
+# Loading Processor.processor_pack
+# Loading Processor.bank(behavior)
+# Loading Processor.reg(behavior)
+# Loading Processor.mux_0(bdf_type)
+# Loading Processor.uc(behavior)
+add wave -position insertpoint sim:/testbench/CPU_inst/*
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/CPU_inst/b2v_inst4
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/CPU_inst/b2v_I_Memory
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/CPU_inst/b2v_D_Memory
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/CPU_inst/b2v_ALU
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/CPU_inst/b2v_ALU
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 1  Instance: /testbench/CPU_inst/b2v_ALU
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 1  Instance: /testbench/CPU_inst/b2v_ALU
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 1  Instance: /testbench/CPU_inst/b2v_ALU
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 0 ps  Iteration: 2  Instance: /testbench/CPU_inst/b2v_ALU
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run -all
+# ** Warning: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand, the result will be 'X'(es).
+#    Time: 13 ns  Iteration: 1  Instance: /testbench/CPU_inst/b2v_ALU
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 13 ns  Iteration: 1  Instance: /testbench/CPU_inst/b2v_inst4
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 13 ns  Iteration: 1  Instance: /testbench/CPU_inst/b2v_inst4
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 13 ns  Iteration: 1  Instance: /testbench/CPU_inst/b2v_inst4
+quit
+# End time: 19:40:40 on May 17,2018, Elapsed time: 0:02:19
+# Errors: 0, Warnings: 13

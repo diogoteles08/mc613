@@ -1,0 +1,61 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
+
+LIBRARY Processor;
+USE Processor.Processor_pack.reg;
+
+ENTITY bank IS
+  GENERIC (
+    WORDSIZE : NATURAL := 32
+  );
+  PORT (
+    WR_EN, RD_EN,
+    clear,
+    clock   : IN  STD_LOGIC;
+    WR_ADDR,
+    RD_ADDR1,
+    RD_ADDR2  : IN  STD_LOGIC_VECTOR (4 DOWNTO 0);
+    DATA_IN   : IN  STD_LOGIC_VECTOR (WORDSIZE-1 DOWNTO 0);
+    DATA_OUT1,
+    DATA_OUT2 : OUT STD_LOGIC_VECTOR (WORDSIZE-1 DOWNTO 0)
+  );
+END ENTITY;
+
+ARCHITECTURE Behavior OF bank IS
+  TYPE TArrayReg IS ARRAY (31 DOWNTO 0) OF STD_LOGIC_VECTOR (WORDSIZE-1 DOWNTO 0);
+  
+  SIGNAL D2R  : STD_LOGIC_VECTOR (31 DOWNTO 0);
+  SIGNAL R2D  : TArrayReg;
+BEGIN
+  Registers:
+  FOR i IN 0 TO 31 GENERATE
+    regs:
+    reg GENERIC MAP (WORDSIZE) PORT MAP (clock, D2R(i), clear, DATA_IN, R2D(i));
+  END GENERATE;
+  
+  WriteDecoder:
+  PROCESS (WR_EN, WR_ADDR)
+  BEGIN
+    FOR i IN 0 TO 31 LOOP
+      D2R(i) <= '0';
+    END LOOP;
+    IF (WR_EN = '1' AND WR_ADDR /= "00000") THEN
+      D2R(TO_INTEGER(UNSIGNED(WR_ADDR))) <= '1';
+    ELSE
+      D2R(TO_INTEGER(UNSIGNED(WR_ADDR))) <= '0';
+    END IF;
+  END PROCESS;
+
+  ReadDecoder:
+  PROCESS (RD_EN, RD_ADDR1, RD_ADDR2, R2D)
+  BEGIN
+    IF (RD_EN = '1') THEN
+      DATA_OUT1 <= R2D(TO_INTEGER(UNSIGNED(RD_ADDR1)));
+      DATA_OUT2 <= R2D(TO_INTEGER(UNSIGNED(RD_ADDR2)));
+    ELSE
+      DATA_OUT1 <= (OTHERS => 'Z');
+      DATA_OUT2 <= (OTHERS => 'Z');
+    END IF;
+  END PROCESS;
+END ARCHITECTURE;

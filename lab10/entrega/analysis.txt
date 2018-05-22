@@ -1,0 +1,48 @@
+Como pode ser visto na Tabela 1 abaixo, a ALU e o banco de registradores fazem 
+parte do caminho crítico.
+
+Uma alternativa para tornar esse processo mais apido seria ao inves de usar um 
+banco com memorias, utilizar registradores, pois isso tornaria o acesso mais rapido,
+nao necessitando dos decodificadores ou zbuffer implementados. 
+
+A frequencia maxima de operacao: 95.23 MHz
+
+Outra coisa que poderia ser feita eh descobrir o gargalo para a frequencia maxima
+e conseguir aumentar esse valor acelerando esse componente. 
+
+Tabela 1: Processos por tempo
+
+Tempo (s)
+10.419	  ALU|Add1~61|datac
+11.070	  ALU|Add1~61|cout
+11.070	  ALU|Add1~109|cin
+11.112	  ALU|Add1~109|cout
+11.112	  ALU|Add1~89|cin
+11.112	  ALU|Add1~89|cout
+11.112	  ALU|Add1~85|cin
+11.154	  ALU|Add1~85|cout
+11.154	  ALU|Add1~81|cin
+11.154	  ALU|Add1~81|cout
+11.154	  ALU|Add1~37|cin
+11.196	  ALU|Add1~37|cout
+11.196	  ALU|Add1~33|cin
+11.196	  ALU|Add1~33|cout
+11.196	  ALU|Add1~1|cin
+11.506	  ALU|Add1~1|sumout
+12.297	  ALU|Mux4~0|dataf
+12.373	  ALU|Mux4~0|combout
+
+4.736	  inst4|outputSelection1|Xout[22]~4|datab
+5.204	  inst4|outputSelection1|Xout[22]~4|combout
+5.711	  inst4|buffer_t_state_r0_1|Xout[21]~251|datad
+6.080	  inst4|buffer_t_state_r0_1|Xout[21]~251|combout
+6.830	  inst4|buffer_t_state_r0_1|Xout[21]~252|datac
+7.226	  inst4|buffer_t_state_r0_1|Xout[21]~252|combout
+7.518	  inst4|buffer_t_state_r0_1|Xout[21]~253|datae
+7.702	  inst4|buffer_t_state_r0_1|Xout[21]~253|combout
+8.915	  inst4|buffer_t_state_r0_1|Xout[21]~260|dataf
+8.989	  inst4|buffer_t_state_r0_1|Xout[21]~260|combout
+9.178	  inst4|buffer_t_state_r0_1|Xout[21]~261|datac
+9.586	  inst4|buffer_t_state_r0_1|Xout[21]~261|combout
+
+
