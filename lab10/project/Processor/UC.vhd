@@ -16,6 +16,7 @@ END ENTITY;
 
 ARCHITECTURE Behavior OF UC IS
 	SIGNAL current_state : states_UC := FETCH;
+	SIGNAL system_halted : STD_LOGIC := '0';
 BEGIN
 	StateMachine:
 	PROCESS (clear, clock, instruction, current_state)
@@ -55,28 +56,33 @@ BEGIN
         WHEN DECODE =>
           current_state <= EX;
         WHEN EX =>
-          CASE instruction IS
-            WHEN "000" =>
-              DM_Rd		<= '1';
-              Reg_Wr		<= '1';
-              DM_2_DBus	<= '1';
-            WHEN "001" =>
-              ALU_2_DBus	<= '1';
-              Reg_Wr		<= '1';
-              Stat_Wr		<= '1';
-            WHEN "010" =>
-              DM_Wr		<= '1';
-            WHEN "011" =>
-            WHEN "100" =>
-              IO_2_Reg	<= '1';
-              Reg_Wr		<= '1';
-            WHEN "101" =>
-            WHEN "110" =>
-              Reg_2_IO	<= '1';
-            WHEN OTHERS =>
-              PC_Ld_En	<= '1';
-          END CASE;			
-          current_state <= FETCH;
+		    IF system_halted = '1' THEN
+            current_state <= EX;
+			 ELSE			
+            CASE instruction IS
+				WHEN "000" =>
+				  DM_Rd		<= '1';
+				  Reg_Wr		<= '1';
+				  DM_2_DBus	<= '1';
+			   WHEN "001" =>
+				  ALU_2_DBus	<= '1';
+				  Reg_Wr		<= '1';
+				  Stat_Wr		<= '1';
+				WHEN "010" =>
+				  DM_Wr		<= '1';
+				WHEN "011" =>
+				  system_halted <= '1';
+				WHEN "100" =>
+				  IO_2_Reg	<= '1';
+				  Reg_Wr		<= '1';
+				WHEN "101" =>
+				WHEN "110" =>
+				  Reg_2_IO	<= '1';
+				WHEN OTHERS =>
+				  PC_Ld_En	<= '1';
+				END CASE;			
+				current_state <= FETCH;
+			END IF;
 			END CASE;
 		END IF;
 	END PROCESS;
