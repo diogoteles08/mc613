@@ -1,0 +1,8 @@
+Para adicionar uma nova instrucao no processador mips adotamos a seguinte abordagem:
+
+1) Adicionamos uma entrada Imed na alu de 16 bits
+2) Aumentamos a entrada das operacoes da ALU de 2 bits para 3 bits
+3) Verificamos na ALU o OP code da operacao e fazemos uma selecao entre
+o valor de B ou o valor de Imed dependendo da operacao realizada
+4) Estabelecemos uma saida das instrucoes de UC para ALU pegando os 16 primeiros
+bits menos significativos
