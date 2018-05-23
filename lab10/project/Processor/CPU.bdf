@@ -1324,13 +1324,13 @@ refer to the applicable agreement for further details.
 		(type "PARAMETER_SIGNED_DEC")	)
 	(parameter
 		"MIF_FILE"
-		"fibonacci_addi.mif"
+		"fibonacci_halt.mif"
 		""
 		(type "PARAMETER_STRING")	)
 	(drawing
 		(rectangle (rect 16 16 272 112))
 	)
-	(annotation_block (parameter)(rect -432 -360 -177 -300))
+	(annotation_block (parameter)(rect -432 -360 -179 -300))
 )
 (connector
 	(text "clock" (rect -474 -200 -449 -189)(font "Arial" ))

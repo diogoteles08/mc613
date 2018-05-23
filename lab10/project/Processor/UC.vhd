@@ -33,6 +33,7 @@ BEGIN
 			Reg_Wr		<= '0';
 			Stat_Wr		<= '0';
 			DM_2_DBus	<= '0';
+			system_halted <= '0';
 			
 			current_state <= FETCH;	
 		ELSIF (clock'EVENT AND clock = '1') THEN

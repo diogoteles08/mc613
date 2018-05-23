@@ -1,0 +1,4 @@
+Sabendo que no código da UC já temos como entrada os 3 primeiros bits do código de instrućão, para interpretar e executar a instrućão HALT
+no próprio UC identificamos quando os 3 primeiros bits da instrućão correspondem a "011" e, nesse caso, setamos um signal criado e denominado
+como system_halted, e fazemos a máquina de estados entrar em loop definindo sempre o estado atual como EX. Dessa forma a máquina de estados
+fica sempre no ciclo de execućão até que seja settado o bit clear, que no código vhdl da UC já é tratado para resetar a máquina.
