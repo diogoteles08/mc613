@@ -48,15 +48,15 @@ architecture comportamento of vga_ball is
   -- Interface com a memória de vídeo do controlador
 
   signal we : std_logic;                        -- write enable ('1' p/ escrita)
-  signal addr : integer range 0 to 12287;       -- endereco mem. vga
+  signal addr : integer range 0 to 49151;       -- endereco mem. vga
   signal pixel : std_logic_vector(2 downto 0);  -- valor de cor do pixel
   signal pixel_bit : std_logic;                 -- um bit do vetor acima
 
   -- Sinais dos contadores de linhas e colunas utilizados para percorrer
   -- as posições da memória de vídeo (pixels) no momento de construir um quadro.
   
-  signal line : integer range 0 to 95;  -- linha atual
-  signal col : integer range 0 to 127;  -- coluna atual
+  signal line : integer range 0 to NUM_LINE-1;  -- linha atual
+  signal col : integer range 0 to NUM_COL-1;  -- coluna atual
 
   signal col_rstn : std_logic;          -- reset do contador de colunas
   signal col_enable : std_logic;        -- enable do contador de colunas
@@ -70,8 +70,8 @@ architecture comportamento of vga_ball is
   -- Sinais que armazem a posição de uma bola, que deverá ser desenhada
   -- na tela de acordo com sua posição.
 
-  signal pos_x : integer range 0 to 127;  -- coluna atual da bola
-  signal pos_y : integer range 0 to 95;   -- linha atual da bola
+  signal pos_x : integer range 0 to NUM_COL-1;  -- coluna atual da bola
+  signal pos_y : integer range 0 to NUM_LINE-1;   -- linha atual da bola
 
   signal atualiza_pos_x : std_logic;    -- se '1' = bola muda sua pos. no eixo x
   signal atualiza_pos_y : std_logic;    -- se '1' = bola muda sua pos. no eixo y
@@ -99,7 +99,7 @@ architecture comportamento of vga_ball is
 begin  -- comportamento
 
 
-  -- Aqui instanciamos o controlador de vídeo, 128 colunas por 96 linhas
+  -- Aqui instanciamos o controlador de vídeo, NUM_COL colunas por NUM_LINE linhas
   -- (aspect ratio 4:3). Os sinais que iremos utilizar para comunicar
   -- com a memória de vídeo (para alterar o brilho dos pixels) são
   -- write_clk (nosso clock), write_enable ('1' quando queremos escrever
@@ -139,7 +139,7 @@ begin  -- comportamento
       col <= 0;
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if col_enable = '1' then
-        if col = 127 then               -- conta de 0 a 127 (128 colunas)
+        if col = NUM_COL-1 then               -- conta de 0 a NUM_COL-1 (NUM_COL colunas)
           col <= 0;
         else
           col <= col + 1;  
@@ -159,9 +159,9 @@ begin  -- comportamento
       line <= 0;
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       -- o contador de linha só incrementa quando o contador de colunas
-      -- chegou ao fim (valor 127)
-      if line_enable = '1' and col = 127 then
-        if line = 95 then               -- conta de 0 a 95 (96 linhas)
+      -- chegou ao fim (valor NUM_COL-1)
+      if line_enable = '1' and col = NUM_COL-1 then
+        if line = NUM_LINE-1 then               -- conta de 0 a NUM_LINE-1 (NUM_LINE linhas)
           line <= 0;
         else
           line <= line + 1;  
@@ -173,7 +173,7 @@ begin  -- comportamento
   -- Este sinal é útil para informar nossa lógica de controle quando
   -- o quadro terminou de ser escrito na memória de vídeo, para que
   -- possamos avançar para o próximo estado.
-  fim_escrita <= '1' when (line = 95) and (col = 127)
+  fim_escrita <= '1' when (line = NUM_LINE-1) and (col = NUM_COL-1)
                  else '0'; 
 
   -----------------------------------------------------------------------------
@@ -197,7 +197,7 @@ begin  -- comportamento
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if atualiza_pos_x = '1' then
         if direcao = direita then         
-          if pos_x = 127 then
+          if pos_x = NUM_COL-1 then
             direcao := esquerda;  
           else
             pos_x <= pos_x + 1;
@@ -227,7 +227,7 @@ begin  -- comportamento
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if atualiza_pos_y = '1' then
         if direcao = desce then         
-          if pos_y = 95 then
+          if pos_y = NUM_LINE-1 then
             direcao := sobe;  
           else
             pos_y <= pos_y + 1;
@@ -258,7 +258,7 @@ begin  -- comportamento
 			if line = pos_y and col = pos_x then	
 				if inic = '1' then
 					cor_atual <= "001";			
-				elsif (line = 95 or line = 0) and (col = 127 or col = 0) then
+				elsif (line = NUM_LINE-1 or line = 0) and (col = NUM_COL-1 or col = 0) then
 					if na_quina = '0' then
 						na_quina := '1';
 						if cor_atual = "111" then 
@@ -269,7 +269,7 @@ begin  -- comportamento
 							cor_atual <= cor_atual + "010";
 						end if;			
 					end if;
-				elsif (line = 95 or line = 0 or col = 127 or col = 0) then
+				elsif (line = NUM_LINE-1 or line = 0 or col = NUM_COL-1 or col = 0) then
 					if na_quina = '0' then
 						na_quina := '1';
 						if cor_atual = "111" then 
@@ -304,7 +304,7 @@ begin  -- comportamento
   
   -- O endereço de memória pode ser construído com essa fórmula simples,
   -- a partir da linha e coluna atual
-  addr  <= col + (128 * line) when (line = pos_y and col = pos_x) or limpa = '1' else 2;
+  addr  <= col + (NUM_COL * line) when (line = pos_y and col = pos_x) or limpa = '1' else 2;
 
   -----------------------------------------------------------------------------
   -- Processos que definem a FSM (finite state machine), nossa máquina
