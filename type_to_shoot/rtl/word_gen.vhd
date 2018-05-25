@@ -9,41 +9,42 @@ entity word_gen is
 		num_words: integer := 5
 	);
   port (
-    get_word : in std_logic;
---		test: out std_logic
-
-		char: out char_arr
---		new_word: out string(1 to 10)
+    get_word : in std_logic;		
+		new_word: out word
   );
 end word_gen;
 
 architecture rtl of word_gen is
---	type word_arr is array(integer range 0 to num_words-1) of word;
---	signal word_base: word_arr;
+	type word_arr is array(integer range 0 to num_words-1) of word;
+	signal word_base: word_arr;
 begin	
 
---	process(get_word)
---		variable index: integer := 0;
---	begin
---		if index = num_words-1 then
---			index := 0;
---		else
---			index := index + 1;
---		end if;
---		
---		new_word <= word_base(index);
---	end process;
+	process(get_word)
+		variable index: integer := 0;
+	begin
+		if get_word'EVENT and get_word = '1' then		
+			if index = num_words-1 then
+				index := 0;
+			else
+				index := index + 1;
+			end if;
+		end if;
 		
+		new_word <= word_base(index);
+	end process;
+		
+		word_base <= (
+			(others => 41),
+			(others => 42),
+			(others => 43),
+			(others => 44),
+			(others => 45)
+		);
 --	word_base <= (
---		"aaaaaaaaaa",
---		"bbbbbbbbbb",
---		"cccccccccc",
---		"dddddddddd",
---		"eeeeeeeeee"
+--		x"41414141414141414141",
+--		x"42424242424242424242",
+--		x"43434343434343434343",
+--		x"44444444444444444444",
+--		x"45454545454545454545"
 --	);
-	
---	new_word <= word_base(0);
---		new_word <= "aaaaaaaaaa";
---		test <= '1';
-		char <= "ab";
 end rtl;
