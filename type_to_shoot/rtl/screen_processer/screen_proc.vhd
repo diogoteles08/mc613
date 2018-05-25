@@ -3,8 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity screen_proc is
   port (
-    Clock : in std_logic;
- 
+    Clock : in std_logic 
   );
 end screen_proc;
 

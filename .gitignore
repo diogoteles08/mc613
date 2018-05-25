@@ -4,6 +4,7 @@ db
 incremental_db
 simulation
 output_files
+c5_pin_model_dump.txt
 *.qsf
 *.qws
 *.qpf
