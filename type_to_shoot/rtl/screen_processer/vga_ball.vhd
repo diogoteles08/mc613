@@ -30,6 +30,12 @@ use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity vga_ball is
+	generic (
+		NUM_LINE : integer := 192;
+		NUM_COL : integer := 256;
+		WORD_LINE : integer := 16;
+		WORD_COL : integer := 8
+	);
   port (    
     CLOCK_50                  : in  std_logic;
     KEY                       : in  std_logic_vector(0 downto 0);
@@ -48,7 +54,7 @@ architecture comportamento of vga_ball is
   -- Interface com a memória de vídeo do controlador
 
   signal we : std_logic;                        -- write enable ('1' p/ escrita)
-  signal addr : integer range 0 to 49151;       -- endereco mem. vga
+  signal addr : integer range 0 to NUM_LINE * NUM_COL - 1;       -- endereco mem. vga
   signal pixel : std_logic_vector(2 downto 0);  -- valor de cor do pixel
   signal pixel_bit : std_logic;                 -- um bit do vetor acima
 
@@ -95,7 +101,412 @@ architecture comportamento of vga_ball is
   signal cor_atual : std_logic_vector(2 downto 0) := "001";
   signal limpa : std_logic := '0';
   signal inic : std_logic := '0';
-
+	
+  signal font_word: std_logic_vector(7 downto 0);
+  signal rom_addr: std_logic_vector(10 downto 0);
+  
+  signal line_base : integer range 0 to NUM_LINE - 1 := 20;
+  signal col_base : integer range 0 to NUM_COL - 1 := 20;
+  signal print_enable : std_logic := '0';
+  
+  signal letra_A : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+   "00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000");
+  signal letra_B : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
+   "00000000000000001111110001100110011001100110011001111100011001100110011001100110011001101111110000000000000000000000000000000000");
+  signal letra_C : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
+   "00000000000000000011110001100110110000101100000011000000110000001100000011000010011001100011110000000000000000000000000000000000");
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11111000
+--   "01101100
+--   "01100110
+--   "01100110
+--   "01100110
+--   "01100110
+--   "01100110
+--   "01100110
+--   "01101100
+--   "11111000
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11111110
+--   "01100110
+--   "01100010
+--   "01101000
+--   "01111000
+--   "01101000
+--   "01100000
+--   "01100010
+--   "01100110
+--   "11111110
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11111110
+--   "01100110
+--   "01100010
+--   "01101000
+--   "01111000
+--   "01101000
+--   "01100000
+--   "01100000
+--   "01100000
+--   "11110000
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "00111100
+--   "01100110
+--   "11000010
+--   "11000000
+--   "11000000
+--   "11011110
+--   "11000110
+--   "11000110
+--   "01100110
+--   "00111010
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11111110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "00111100
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00111100
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "00011110
+--   "00001100
+--   "00001100
+--   "00001100
+--   "00001100
+--   "00001100
+--   "11001100
+--   "11001100
+--   "11001100
+--   "01111000
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11100110
+--   "01100110
+--   "01100110
+--   "01101100
+--   "01111000
+--   "01111000
+--   "01101100
+--   "01100110
+--   "01100110
+--   "11100110
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11110000
+--   "01100000
+--   "01100000
+--   "01100000
+--   "01100000
+--   "01100000
+--   "01100000
+--   "01100010
+--   "01100110
+--   "11111110
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000011
+--   "11100111
+--   "11111111
+--   "11111111
+--   "11011011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000110
+--   "11100110
+--   "11110110
+--   "11111110
+--   "11011110
+--   "11001110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "01111100
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "01111100
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11111100
+--   "01100110
+--   "01100110
+--   "01100110
+--   "01111100
+--   "01100000
+--   "01100000
+--   "01100000
+--   "01100000
+--   "11110000
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "01111100
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11010110
+--   "11011110
+--   "01111100
+--   "00001100
+--   "00001110
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11111100
+--   "01100110
+--   "01100110
+--   "01100110
+--   "01111100
+--   "01101100
+--   "01100110
+--   "01100110
+--   "01100110
+--   "11100110
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "01111100
+--   "11000110
+--   "11000110
+--   "01100000
+--   "00111000
+--   "00001100
+--   "00000110
+--   "11000110
+--   "11000110
+--   "01111100
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11111111
+--   "11011011
+--   "10011001
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00111100
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "11000110
+--   "01111100
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "01100110
+--   "00111100
+--   "00011000
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11000011
+--   "11011011
+--   "11011011
+--   "11111111
+--   "01100110
+--   "01100110
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000011
+--   "11000011
+--   "01100110
+--   "00111100
+--   "00011000
+--   "00011000
+--   "00111100
+--   "01100110
+--   "11000011
+--   "11000011
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11000011
+--   "11000011
+--   "11000011
+--   "01100110
+--   "00111100
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00011000
+--   "00111100
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000
+--   -- code x
+--   "00000000
+--   "00000000
+--   "11111111
+--   "11000011
+--   "10000110
+--   "00001100
+--   "00011000
+--   "00110000
+--   "01100000
+--   "11000001
+--   "11000011
+--   "11111111
+--   "00000000
+--   "00000000
+--   "00000000
+--   "00000000");
+	
 begin  -- comportamento
 
 
@@ -105,7 +516,12 @@ begin  -- comportamento
   -- write_clk (nosso clock), write_enable ('1' quando queremos escrever
   -- o valor de um pixel), write_addr (endereço do pixel a escrever)
   -- e data_in (valor do brilho do pixel RGB, 1 bit pra cada componente de cor)
-  vga_controller: entity work.vgacon port map (
+  vga_controller: entity work.vgacon 
+	 generic map (
+		NUM_HORZ_PIXELS => NUM_COL,
+		NUM_VERT_PIXELS => NUM_LINE
+	 )
+	 port map (
     clk50M       => CLOCK_50,
     rstn         => '1',
     red          => VGA_R,
@@ -120,9 +536,52 @@ begin  -- comportamento
     vga_clk      => VGA_CLK,
     sync         => sync,
     blank        => blank);
-  VGA_SYNC_N <= NOT sync;
-  VGA_BLANK_N <= NOT blank;
+	 
+	 VGA_SYNC_N <= NOT sync;
+	 VGA_BLANK_N <= NOT blank;
+	 
+	-- instantiate font ROM
+   font_unit: entity work.font_rom  port map(
+				 clk	=>		CLOCK_50,
+				 addr	=>		rom_addr, 
+				 data	=>		font_word);  
+	 
+	  -----------------------------------------------------------------------------
+  -- PROCESS PARA PEDIR INFORMACOES DE FONT_ROM E IMPRIMIR NA TELA
+  -----------------------------------------------------------------------------
 
+  -- purpose: 
+  -- type   : sequential
+  -- inputs :
+  -- outputs: 
+  pega_linha: process (CLOCK_50)
+  begin  -- process conta_coluna
+    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
+		if line >= line_base and line <= line_base + WORD_LINE - 1 and col >= col_base and col <= col_base + WORD_COL -1 then
+			print_enable <= letra_B( (line-line_base) * WORD_COL + (col - col_base) );
+		else
+			print_enable <= '0';
+		end if;
+    end if;
+  end process pega_linha;
+  
+    -----------------------------------------------------------------------------
+  -- PROCESS PARA DESCER A LETRA
+  -----------------------------------------------------------------------------
+
+  -- purpose: 
+  -- type   : sequential
+  -- inputs :
+  -- outputs: 
+  desce_linha: process (CLOCK_50)
+  begin  -- process conta_coluna
+    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
+		if atualiza_pos_x = '1' and atualiza_pos_y = '1' then
+			line_base <= line_base + 1;
+		end if;
+    end if;
+  end process desce_linha;
+  
   -----------------------------------------------------------------------------
   -- Processos que controlam contadores de linhas e coluna para varrer
   -- todos os endereços da memória de vídeo, no momento de construir um quadro.
@@ -188,60 +647,60 @@ begin  -- comportamento
   -- type   : sequential
   -- inputs : CLOCK_50, rstn
   -- outputs: pos_x
-  p_atualiza_pos_x: process (CLOCK_50, rstn)
-    type direcao_t is (direita, esquerda);
-    variable direcao : direcao_t := direita;
-  begin  -- process p_atualiza_pos_x
-    if rstn = '0' then                  -- asynchronous reset (active low)
-      pos_x <= 0;
-    elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-      if atualiza_pos_x = '1' then
-        if direcao = direita then         
-          if pos_x = NUM_COL-1 then
-            direcao := esquerda;  
-          else
-            pos_x <= pos_x + 1;
-          end if;        
-        else  -- se a direcao é esquerda
-          if pos_x = 0 then
-            direcao := direita;
-          else
-            pos_x <= pos_x - 1;
-          end if;
-        end if;
-      end if;
-    end if;
-  end process p_atualiza_pos_x;
+--  p_atualiza_pos_x: process (CLOCK_50, rstn)
+--    type direcao_t is (direita, esquerda);
+--    variable direcao : direcao_t := direita;
+--  begin  -- process p_atualiza_pos_x
+--    if rstn = '0' then                  -- asynchronous reset (active low)
+--      pos_x <= 0;
+--    elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
+--      if atualiza_pos_x = '1' then
+--        if direcao = direita then         
+--          if pos_x = NUM_COL-1 then
+--            direcao := esquerda;  
+--          else
+--            pos_x <= pos_x + 1;
+--          end if;        
+--        else  -- se a direcao é esquerda
+--          if pos_x = 0 then
+--            direcao := direita;
+--          else
+--            pos_x <= pos_x - 1;
+--          end if;
+--        end if;
+--      end if;
+--    end if;
+--  end process p_atualiza_pos_x;
 
   -- purpose: Este processo irá atualizar a linha atual da bola,
   --          alterando sua posição no próximo quadro a ser desenhado.
   -- type   : sequential
   -- inputs : CLOCK_50, rstn
   -- outputs: pos_y
-  p_atualiza_pos_y: process (CLOCK_50, rstn)
-    type direcao_t is (desce, sobe);
-    variable direcao : direcao_t := desce;
-  begin  -- process p_atualiza_pos_x
-    if rstn = '0' then                  -- asynchronous reset (active low)
-      pos_y <= 0;
-    elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-      if atualiza_pos_y = '1' then
-        if direcao = desce then         
-          if pos_y = NUM_LINE-1 then
-            direcao := sobe;  
-          else
-            pos_y <= pos_y + 1;
-          end if;        
-        else  -- se a direcao é para subir
-          if pos_y = 0 then
-            direcao := desce;
-          else
-            pos_y <= pos_y - 1;
-          end if;
-        end if;
-      end if;
-    end if;
-  end process p_atualiza_pos_y;
+--  p_atualiza_pos_y: process (CLOCK_50, rstn)
+--    type direcao_t is (desce, sobe);
+--    variable direcao : direcao_t := desce;
+--  begin  -- process p_atualiza_pos_x
+--    if rstn = '0' then                  -- asynchronous reset (active low)
+--      pos_y <= 0;
+--    elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
+--      if atualiza_pos_y = '1' then
+--        if direcao = desce then         
+--          if pos_y = NUM_LINE-1 then
+--            direcao := sobe;  
+--          else
+--            pos_y <= pos_y + 1;
+--          end if;        
+--        else  -- se a direcao é para subir
+--          if pos_y = 0 then
+--            direcao := desce;
+--          else
+--            pos_y <= pos_y - 1;
+--          end if;
+--        end if;
+--      end if;
+--    end if;
+--  end process p_atualiza_pos_y;
 
   -----------------------------------------------------------------------------
   -- Brilho do pixel
@@ -250,40 +709,40 @@ begin  -- comportamento
   -- indicam o endereço do pixel sendo escrito para o quadro atual, casam com a
   -- posição da bola (sinais pos_x e pos_y). Caso contrário,
   -- o pixel é preto.
-  
-  process(CLOCK_50)
-		variable na_quina : std_logic := '0';
-  begin
-		if CLOCK_50'event and CLOCK_50 = '1' then
-			if line = pos_y and col = pos_x then	
-				if inic = '1' then
-					cor_atual <= "001";			
-				elsif (line = NUM_LINE-1 or line = 0) and (col = NUM_COL-1 or col = 0) then
-					if na_quina = '0' then
-						na_quina := '1';
-						if cor_atual = "111" then 
-							cor_atual <= "010";	
-						elsif cor_atual = "110" then
-							cor_atual <= "001";
-						else
-							cor_atual <= cor_atual + "010";
-						end if;			
-					end if;
-				elsif (line = NUM_LINE-1 or line = 0 or col = NUM_COL-1 or col = 0) then
-					if na_quina = '0' then
-						na_quina := '1';
-						if cor_atual = "111" then 
-							cor_atual <= "001";				
-						else
-							cor_atual <= cor_atual + "001";
-						end if;			
-					end if;										
-				else
-					na_quina := '0';					
-				end if;
-			end if;
-		end if;
-  end process;
+--  
+--  process(CLOCK_50)
+--		variable na_quina : std_logic := '0';
+--  begin
+--		if CLOCK_50'event and CLOCK_50 = '1' then
+--			if line = pos_y and col = pos_x then	
+--				if inic = '1' then
+--					cor_atual <= "001";			
+--				elsif (line = NUM_LINE-1 or line = 0) and (col = NUM_COL-1 or col = 0) then
+--					if na_quina = '0' then
+--						na_quina := '1';
+--						if cor_atual = "111" then 
+--							cor_atual <= "010";	
+--						elsif cor_atual = "110" then
+--							cor_atual <= "001";
+--						else
+--							cor_atual <= cor_atual + "010";
+--						end if;			
+--					end if;
+--				elsif (line = NUM_LINE-1 or line = 0 or col = NUM_COL-1 or col = 0) then
+--					if na_quina = '0' then
+--						na_quina := '1';
+--						if cor_atual = "111" then 
+--							cor_atual <= "001";				
+--						else
+--							cor_atual <= cor_atual + "001";
+--						end if;			
+--					end if;										
+--				else
+--					na_quina := '0';					
+--				end if;
+--			end if;
+--		end if;
+--  end process;
   
   process (CLOCK_50, rstn)
 		variable temp: std_logic := '0';
@@ -300,11 +759,12 @@ begin  -- comportamento
 	 limpa <= temp;
   end process;
 
-  pixel <= cor_atual when line = pos_y and col = pos_x and limpa = '0' else "000";
+--  pixel <= cor_atual when line = pos_y and col = pos_x and limpa = '0' else "000";
+  pixel <= "111" when print_enable = '1' else "000";
   
   -- O endereço de memória pode ser construído com essa fórmula simples,
   -- a partir da linha e coluna atual
-  addr  <= col + (NUM_COL * line) when (line = pos_y and col = pos_x) or limpa = '1' else 2;
+  addr  <= col + (NUM_COL * line);
 
   -----------------------------------------------------------------------------
   -- Processos que definem a FSM (finite state machine), nossa máquina
