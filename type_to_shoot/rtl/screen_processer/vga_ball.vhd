@@ -204,7 +204,6 @@ begin  -- comportamento
 				 addr	=>		rom_addr, 
 				 data	=>		font_word);  
 	
-	
   letra_atual <= letra_Z;
   -----------------------------------------------------------------------------
   -- PROCESS PARA PEDIR INFORMACOES DE FONT_ROM E IMPRIMIR NA TELA
