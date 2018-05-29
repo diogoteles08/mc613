@@ -78,8 +78,8 @@ entity vgacon is
     --  Must also keep in mind that our native resolution is 640x480, and
     --  you can't cross these bounds (although you will seldom have enough
     --  on-chip memory to instantiate this module with higher res).
-    NUM_HORZ_PIXELS : natural := 128;  -- Number of horizontal pixels
-    NUM_VERT_PIXELS : natural := 96);  -- Number of vertical pixels
+    NUM_HORZ_PIXELS : natural := 256;  -- Number of horizontal pixels
+    NUM_VERT_PIXELS : natural := 192);  -- Number of vertical pixels
   
   port (
     clk50M, rstn              : in  std_logic;
@@ -276,7 +276,7 @@ architecture behav of dual_clock_ram is
   attribute ramstyle : string;
   attribute ramstyle of dual_clock_ram : entity is "no_rw_check";
   attribute ram_init_file : string;
-  attribute ram_init_file of ram_block : signal is "vga_mem.mif";
+  attribute ram_init_file of ram_block : signal is "vga_mem2.mif";
 
 begin  -- behav
 
