@@ -50,7 +50,13 @@ architecture comportamento of vga_ball is
   
   signal rstn : std_logic;              -- reset active low para nossos
                                         -- circuitos sequenciais.
-
+  constant col_0 : integer := 5;
+  constant col_1 : integer := 110;
+  constant col_2 : integer := 215;
+  constant col_3 : integer := 320;
+  constant col_4 : integer := 425;
+  constant col_5 : integer := 530;
+  
   -- Interface com a memória de vídeo do controlador
 
   signal we : std_logic;                        -- write enable ('1' p/ escrita)
@@ -63,6 +69,7 @@ architecture comportamento of vga_ball is
   
   signal line : integer range 0 to NUM_LINE-1;  -- linha atual
   signal col : integer range 0 to NUM_COL-1;  -- coluna atual
+  signal col_d : integer range 0 to NUM_COL-1;  -- coluna atual
 
   signal col_rstn : std_logic;          -- reset do contador de colunas
   signal col_enable : std_logic;        -- enable do contador de colunas
@@ -105,9 +112,15 @@ architecture comportamento of vga_ball is
   signal font_word: std_logic_vector(7 downto 0);
   signal rom_addr: std_logic_vector(10 downto 0);
   
-  signal line_base : integer range 0 to NUM_LINE - 1 := 20;
-  signal col_base : integer range 0 to NUM_COL - 1 := 20;
+  type size_5_array is array (0 to 5) of integer;
+  
+  signal line_bases : size_5_array := (20, 20, 20, 20, 20, 20);
+  signal col_bases : size_5_array := (5, 110, 215, 320, 425, 530);
+
+  signal letter_col : size_5_array := (1, 2, 3, 4, 5, 10);
   signal print_enable : std_logic := '0';
+  
+  signal att_col : std_logic := '0';
   
   signal letra_A : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
    "00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000");
@@ -204,7 +217,6 @@ begin  -- comportamento
 				 addr	=>		rom_addr, 
 				 data	=>		font_word);  
 	
-  letra_atual <= letra_Z;
   -----------------------------------------------------------------------------
   -- PROCESS PARA PEDIR INFORMACOES DE FONT_ROM E IMPRIMIR NA TELA
   -----------------------------------------------------------------------------
@@ -213,11 +225,21 @@ begin  -- comportamento
   -- type   : sequential
   -- inputs :
   -- outputs: 
-  pega_linha: process (CLOCK_50)
+  pega_linha: process (att_col)
   begin  -- process conta_coluna
-    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-		if line >= line_base and line <= line_base + WORD_LINE - 1 and col >= col_base and col <= col_base + WORD_COL -1 then
-			print_enable <= letra_atual( (line-line_base) * WORD_COL + (col - col_base) );
+    if att_col'event and att_col = '1' then  -- rising clock edge
+		if line >= line_bases(0) and line <= line_bases(0) + WORD_LINE - 1 and (col + 1) >= col_bases(0) and (col + 1) <= col_bases(0) + WORD_COL* letter_col(0) -1 then
+			print_enable <= letra_atual( (line-line_bases(0)) * WORD_COL + ((col + 1) mod WORD_COL) );
+		elsif line >= line_bases(1) and line <= line_bases(1) + WORD_LINE - 1 and col >= col_bases(1) and col <= col_bases(1) + WORD_COL* letter_col(1) -1 then
+			print_enable <= letra_atual( (line-line_bases(1)) * WORD_COL + (col mod WORD_COL) );
+		elsif line >= line_bases(2) and line <= line_bases(2) + WORD_LINE - 1 and col >= col_bases(2) and col <= col_bases(2) + WORD_COL* letter_col(2) -1 then
+			print_enable <= letra_atual( (line-line_bases(2)) * WORD_COL + (col mod WORD_COL) );
+		elsif line >= line_bases(3) and line <= line_bases(3) + WORD_LINE - 1 and col >= col_bases(3) and col <= col_bases(3) + WORD_COL* letter_col(3) -1 then
+			print_enable <= letra_atual( (line-line_bases(3)) * WORD_COL + (col mod WORD_COL) );
+		elsif line >= line_bases(4) and line <= line_bases(4) + WORD_LINE - 1 and col >= col_bases(4) and col <= col_bases(4) + WORD_COL* letter_col(4) -1 then
+			print_enable <= letra_atual( (line-line_bases(4)) * WORD_COL + (col mod WORD_COL) );
+		elsif line >= line_bases(5) and line <= line_bases(5) + WORD_LINE - 1 and col >= col_bases(5) and col <= col_bases(5) + WORD_COL* letter_col(5) -1 then
+			print_enable <= letra_atual( (line-line_bases(5)) * WORD_COL + (col mod WORD_COL) );	
 		else
 			print_enable <= '0';
 		end if;
@@ -236,11 +258,57 @@ begin  -- comportamento
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		if atualiza_pos_x = '1' and atualiza_pos_y = '1' then
-			line_base <= line_base + 1;
+			if line_bases(0) = 470 then
+				line_bases(0) <= 0;
+				line_bases(1) <= 0;
+				line_bases(2) <= 0;
+				line_bases(3) <= 0;
+				line_bases(4) <= 0;
+				line_bases(5) <= 0;
+			else
+				line_bases(0) <= line_bases(0) + 1;
+				line_bases(1) <= line_bases(1) + 1;
+				line_bases(2) <= line_bases(2) + 1;
+				line_bases(3) <= line_bases(3) + 1;
+				line_bases(4) <= line_bases(4) + 1;
+				line_bases(5) <= line_bases(5) + 1;
+			end if;
+			
 		end if;
     end if;
   end process desce_linha;
   
+   -----------------------------------------------------------------------------
+  -- PROCESS RESPONSAVEL POR ALTERAR A LETRA ATUAL DEPENDENDO DE QUAL POSICAO ESTAMOS
+  -----------------------------------------------------------------------------
+
+  -- purpose: Este processo altera a letra atual dependendo de qual coluna estamos agora
+  -- type   : 
+  -- inputs : CLOCK_50, col_rstn
+  -- outputs: col
+  troca_letra_atual: process (CLOCK_50, col_rstn)
+  begin  -- process conta_coluna
+    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
+      if col_enable = '1' then
+        if col >= col_0 and col <= col_0 + WORD_COL * letter_col(0) then
+				letra_atual <= letra_A;
+		  elsif col >= col_1 and col <= col_1 + WORD_COL * letter_col(1) then
+				letra_atual <= letra_B;
+		  elsif col >= col_2 and col <= col_2 + WORD_COL * letter_col(2) then
+				letra_atual <= letra_C;
+		  elsif col >= col_3 and col <= col_3 + WORD_COL * letter_col(3) then
+				letra_atual <= letra_D;
+		  elsif col >= col_4 and col <= col_4 + WORD_COL * letter_col(4) then
+				letra_atual <= letra_E;
+		  elsif col >= col_5 and col <= col_5 + WORD_COL * letter_col(5) then
+				letra_atual <= letra_F;
+		  else
+				letra_atual <= "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+		  end if;
+      end if;
+    end if;
+  end process troca_letra_atual;
+		  
   -----------------------------------------------------------------------------
   -- Processos que controlam contadores de linhas e coluna para varrer
   -- todos os endereços da memória de vídeo, no momento de construir um quadro.
@@ -257,10 +325,11 @@ begin  -- comportamento
       col <= 0;
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if col_enable = '1' then
+		  att_col <= '1';
         if col = NUM_COL-1 then               -- conta de 0 a NUM_COL-1 (NUM_COL colunas)
           col <= 0;
         else
-          col <= col + 1;  
+          col <= col + 1;
         end if;
       end if;
     end if;
