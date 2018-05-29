@@ -26,8 +26,10 @@
 -------------------------------------------------------------------------------
 
 library ieee;
+library work;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use work.main_pack.all;
 
 entity vga_ball is
 	generic (
@@ -37,12 +39,17 @@ entity vga_ball is
 		WORD_COL : integer := 8
 	);
   port (    
-    CLOCK_50                  : in  std_logic;
-    KEY                       : in  std_logic_vector(0 downto 0);
-    VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
-    VGA_HS, VGA_VS            : out std_logic;
-    VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
-    VGA_CLK                   : out std_logic
+    CLOCK_50                : in  std_logic;
+    KEY                     : in  std_logic;
+		NEW_WORD								: in word;
+		LOCKED_WORD							: in word;
+		LETTER_HIT							: in std_logic;
+		WORD_DESTROYED					: in std_logic;
+    VGA_R, VGA_G, VGA_B     : out std_logic_vector(7 downto 0);
+    VGA_HS, VGA_VS          : out std_logic;
+    VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
+    VGA_CLK                 : out std_logic;
+		GAME_OVER								: out std_logic
     );
 end vga_ball;
 
@@ -558,7 +565,7 @@ begin  -- comportamento
   begin  -- process build_rstn
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       rstn <= temp;      
-      temp := KEY(0);      
+      temp := KEY;
     end if;
   end process build_rstn;
 
