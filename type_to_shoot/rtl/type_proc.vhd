@@ -29,17 +29,20 @@ architecture rtl of type_proc is
 
 	component vga_ball
 		port (
-			CLOCK_50                  : in  std_logic;
-			KEY                       : in  std_logic;
-			NEW_WORD									: in word;
-			LOCKED_WORD								: in word;
-			LETTER_HIT								: in std_logic;
-			WORD_DESTROYED						: in std_logic;
-			VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
-			VGA_HS, VGA_VS            : out std_logic;
-			VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
-			VGA_CLK                   : out std_logic;
-			GAME_OVER									: out std_logic
+			CLOCK_50                : in  std_logic;
+			KEY                     : in  std_logic;
+			START_GAME							: in std_logic;
+			STAGE_END								: in std_logic;
+			PLAY_AGAIN							: in std_logic;
+			NEW_WORD								: in word;
+			LOCKED_WORD							: in word;
+			LETTER_HIT							: in std_logic;
+			WORD_DESTROYED					: in std_logic;
+			VGA_R, VGA_G, VGA_B     : out std_logic_vector(7 downto 0);
+			VGA_HS, VGA_VS          : out std_logic;
+			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
+			VGA_CLK                 : out std_logic;
+			GAME_OVER								: out std_logic
 		);
 	end component;
 
@@ -72,8 +75,11 @@ architecture rtl of type_proc is
 	signal key_on: std_logic;
 	signal char_pressed: integer;
 
+	signal start_game: std_logic;
 	signal stage: integer;
+	signal stage_end: std_logic;
 	signal game_over: std_logic;
+	signal play_again: std_logic;
 
 begin
 	bank: word_bank
@@ -98,6 +104,9 @@ begin
 		port map (
 			CLOCK_50				=> CLOCK_50,
 			KEY							=> '1',
+			START_GAME			=> start_game,
+			STAGE_END				=> stage_end,
+			PLAY_AGAIN			=> play_again,
 			NEW_WORD				=> new_word,
 			LOCKED_WORD 		=> locked_word,
 			LETTER_HIT  		=> letter_hit,

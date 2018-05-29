@@ -41,6 +41,9 @@ entity vga_ball is
   port (    
     CLOCK_50                : in  std_logic;
     KEY                     : in  std_logic;
+		START_GAME							: in std_logic;
+		STAGE_END								: in std_logic;
+		PLAY_AGAIN							: in std_logic;
 		NEW_WORD								: in word;
 		LOCKED_WORD							: in word;
 		LETTER_HIT							: in std_logic;
