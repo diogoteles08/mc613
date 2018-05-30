@@ -26,6 +26,8 @@
 -------------------------------------------------------------------------------
 
 library ieee;
+--library work;
+--use work.main_pack.all;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
@@ -50,26 +52,18 @@ architecture comportamento of vga_ball is
   
   signal rstn : std_logic;              -- reset active low para nossos
                                         -- circuitos sequenciais.
-  constant col_0 : integer := 5;
-  constant col_1 : integer := 110;
-  constant col_2 : integer := 215;
-  constant col_3 : integer := 320;
-  constant col_4 : integer := 425;
-  constant col_5 : integer := 530;
   
   -- Interface com a memória de vídeo do controlador
 
   signal we : std_logic;                        -- write enable ('1' p/ escrita)
   signal addr : integer range 0 to NUM_LINE * NUM_COL - 1;       -- endereco mem. vga
   signal pixel : std_logic_vector(2 downto 0);  -- valor de cor do pixel
-  signal pixel_bit : std_logic;                 -- um bit do vetor acima
 
   -- Sinais dos contadores de linhas e colunas utilizados para percorrer
   -- as posições da memória de vídeo (pixels) no momento de construir um quadro.
   
   signal line : integer range 0 to NUM_LINE-1;  -- linha atual
   signal col : integer range 0 to NUM_COL-1;  -- coluna atual
-  signal col_d : integer range 0 to NUM_COL-1;  -- coluna atual
 
   signal col_rstn : std_logic;          -- reset do contador de colunas
   signal col_enable : std_logic;        -- enable do contador de colunas
@@ -108,71 +102,120 @@ architecture comportamento of vga_ball is
   signal cor_atual : std_logic_vector(2 downto 0) := "001";
   signal inic : std_logic := '0';
 	
-  type size_5_array is array (0 to 5) of integer;
+  type size_6_array is array (0 to 5) of integer;
   
-  signal line_bases : size_5_array := (20, 20, 20, 20, 20, 20);
-  signal col_bases : size_5_array := (col_0, col_1, col_2, col_3, col_4, col_5);
+  constant col_0 : integer := 5;
+  constant col_1 : integer := 110;
+  constant col_2 : integer := 215;
+  constant col_3 : integer := 320;
+  constant col_4 : integer := 425;
+  constant col_5 : integer := 530;
+  signal line_bases : size_6_array := (20, 20, 20, 20, 20, 20);
+  signal col_bases : size_6_array := (col_0, col_1, col_2, col_3, col_4, col_5);
 
-  signal letter_col : size_5_array := (1, 2, 3, 4, 5, 10);
+  
   signal print_enable : std_logic := '0';
+  signal new_letter : std_logic := '0';
+  type word is array (0 to 9) of integer;
   
-  
-  signal letra_A : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000");
-  signal letra_B : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
-   "00000000000000001111110001100110011001100110011001111100011001100110011001100110011001101111110000000000000000000000000000000000");
-  signal letra_C : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
-   "00000000000000000011110001100110110000101100000011000000110000001100000011000010011001100011110000000000000000000000000000000000");
-  signal letra_D : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001111100001101100011001100110011001100110011001100110011001100110011011001111100000000000000000000000000000000000");
-  signal letra_E : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001111111001100110011000100110100001111000011010000110000001100010011001101111111000000000000000000000000000000000");
-  signal letra_F : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001111111001100110011000100110100001111000011010000110000001100000011000001111000000000000000000000000000000000000");
-  signal letra_G : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000000011110001100110110000101100000011000000110111101100011011000110011001100011101000000000000000000000000000000000");
-  signal letra_H : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001100011011000110110001101100011011111110110001101100011011000110110001101100011000000000000000000000000000000000");
-  signal letra_I : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000000011110000011000000110000001100000011000000110000001100000011000000110000011110000000000000000000000000000000000");
-  signal letra_J : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000000001111000001100000011000000110000001100000011001100110011001100110011000111100000000000000000000000000000000000");
-  signal letra_K : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000001110011001100110011001100110110001111000011110000110110001100110011001101110011000000000000000000000000000000000");
-  signal letra_L : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001111000001100000011000000110000001100000011000000110000001100010011001101111111000000000000000000000000000000000");
-  signal letra_M : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001100001111100111111111111111111111011011110000111100001111000011110000111100001100000000000000000000000000000000");
-  signal letra_N : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001100011011100110111101101111111011011110110011101100011011000110110001101100011000000000000000000000000000000000");
-  signal letra_O : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000000111110011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000");
-  signal letra_P : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001111110001100110011001100110011001111100011000000110000001100000011000001111000000000000000000000000000000000000");
-  signal letra_Q : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000000111110011000110110001101100011011000110110001101100011011010110110111100111110000001100000011100000000000000000");
-  signal letra_R : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000001111110001100110011001100110011001111100011011000110011001100110011001101110011000000000000000000000000000000000");
-  signal letra_S : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
-   "00000000000000000111110011000110110001100110000000111000000011000000011011000110110001100111110000000000000000000000000000000000");
-  signal letra_T : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000001111111111011011100110010001100000011000000110000001100000011000000110000011110000000000000000000000000000000000");
-  signal letra_U : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000001100011011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000");
-  signal letra_V : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000001100001111000011110000111100001111000011110000111100001101100110001111000001100000000000000000000000000000000000");
-  signal letra_W : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001100001111000011110000111100001111000011110110111101101111111111011001100110011000000000000000000000000000000000");
-  signal letra_X : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001100001111000011011001100011110000011000000110000011110001100110110000111100001100000000000000000000000000000000");
-  signal letra_Y : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
-   "00000000000000001100001111000011110000110110011000111100000110000001100000011000000110000011110000000000000000000000000000000000");
-  signal letra_Z : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
-   "00000000000000001111111111000011100001100000110000011000001100000110000011000001110000111111111100000000000000000000000000000000");
+  type matriz_palavras is array (0 to 5) of word;
+  signal letter_col : size_6_array := (4, 4, 4, 4, 4, 4);
+  signal palavras : matriz_palavras := (
+  (65, 71, 77, 83, 0, 0, 0, 0, 0, 0),
+  (70, 76, 82, 88, 80, 81, 82, 83, 76, 67),
+  (67, 73, 79, 85, 0, 0, 0, 0, 0, 0),
+  (68, 74, 80, 86, 0, 0, 0, 0, 0, 0),
+  (69, 75, 81, 87, 0, 0, 0, 0, 0, 0),
+  (70, 76, 82, 88, 80, 81, 82, 83, 76, 67));
+
+  type alfabeto is array (0 to 26) of std_logic_vector(0 to WORD_COL * WORD_LINE - 1);
+  signal alfa: alfabeto := 
+  ("00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000", --'A'
+	"00000000000000001111110001100110011001100110011001111100011001100110011001100110011001101111110000000000000000000000000000000000", --'B'
+	"00000000000000000011110001100110110000101100000011000000110000001100000011000010011001100011110000000000000000000000000000000000", --'C'
+	"00000000000000001111100001101100011001100110011001100110011001100110011001100110011011001111100000000000000000000000000000000000", --'D'
+	"00000000000000001111111001100110011000100110100001111000011010000110000001100010011001101111111000000000000000000000000000000000", --'E'
+	"00000000000000001111111001100110011000100110100001111000011010000110000001100000011000001111000000000000000000000000000000000000", --'F'
+	"00000000000000000011110001100110110000101100000011000000110111101100011011000110011001100011101000000000000000000000000000000000", --'G'
+	"00000000000000001100011011000110110001101100011011111110110001101100011011000110110001101100011000000000000000000000000000000000", --'H'
+	"00000000000000000011110000011000000110000001100000011000000110000001100000011000000110000011110000000000000000000000000000000000", --'I'
+	"00000000000000000001111000001100000011000000110000001100000011001100110011001100110011000111100000000000000000000000000000000000", --'J'
+	"00000000000000001110011001100110011001100110110001111000011110000110110001100110011001101110011000000000000000000000000000000000", --'K'
+	"00000000000000001111000001100000011000000110000001100000011000000110000001100010011001101111111000000000000000000000000000000000", --'L'
+	"00000000000000001100001111100111111111111111111111011011110000111100001111000011110000111100001100000000000000000000000000000000", --'M'
+	"00000000000000001100011011100110111101101111111011011110110011101100011011000110110001101100011000000000000000000000000000000000", --'N'
+	"00000000000000000111110011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000", --'O'
+	"00000000000000001111110001100110011001100110011001111100011000000110000001100000011000001111000000000000000000000000000000000000", --'P'
+	"00000000000000000111110011000110110001101100011011000110110001101100011011010110110111100111110000001100000011100000000000000000", --'Q'
+	"00000000000000001111110001100110011001100110011001111100011011000110011001100110011001101110011000000000000000000000000000000000", --'R'
+	"00000000000000000111110011000110110001100110000000111000000011000000011011000110110001100111110000000000000000000000000000000000", --'S'
+	"00000000000000001111111111011011100110010001100000011000000110000001100000011000000110000011110000000000000000000000000000000000", --'T'
+	"00000000000000001100011011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000", --'U'
+	"00000000000000001100001111000011110000111100001111000011110000111100001101100110001111000001100000000000000000000000000000000000", --'V'
+	"00000000000000001100001111000011110000111100001111000011110110111101101111111111011001100110011000000000000000000000000000000000", --'W'
+	"00000000000000001100001111000011011001100011110000011000000110000011110001100110110000111100001100000000000000000000000000000000", --'X'
+	"00000000000000001100001111000011110000110110011000111100000110000001100000011000000110000011110000000000000000000000000000000000", --'Y'
+	"00000000000000001111111111000011100001100000110000011000001100000110000011000001110000111111111100000000000000000000000000000000",-- 'Z'
+	"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");--' '
+	
+	
+	 
+--  signal letra_A : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000");
+--  signal letra_B : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
+--   "00000000000000001111110001100110011001100110011001111100011001100110011001100110011001101111110000000000000000000000000000000000");
+--  signal letra_C : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
+--   "00000000000000000011110001100110110000101100000011000000110000001100000011000010011001100011110000000000000000000000000000000000");
+--  signal letra_D : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001111100001101100011001100110011001100110011001100110011001100110011011001111100000000000000000000000000000000000");
+--  signal letra_E : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001111111001100110011000100110100001111000011010000110000001100010011001101111111000000000000000000000000000000000");
+--  signal letra_F : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001111111001100110011000100110100001111000011010000110000001100000011000001111000000000000000000000000000000000000");
+--  signal letra_G : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000000011110001100110110000101100000011000000110111101100011011000110011001100011101000000000000000000000000000000000");
+--  signal letra_H : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001100011011000110110001101100011011111110110001101100011011000110110001101100011000000000000000000000000000000000");
+--  signal letra_I : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000000011110000011000000110000001100000011000000110000001100000011000000110000011110000000000000000000000000000000000");
+--  signal letra_J : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000000001111000001100000011000000110000001100000011001100110011001100110011000111100000000000000000000000000000000000");
+--  signal letra_K : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000001110011001100110011001100110110001111000011110000110110001100110011001101110011000000000000000000000000000000000");
+--  signal letra_L : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001111000001100000011000000110000001100000011000000110000001100010011001101111111000000000000000000000000000000000");
+--  signal letra_M : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001100001111100111111111111111111111011011110000111100001111000011110000111100001100000000000000000000000000000000");
+--  signal letra_N : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001100011011100110111101101111111011011110110011101100011011000110110001101100011000000000000000000000000000000000");
+--  signal letra_O : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000000111110011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000");
+--  signal letra_P : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001111110001100110011001100110011001111100011000000110000001100000011000001111000000000000000000000000000000000000");
+--  signal letra_Q : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000000111110011000110110001101100011011000110110001101100011011010110110111100111110000001100000011100000000000000000");
+--  signal letra_R : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000001111110001100110011001100110011001111100011011000110011001100110011001101110011000000000000000000000000000000000");
+--  signal letra_S : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
+--   "00000000000000000111110011000110110001100110000000111000000011000000011011000110110001100111110000000000000000000000000000000000");
+--  signal letra_T : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000001111111111011011100110010001100000011000000110000001100000011000000110000011110000000000000000000000000000000000");
+--  signal letra_U : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000001100011011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000");
+--  signal letra_V : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000001100001111000011110000111100001111000011110000111100001101100110001111000001100000000000000000000000000000000000");
+--  signal letra_W : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001100001111000011110000111100001111000011110110111101101111111111011001100110011000000000000000000000000000000000");
+--  signal letra_X : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001100001111000011011001100011110000011000000110000011110001100110110000111100001100000000000000000000000000000000");
+--  signal letra_Y : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
+--   "00000000000000001100001111000011110000110110011000111100000110000001100000011000000110000011110000000000000000000000000000000000");
+--  signal letra_Z : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
+--   "00000000000000001111111111000011100001100000110000011000001100000110000011000001110000111111111100000000000000000000000000000000");
 	
   signal letra_atual : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
 	"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
-
+	signal index : integer := 0;
 begin  -- comportamento
 
 
@@ -217,20 +260,22 @@ begin  -- comportamento
   pega_linha: process (CLOCK_50)
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-		if line >= line_bases(0) and line <= line_bases(0) + WORD_LINE - 1 and (col + 1) >= col_bases(0) and (col + 1) <= col_bases(0) + WORD_COL* letter_col(0) -1 then
-			print_enable <= letra_atual( (line-line_bases(0)) * WORD_COL + ((col + 1) mod WORD_COL) );
-		elsif line >= line_bases(1) and line <= line_bases(1) + WORD_LINE - 1 and col >= col_bases(1) and col <= col_bases(1) + WORD_COL* letter_col(1) -1 then
-			print_enable <= letra_atual( (line-line_bases(1)) * WORD_COL + (col mod WORD_COL) );
-		elsif line >= line_bases(2) and line <= line_bases(2) + WORD_LINE - 1 and col >= col_bases(2) and col <= col_bases(2) + WORD_COL* letter_col(2) -1 then
-			print_enable <= letra_atual( (line-line_bases(2)) * WORD_COL + (col mod WORD_COL) );
-		elsif line >= line_bases(3) and line <= line_bases(3) + WORD_LINE - 1 and col >= col_bases(3) and col <= col_bases(3) + WORD_COL* letter_col(3) -1 then
-			print_enable <= letra_atual( (line-line_bases(3)) * WORD_COL + (col mod WORD_COL) );
-		elsif line >= line_bases(4) and line <= line_bases(4) + WORD_LINE - 1 and col >= col_bases(4) and col <= col_bases(4) + WORD_COL* letter_col(4) -1 then
-			print_enable <= letra_atual( (line-line_bases(4)) * WORD_COL + (col mod WORD_COL) );
-		elsif line >= line_bases(5) and line <= line_bases(5) + WORD_LINE - 1 and col >= col_bases(5) and col <= col_bases(5) + WORD_COL* letter_col(5) -1 then
-			print_enable <= letra_atual( (line-line_bases(5)) * WORD_COL + (col mod WORD_COL) );	
-		else
-			print_enable <= '0';
+		if new_letter = '1' then
+			if line >= line_bases(0) and line <= line_bases(0) + WORD_LINE and col >= col_bases(0) and col <= col_bases(0) + WORD_COL* letter_col(0) then
+				print_enable <= letra_atual( (line-line_bases(0)) * WORD_COL + (col mod WORD_COL) );
+			elsif line >= line_bases(1) and line <= line_bases(1) + WORD_LINE and col >= col_bases(1) and col <= col_bases(1) + WORD_COL* letter_col(1) then
+				print_enable <= letra_atual( (line-line_bases(1)) * WORD_COL + (col mod WORD_COL) );
+			elsif line >= line_bases(2) and line <= line_bases(2) + WORD_LINE and col >= col_bases(2) and col <= col_bases(2) + WORD_COL* letter_col(2) then
+				print_enable <= letra_atual( (line-line_bases(2)) * WORD_COL + (col mod WORD_COL) );
+			elsif line >= line_bases(3) and line <= line_bases(3) + WORD_LINE and col >= col_bases(3) and col <= col_bases(3) + WORD_COL* letter_col(3) then
+				print_enable <= letra_atual( (line-line_bases(3)) * WORD_COL + (col mod WORD_COL) );
+			elsif line >= line_bases(4) and line <= line_bases(4) + WORD_LINE and col >= col_bases(4) and col <= col_bases(4) + WORD_COL* letter_col(4) then
+				print_enable <= letra_atual( (line-line_bases(4)) * WORD_COL + (col mod WORD_COL) );
+			elsif line >= line_bases(5) and line <= line_bases(5) + WORD_LINE and col >= col_bases(5) and col <= col_bases(5) + WORD_COL* letter_col(5) then
+				print_enable <= letra_atual( (line-line_bases(5)) * WORD_COL + (col mod WORD_COL) );	
+			else
+				print_enable <= '0';
+			end if;
 		end if;
     end if;
   end process pega_linha;
@@ -279,19 +324,215 @@ begin  -- comportamento
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if col_enable = '1' then
-        if col >= col_0 and col <= col_0 + WORD_COL * letter_col(0) then
-				letra_atual <= letra_A;
-		  elsif col >= col_1 and col <= col_1 + WORD_COL * letter_col(1) then
-				letra_atual <= letra_B;
-		  elsif col >= col_2 and col <= col_2 + WORD_COL * letter_col(2) then
-				letra_atual <= letra_C;
-		  elsif col >= col_3 and col <= col_3 + WORD_COL * letter_col(3) then
-				letra_atual <= letra_D;
-		  elsif col >= col_4 and col <= col_4 + WORD_COL * letter_col(4) then
-				letra_atual <= letra_E;
-		  elsif col >= col_5 and col <= col_5 + WORD_COL * letter_col(5) then
-				letra_atual <= letra_F;
+		  if col >= col_bases(0) and col <= col_bases(0) + WORD_COL * letter_col(0) then
+				if (col <= col_bases(0) + WORD_COL) and letter_col(0) >= 1 then
+					letra_atual <= alfa ( (palavras(0)(0) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 2*WORD_COL) and letter_col(0) >= 2 then
+					letra_atual <= alfa ( (palavras(0)(1) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 3*WORD_COL) and letter_col(0) >= 3 then
+					letra_atual <= alfa ( (palavras(0)(2) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 4*WORD_COL) and letter_col(0) >= 4 then
+					letra_atual <= alfa ( (palavras(0)(3) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 5*WORD_COL) and letter_col(0) >= 5 then
+					letra_atual <= alfa ( (palavras(0)(4) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 6*WORD_COL) and letter_col(0) >= 6 then
+					letra_atual <= alfa ( (palavras(0)(5) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 7*WORD_COL) and letter_col(0) >= 7 then
+					letra_atual <= alfa ( (palavras(0)(6) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 8*WORD_COL) and letter_col(0) >= 8 then
+					letra_atual <= alfa ( (palavras(0)(7) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 9*WORD_COL) and letter_col(0) >= 9 then
+					letra_atual <= alfa ( (palavras(0)(8) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(0) + 10*WORD_COL) and letter_col(0) >= 10 then
+					letra_atual <= alfa ( (palavras(0)(9) - 65) );
+					new_letter <= '1';
+				else
+					new_letter <= '0';
+				end if;
+		  
+				--letra_atual <= alfa( ( palavras(0)((col - col_bases(0)) / WORD_COL) ) - 65);
+		  elsif col >= col_bases(1) and col <= col_bases(1) + WORD_COL * letter_col(1) then
+				if (col <= col_bases(1) + WORD_COL) and letter_col(1) >= 1 then
+					letra_atual <= alfa ( (palavras(1)(0) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 2*WORD_COL) and letter_col(1) >= 2 then
+					letra_atual <= alfa ( (palavras(1)(1) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 3*WORD_COL) and letter_col(1) >= 3 then
+					letra_atual <= alfa ( (palavras(1)(2) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 4*WORD_COL) and letter_col(1) >= 4 then
+					letra_atual <= alfa ( (palavras(1)(3) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 5*WORD_COL) and letter_col(1) >= 5 then
+					letra_atual <= alfa ( (palavras(1)(4) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 6*WORD_COL) and letter_col(1) >= 6 then
+					letra_atual <= alfa ( (palavras(1)(5) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 7*WORD_COL) and letter_col(1) >= 7 then
+					letra_atual <= alfa ( (palavras(1)(6) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 8*WORD_COL) and letter_col(1) >= 8 then
+					letra_atual <= alfa ( (palavras(1)(7) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 9*WORD_COL) and letter_col(1) >= 9 then
+					letra_atual <= alfa ( (palavras(1)(8) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(1) + 10*WORD_COL) and letter_col(1) >= 10 then
+					letra_atual <= alfa ( (palavras(1)(9) - 65) );
+					new_letter <= '1';
+				else
+					new_letter <= '0';
+				end if;
+		  elsif col >= col_bases(2) and col <= col_bases(2) + WORD_COL * letter_col(2) then
+				if (col <= col_bases(2) + WORD_COL) and letter_col(2) >= 1 then
+					letra_atual <= alfa ( (palavras(2)(0) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 2*WORD_COL) and letter_col(2) >= 2 then
+					letra_atual <= alfa ( (palavras(2)(1) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 3*WORD_COL) and letter_col(2) >= 3 then
+					letra_atual <= alfa ( (palavras(2)(2) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 4*WORD_COL) and letter_col(2) >= 4 then
+					letra_atual <= alfa ( (palavras(2)(3) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 5*WORD_COL) and letter_col(2) >= 5 then
+					letra_atual <= alfa ( (palavras(2)(4) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 6*WORD_COL) and letter_col(2) >= 6 then
+					letra_atual <= alfa ( (palavras(2)(5) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 7*WORD_COL) and letter_col(2) >= 7 then
+					letra_atual <= alfa ( (palavras(2)(6) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 8*WORD_COL) and letter_col(2) >= 8 then
+					letra_atual <= alfa ( (palavras(2)(7) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 9*WORD_COL) and letter_col(2) >= 9 then
+					letra_atual <= alfa ( (palavras(2)(8) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(2) + 10*WORD_COL) and letter_col(2) >= 10 then
+					letra_atual <= alfa ( (palavras(2)(9) - 65) );
+					new_letter <= '1';
+				else
+					new_letter <= '0';
+				end if;
+		  elsif col >= col_bases(3) and col <= col_bases(3) + WORD_COL * letter_col(3) then
+				if (col <= col_bases(3) + WORD_COL) and letter_col(3) >= 1 then
+					letra_atual <= alfa ( (palavras(3)(0) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 2*WORD_COL) and letter_col(3) >= 2 then
+					letra_atual <= alfa ( (palavras(3)(1) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 3*WORD_COL) and letter_col(3) >= 3 then
+					letra_atual <= alfa ( (palavras(3)(2) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 4*WORD_COL) and letter_col(3) >= 4 then
+					letra_atual <= alfa ( (palavras(3)(3) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 5*WORD_COL) and letter_col(3) >= 5 then
+					letra_atual <= alfa ( (palavras(3)(4) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 6*WORD_COL) and letter_col(3) >= 6 then
+					letra_atual <= alfa ( (palavras(3)(5) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 7*WORD_COL) and letter_col(3) >= 7 then
+					letra_atual <= alfa ( (palavras(3)(6) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 8*WORD_COL) and letter_col(3) >= 8 then
+					letra_atual <= alfa ( (palavras(3)(7) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 9*WORD_COL) and letter_col(3) >= 9 then
+					letra_atual <= alfa ( (palavras(3)(8) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(3) + 10*WORD_COL) and letter_col(3) >= 10 then
+					letra_atual <= alfa ( (palavras(3)(9) - 65) );
+					new_letter <= '1';
+				else
+					new_letter <= '0';
+				end if;
+		  elsif col >= col_bases(4) and col <= col_bases(4) + WORD_COL * letter_col(4) then
+				if (col <= col_bases(4) + WORD_COL) and letter_col(4) >= 1 then
+					letra_atual <= alfa ( (palavras(4)(0) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 2*WORD_COL) and letter_col(4) >= 2 then
+					letra_atual <= alfa ( (palavras(4)(1) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 3*WORD_COL) and letter_col(4) >= 3 then
+					letra_atual <= alfa ( (palavras(4)(2) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 4*WORD_COL) and letter_col(4) >= 4 then
+					letra_atual <= alfa ( (palavras(4)(3) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 5*WORD_COL) and letter_col(4) >= 5 then
+					letra_atual <= alfa ( (palavras(4)(4) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 6*WORD_COL) and letter_col(4) >= 6 then
+					letra_atual <= alfa ( (palavras(4)(5) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 7*WORD_COL) and letter_col(4) >= 7 then
+					letra_atual <= alfa ( (palavras(4)(6) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 8*WORD_COL) and letter_col(4) >= 8 then
+					letra_atual <= alfa ( (palavras(4)(7) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 9*WORD_COL) and letter_col(4) >= 9 then
+					letra_atual <= alfa ( (palavras(4)(8) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(4) + 10*WORD_COL) and letter_col(4) >= 10 then
+					letra_atual <= alfa ( (palavras(4)(9) - 65) );
+					new_letter <= '1';
+				else
+					new_letter <= '0';
+				end if;
+		  elsif col >= col_bases(5) and col <= col_bases(5) + WORD_COL * letter_col(5) then
+				if (col <= col_bases(5) + WORD_COL) and letter_col(5) >= 1 then
+					letra_atual <= alfa ( (palavras(5)(0) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 2*WORD_COL) and letter_col(5) >= 2 then
+					letra_atual <= alfa ( (palavras(5)(1) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 3*WORD_COL) and letter_col(5) >= 3 then
+					letra_atual <= alfa ( (palavras(5)(2) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 4*WORD_COL) and letter_col(5) >= 4 then
+					letra_atual <= alfa ( (palavras(5)(3) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 5*WORD_COL) and letter_col(5) >= 5 then
+					letra_atual <= alfa ( (palavras(5)(4) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 6*WORD_COL) and letter_col(5) >= 6 then
+					letra_atual <= alfa ( (palavras(5)(5) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 7*WORD_COL) and letter_col(5) >= 7 then
+					letra_atual <= alfa ( (palavras(5)(6) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 8*WORD_COL) and letter_col(5) >= 8 then
+					letra_atual <= alfa ( (palavras(5)(7) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 9*WORD_COL) and letter_col(5) >= 9 then
+					letra_atual <= alfa ( (palavras(5)(8) - 65) );
+					new_letter <= '1';
+				elsif (col <= col_bases(5) + 10*WORD_COL) and letter_col(5) >= 10 then
+					letra_atual <= alfa ( (palavras(5)(9) - 65) );
+					new_letter <= '1';
+				else
+					new_letter <= '0';
+				end if;
+				--letra_atual <= alfa( ( palavras(5)((col - col_bases(5)) / WORD_COL) ) - 65);
 		  else
+				new_letter <= '1';
 				letra_atual <= "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 		  end if;
       end if;
