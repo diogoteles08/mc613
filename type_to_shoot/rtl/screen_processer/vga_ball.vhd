@@ -39,8 +39,9 @@ entity vga_ball is
 		WORD_COL : integer := 8
 	);
   port (    
-    CLOCK_50                : in  std_logic;
-    KEY                     : in  std_logic;
+    CLOCK_50                : in std_logic;
+		TIMERR										: in std_logic;
+    KEY                     : in std_logic;
 		START_GAME							: in std_logic;
 		STAGE_END								: in std_logic;
 		PLAY_AGAIN							: in std_logic;
@@ -609,7 +610,7 @@ begin  -- comportamento
     end if;
   end process p_contador;
 
-  -- purpose: Calcula o sinal "timer" que indica quando o contador chegou aotemp := KEY(0);
+  -- purpose: Calcula o sinal "timer" que indica quando o contador chegou ao tempo
   --          final
   -- type   : combinational
   -- inputs : contador

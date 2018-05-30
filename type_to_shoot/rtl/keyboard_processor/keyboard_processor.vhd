@@ -34,6 +34,7 @@ architecture rtl of keyboard_processor is
 	
 	signal key_code: std_logic_vector(47 downto 0);
 	signal key_on_aux: std_logic_vector(2 downto 0);
+	signal asc_code_aux: integer;
 begin
 	controller: kbdex_ctrl
 		generic map (
@@ -50,12 +51,12 @@ begin
 			key_code => key_code
 		);
 	
-		-- Pegamos somente o bit indicando que pelo menos uma 
-		-- tecla foi pressionada
-		key_on <= key_on_aux(0);
+		-- key_on eh ativado quando alguma tecla eh pressionada e
+		-- quando essa tecla e uma letra		
+		key_on <= key_on_aux(0) and asc_code_aux /= -1;
 		
 		-- Converte o codigo do kbdex_ctrl para asc
-		with key_code(15 downto 0) select asc_code <=
+		with key_code(15 downto 0) select asc_code_aux <=
 			65 when x"1C",
 			66 when x"32",
 			67 when x"21",
@@ -81,5 +82,8 @@ begin
 			87 when x"1D",
 			88 when x"22",
 			89 when x"35",
-			90 when x"1A";											
+			90 when x"1A",
+			-1 when others;
+			
+		asc_code <= asc_code_aux;
 end rtl;
