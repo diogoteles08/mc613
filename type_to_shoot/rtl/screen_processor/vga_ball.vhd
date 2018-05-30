@@ -119,14 +119,14 @@ architecture comportamento of vga_ball is
   type word is array (0 to 9) of integer;
   
   type matriz_palavras is array (0 to 5) of word;
-  signal letter_col : size_6_array := (4, 4, 4, 4, 4, 4);
+  signal letter_col : size_6_array := (10, 10, 10, 10, 10, 10);
   signal palavras : matriz_palavras := (
-  (65, 71, 77, 83, 0, 0, 0, 0, 0, 0),
-  (70, 76, 82, 88, 80, 81, 82, 83, 76, 67),
-  (67, 73, 79, 85, 0, 0, 0, 0, 0, 0),
-  (68, 74, 80, 86, 0, 0, 0, 0, 0, 0),
-  (69, 75, 81, 87, 0, 0, 0, 0, 0, 0),
-  (70, 76, 82, 88, 80, 81, 82, 83, 76, 67));
+  (65, 65, 65, 65, 66, 66, 66, 66, 66, 66),
+  (70, 70, 70, 70, 70, 71, 71, 71, 71, 71),
+  (75, 75, 75, 75, 75, 76, 76, 76, 76, 76),
+  (70, 70, 70, 70, 70, 77, 77, 77, 77, 77),
+  (73, 73, 73, 70, 70, 71, 71, 71, 71, 71),
+  (73, 73, 73, 70, 70, 71, 71, 71, 71, 71));
 
   type alfabeto is array (0 to 26) of std_logic_vector(0 to WORD_COL * WORD_LINE - 1);
   signal alfa: alfabeto := 
@@ -261,17 +261,17 @@ begin  -- comportamento
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		if new_letter = '1' then
-			if line >= line_bases(0) and line <= line_bases(0) + WORD_LINE and col >= col_bases(0) and col <= col_bases(0) + WORD_COL* letter_col(0) then
+			if line >= line_bases(0) and line < line_bases(0) + WORD_LINE and col >= col_bases(0) and col < col_bases(0) + WORD_COL* letter_col(0) then
 				print_enable <= letra_atual( (line-line_bases(0)) * WORD_COL + (col mod WORD_COL) );
-			elsif line >= line_bases(1) and line <= line_bases(1) + WORD_LINE and col >= col_bases(1) and col <= col_bases(1) + WORD_COL* letter_col(1) then
+			elsif line >= line_bases(1) and line < line_bases(1) + WORD_LINE and col >= col_bases(1) and col < col_bases(1) + WORD_COL* letter_col(1) then
 				print_enable <= letra_atual( (line-line_bases(1)) * WORD_COL + (col mod WORD_COL) );
-			elsif line >= line_bases(2) and line <= line_bases(2) + WORD_LINE and col >= col_bases(2) and col <= col_bases(2) + WORD_COL* letter_col(2) then
+			elsif line >= line_bases(2) and line < line_bases(2) + WORD_LINE and col >= col_bases(2) and col < col_bases(2) + WORD_COL* letter_col(2) then
 				print_enable <= letra_atual( (line-line_bases(2)) * WORD_COL + (col mod WORD_COL) );
-			elsif line >= line_bases(3) and line <= line_bases(3) + WORD_LINE and col >= col_bases(3) and col <= col_bases(3) + WORD_COL* letter_col(3) then
+			elsif line >= line_bases(3) and line < line_bases(3) + WORD_LINE and col >= col_bases(3) and col < col_bases(3) + WORD_COL* letter_col(3) then
 				print_enable <= letra_atual( (line-line_bases(3)) * WORD_COL + (col mod WORD_COL) );
-			elsif line >= line_bases(4) and line <= line_bases(4) + WORD_LINE and col >= col_bases(4) and col <= col_bases(4) + WORD_COL* letter_col(4) then
+			elsif line >= line_bases(4) and line < line_bases(4) + WORD_LINE and col >= col_bases(4) and col < col_bases(4) + WORD_COL* letter_col(4) then
 				print_enable <= letra_atual( (line-line_bases(4)) * WORD_COL + (col mod WORD_COL) );
-			elsif line >= line_bases(5) and line <= line_bases(5) + WORD_LINE and col >= col_bases(5) and col <= col_bases(5) + WORD_COL* letter_col(5) then
+			elsif line >= line_bases(5) and line < line_bases(5) + WORD_LINE and col >= col_bases(5) and col < col_bases(5) + WORD_COL* letter_col(5) then
 				print_enable <= letra_atual( (line-line_bases(5)) * WORD_COL + (col mod WORD_COL) );	
 			else
 				print_enable <= '0';
@@ -324,35 +324,35 @@ begin  -- comportamento
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if col_enable = '1' then
-		  if col >= col_bases(0) and col <= col_bases(0) + WORD_COL * letter_col(0) then
-				if (col <= col_bases(0) + WORD_COL) and letter_col(0) >= 1 then
+		  if col >= col_bases(0) and col < col_bases(0) + WORD_COL * letter_col(0) then
+				if (col < col_bases(0) + WORD_COL) and letter_col(0) >= 1 then
 					letra_atual <= alfa ( (palavras(0)(0) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 2*WORD_COL) and letter_col(0) >= 2 then
+				elsif (col < col_bases(0) + 2*WORD_COL) and letter_col(0) >= 2 then
 					letra_atual <= alfa ( (palavras(0)(1) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 3*WORD_COL) and letter_col(0) >= 3 then
+				elsif (col < col_bases(0) + 3*WORD_COL) and letter_col(0) >= 3 then
 					letra_atual <= alfa ( (palavras(0)(2) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 4*WORD_COL) and letter_col(0) >= 4 then
+				elsif (col < col_bases(0) + 4*WORD_COL) and letter_col(0) >= 4 then
 					letra_atual <= alfa ( (palavras(0)(3) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 5*WORD_COL) and letter_col(0) >= 5 then
+				elsif (col < col_bases(0) + 5*WORD_COL) and letter_col(0) >= 5 then
 					letra_atual <= alfa ( (palavras(0)(4) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 6*WORD_COL) and letter_col(0) >= 6 then
+				elsif (col < col_bases(0) + 6*WORD_COL) and letter_col(0) >= 6 then
 					letra_atual <= alfa ( (palavras(0)(5) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 7*WORD_COL) and letter_col(0) >= 7 then
+				elsif (col < col_bases(0) + 7*WORD_COL) and letter_col(0) >= 7 then
 					letra_atual <= alfa ( (palavras(0)(6) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 8*WORD_COL) and letter_col(0) >= 8 then
+				elsif (col < col_bases(0) + 8*WORD_COL) and letter_col(0) >= 8 then
 					letra_atual <= alfa ( (palavras(0)(7) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 9*WORD_COL) and letter_col(0) >= 9 then
+				elsif (col < col_bases(0) + 9*WORD_COL) and letter_col(0) >= 9 then
 					letra_atual <= alfa ( (palavras(0)(8) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(0) + 10*WORD_COL) and letter_col(0) >= 10 then
+				elsif (col < col_bases(0) + 10*WORD_COL) and letter_col(0) >= 10 then
 					letra_atual <= alfa ( (palavras(0)(9) - 65) );
 					new_letter <= '1';
 				else
@@ -360,171 +360,171 @@ begin  -- comportamento
 				end if;
 		  
 				--letra_atual <= alfa( ( palavras(0)((col - col_bases(0)) / WORD_COL) ) - 65);
-		  elsif col >= col_bases(1) and col <= col_bases(1) + WORD_COL * letter_col(1) then
-				if (col <= col_bases(1) + WORD_COL) and letter_col(1) >= 1 then
+		  elsif col >= col_bases(1) and col < col_bases(1) + WORD_COL * letter_col(1) then
+				if (col < col_bases(1) + WORD_COL) and letter_col(1) >= 1 then
 					letra_atual <= alfa ( (palavras(1)(0) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 2*WORD_COL) and letter_col(1) >= 2 then
+				elsif (col < col_bases(1) + 2*WORD_COL) and letter_col(1) >= 2 then
 					letra_atual <= alfa ( (palavras(1)(1) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 3*WORD_COL) and letter_col(1) >= 3 then
+				elsif (col < col_bases(1) + 3*WORD_COL) and letter_col(1) >= 3 then
 					letra_atual <= alfa ( (palavras(1)(2) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 4*WORD_COL) and letter_col(1) >= 4 then
+				elsif (col < col_bases(1) + 4*WORD_COL) and letter_col(1) >= 4 then
 					letra_atual <= alfa ( (palavras(1)(3) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 5*WORD_COL) and letter_col(1) >= 5 then
+				elsif (col < col_bases(1) + 5*WORD_COL) and letter_col(1) >= 5 then
 					letra_atual <= alfa ( (palavras(1)(4) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 6*WORD_COL) and letter_col(1) >= 6 then
+				elsif (col < col_bases(1) + 6*WORD_COL) and letter_col(1) >= 6 then
 					letra_atual <= alfa ( (palavras(1)(5) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 7*WORD_COL) and letter_col(1) >= 7 then
+				elsif (col < col_bases(1) + 7*WORD_COL) and letter_col(1) >= 7 then
 					letra_atual <= alfa ( (palavras(1)(6) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 8*WORD_COL) and letter_col(1) >= 8 then
+				elsif (col < col_bases(1) + 8*WORD_COL) and letter_col(1) >= 8 then
 					letra_atual <= alfa ( (palavras(1)(7) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 9*WORD_COL) and letter_col(1) >= 9 then
+				elsif (col < col_bases(1) + 9*WORD_COL) and letter_col(1) >= 9 then
 					letra_atual <= alfa ( (palavras(1)(8) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(1) + 10*WORD_COL) and letter_col(1) >= 10 then
+				elsif (col < col_bases(1) + 10*WORD_COL) and letter_col(1) >= 10 then
 					letra_atual <= alfa ( (palavras(1)(9) - 65) );
 					new_letter <= '1';
 				else
 					new_letter <= '0';
 				end if;
-		  elsif col >= col_bases(2) and col <= col_bases(2) + WORD_COL * letter_col(2) then
-				if (col <= col_bases(2) + WORD_COL) and letter_col(2) >= 1 then
+		  elsif col >= col_bases(2) and col < col_bases(2) + WORD_COL * letter_col(2) then
+				if (col < col_bases(2) + WORD_COL) and letter_col(2) >= 1 then
 					letra_atual <= alfa ( (palavras(2)(0) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 2*WORD_COL) and letter_col(2) >= 2 then
+				elsif (col < col_bases(2) + 2*WORD_COL) and letter_col(2) >= 2 then
 					letra_atual <= alfa ( (palavras(2)(1) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 3*WORD_COL) and letter_col(2) >= 3 then
+				elsif (col < col_bases(2) + 3*WORD_COL) and letter_col(2) >= 3 then
 					letra_atual <= alfa ( (palavras(2)(2) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 4*WORD_COL) and letter_col(2) >= 4 then
+				elsif (col < col_bases(2) + 4*WORD_COL) and letter_col(2) >= 4 then
 					letra_atual <= alfa ( (palavras(2)(3) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 5*WORD_COL) and letter_col(2) >= 5 then
+				elsif (col < col_bases(2) + 5*WORD_COL) and letter_col(2) >= 5 then
 					letra_atual <= alfa ( (palavras(2)(4) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 6*WORD_COL) and letter_col(2) >= 6 then
+				elsif (col < col_bases(2) + 6*WORD_COL) and letter_col(2) >= 6 then
 					letra_atual <= alfa ( (palavras(2)(5) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 7*WORD_COL) and letter_col(2) >= 7 then
+				elsif (col < col_bases(2) + 7*WORD_COL) and letter_col(2) >= 7 then
 					letra_atual <= alfa ( (palavras(2)(6) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 8*WORD_COL) and letter_col(2) >= 8 then
+				elsif (col < col_bases(2) + 8*WORD_COL) and letter_col(2) >= 8 then
 					letra_atual <= alfa ( (palavras(2)(7) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 9*WORD_COL) and letter_col(2) >= 9 then
+				elsif (col < col_bases(2) + 9*WORD_COL) and letter_col(2) >= 9 then
 					letra_atual <= alfa ( (palavras(2)(8) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(2) + 10*WORD_COL) and letter_col(2) >= 10 then
+				elsif (col < col_bases(2) + 10*WORD_COL) and letter_col(2) >= 10 then
 					letra_atual <= alfa ( (palavras(2)(9) - 65) );
 					new_letter <= '1';
 				else
 					new_letter <= '0';
 				end if;
-		  elsif col >= col_bases(3) and col <= col_bases(3) + WORD_COL * letter_col(3) then
-				if (col <= col_bases(3) + WORD_COL) and letter_col(3) >= 1 then
+		  elsif col >= col_bases(3) and col < col_bases(3) + WORD_COL * letter_col(3) then
+				if (col < col_bases(3) + WORD_COL) and letter_col(3) >= 1 then
 					letra_atual <= alfa ( (palavras(3)(0) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 2*WORD_COL) and letter_col(3) >= 2 then
+				elsif (col < col_bases(3) + 2*WORD_COL) and letter_col(3) >= 2 then
 					letra_atual <= alfa ( (palavras(3)(1) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 3*WORD_COL) and letter_col(3) >= 3 then
+				elsif (col < col_bases(3) + 3*WORD_COL) and letter_col(3) >= 3 then
 					letra_atual <= alfa ( (palavras(3)(2) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 4*WORD_COL) and letter_col(3) >= 4 then
+				elsif (col < col_bases(3) + 4*WORD_COL) and letter_col(3) >= 4 then
 					letra_atual <= alfa ( (palavras(3)(3) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 5*WORD_COL) and letter_col(3) >= 5 then
+				elsif (col < col_bases(3) + 5*WORD_COL) and letter_col(3) >= 5 then
 					letra_atual <= alfa ( (palavras(3)(4) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 6*WORD_COL) and letter_col(3) >= 6 then
+				elsif (col < col_bases(3) + 6*WORD_COL) and letter_col(3) >= 6 then
 					letra_atual <= alfa ( (palavras(3)(5) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 7*WORD_COL) and letter_col(3) >= 7 then
+				elsif (col < col_bases(3) + 7*WORD_COL) and letter_col(3) >= 7 then
 					letra_atual <= alfa ( (palavras(3)(6) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 8*WORD_COL) and letter_col(3) >= 8 then
+				elsif (col < col_bases(3) + 8*WORD_COL) and letter_col(3) >= 8 then
 					letra_atual <= alfa ( (palavras(3)(7) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 9*WORD_COL) and letter_col(3) >= 9 then
+				elsif (col < col_bases(3) + 9*WORD_COL) and letter_col(3) >= 9 then
 					letra_atual <= alfa ( (palavras(3)(8) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(3) + 10*WORD_COL) and letter_col(3) >= 10 then
+				elsif (col < col_bases(3) + 10*WORD_COL) and letter_col(3) >= 10 then
 					letra_atual <= alfa ( (palavras(3)(9) - 65) );
 					new_letter <= '1';
 				else
 					new_letter <= '0';
 				end if;
-		  elsif col >= col_bases(4) and col <= col_bases(4) + WORD_COL * letter_col(4) then
-				if (col <= col_bases(4) + WORD_COL) and letter_col(4) >= 1 then
+		  elsif col >= col_bases(4) and col < col_bases(4) + WORD_COL * letter_col(4) then
+				if (col < col_bases(4) + WORD_COL) and letter_col(4) >= 1 then
 					letra_atual <= alfa ( (palavras(4)(0) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 2*WORD_COL) and letter_col(4) >= 2 then
+				elsif (col < col_bases(4) + 2*WORD_COL) and letter_col(4) >= 2 then
 					letra_atual <= alfa ( (palavras(4)(1) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 3*WORD_COL) and letter_col(4) >= 3 then
+				elsif (col < col_bases(4) + 3*WORD_COL) and letter_col(4) >= 3 then
 					letra_atual <= alfa ( (palavras(4)(2) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 4*WORD_COL) and letter_col(4) >= 4 then
+				elsif (col < col_bases(4) + 4*WORD_COL) and letter_col(4) >= 4 then
 					letra_atual <= alfa ( (palavras(4)(3) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 5*WORD_COL) and letter_col(4) >= 5 then
+				elsif (col < col_bases(4) + 5*WORD_COL) and letter_col(4) >= 5 then
 					letra_atual <= alfa ( (palavras(4)(4) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 6*WORD_COL) and letter_col(4) >= 6 then
+				elsif (col < col_bases(4) + 6*WORD_COL) and letter_col(4) >= 6 then
 					letra_atual <= alfa ( (palavras(4)(5) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 7*WORD_COL) and letter_col(4) >= 7 then
+				elsif (col < col_bases(4) + 7*WORD_COL) and letter_col(4) >= 7 then
 					letra_atual <= alfa ( (palavras(4)(6) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 8*WORD_COL) and letter_col(4) >= 8 then
+				elsif (col < col_bases(4) + 8*WORD_COL) and letter_col(4) >= 8 then
 					letra_atual <= alfa ( (palavras(4)(7) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 9*WORD_COL) and letter_col(4) >= 9 then
+				elsif (col < col_bases(4) + 9*WORD_COL) and letter_col(4) >= 9 then
 					letra_atual <= alfa ( (palavras(4)(8) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(4) + 10*WORD_COL) and letter_col(4) >= 10 then
+				elsif (col < col_bases(4) + 10*WORD_COL) and letter_col(4) >= 10 then
 					letra_atual <= alfa ( (palavras(4)(9) - 65) );
 					new_letter <= '1';
 				else
 					new_letter <= '0';
 				end if;
-		  elsif col >= col_bases(5) and col <= col_bases(5) + WORD_COL * letter_col(5) then
-				if (col <= col_bases(5) + WORD_COL) and letter_col(5) >= 1 then
+		  elsif col >= col_bases(5) and col < col_bases(5) + WORD_COL * letter_col(5) then
+				if (col < col_bases(5) + WORD_COL) and letter_col(5) >= 1 then
 					letra_atual <= alfa ( (palavras(5)(0) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 2*WORD_COL) and letter_col(5) >= 2 then
+				elsif (col < col_bases(5) + 2*WORD_COL) and letter_col(5) >= 2 then
 					letra_atual <= alfa ( (palavras(5)(1) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 3*WORD_COL) and letter_col(5) >= 3 then
+				elsif (col < col_bases(5) + 3*WORD_COL) and letter_col(5) >= 3 then
 					letra_atual <= alfa ( (palavras(5)(2) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 4*WORD_COL) and letter_col(5) >= 4 then
+				elsif (col < col_bases(5) + 4*WORD_COL) and letter_col(5) >= 4 then
 					letra_atual <= alfa ( (palavras(5)(3) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 5*WORD_COL) and letter_col(5) >= 5 then
+				elsif (col < col_bases(5) + 5*WORD_COL) and letter_col(5) >= 5 then
 					letra_atual <= alfa ( (palavras(5)(4) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 6*WORD_COL) and letter_col(5) >= 6 then
+				elsif (col < col_bases(5) + 6*WORD_COL) and letter_col(5) >= 6 then
 					letra_atual <= alfa ( (palavras(5)(5) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 7*WORD_COL) and letter_col(5) >= 7 then
+				elsif (col < col_bases(5) + 7*WORD_COL) and letter_col(5) >= 7 then
 					letra_atual <= alfa ( (palavras(5)(6) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 8*WORD_COL) and letter_col(5) >= 8 then
+				elsif (col < col_bases(5) + 8*WORD_COL) and letter_col(5) >= 8 then
 					letra_atual <= alfa ( (palavras(5)(7) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 9*WORD_COL) and letter_col(5) >= 9 then
+				elsif (col < col_bases(5) + 9*WORD_COL) and letter_col(5) >= 9 then
 					letra_atual <= alfa ( (palavras(5)(8) - 65) );
 					new_letter <= '1';
-				elsif (col <= col_bases(5) + 10*WORD_COL) and letter_col(5) >= 10 then
+				elsif (col < col_bases(5) + 10*WORD_COL) and letter_col(5) >= 10 then
 					letra_atual <= alfa ( (palavras(5)(9) - 65) );
 					new_letter <= '1';
 				else
