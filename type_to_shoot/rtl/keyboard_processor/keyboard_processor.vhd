@@ -13,6 +13,15 @@ end keyboard_processor;
 
 architecture rtl of keyboard_processor is
 
+	function to_std_logic(bool: boolean) return std_logic is
+	begin
+		if bool then
+			return ('1');
+		else
+			return ('0');
+		end if;
+	end function to_std_logic;
+
 	-- Valor pego do Lab 6
 	constant clockfreq: integer := 50000;
 
@@ -53,7 +62,7 @@ begin
 	
 		-- key_on eh ativado quando alguma tecla eh pressionada e
 		-- quando essa tecla e uma letra		
-		key_on <= key_on_aux(0) and asc_code_aux /= -1;
+		key_on <= key_on_aux(0) and to_std_logic(asc_code_aux /= -1);
 		
 		-- Converte o codigo do kbdex_ctrl para asc
 		with key_code(15 downto 0) select asc_code_aux <=

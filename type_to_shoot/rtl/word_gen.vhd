@@ -10,7 +10,8 @@ entity word_gen is
 	);
   port (
     get_word : in std_logic;		
-		new_word: out word
+		new_word: out word;
+		new_word_size: integer
   );
 end word_gen;
 

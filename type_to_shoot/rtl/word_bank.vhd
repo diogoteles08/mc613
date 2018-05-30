@@ -8,7 +8,7 @@ entity word_bank is
 	);
   port (
     kill_word : in std_logic;
-		word_to_kill: in integer;
+		word_to_kill_index: in integer;
 		new_word: in word;
 		words: out word_table;
 		num_words: out integer -- Number less than or equals to max_words
@@ -28,7 +28,7 @@ begin
 		
 		if kill_word'EVENT and kill_word = '1' then
 			-- Does the shift
-			for i in word_to_kill to num_words_aux-2 loop
+			for i in word_to_kill_index to num_words_aux-2 loop
 				words_aux(i) <= words_aux(i+1);
 			end loop;
 			
