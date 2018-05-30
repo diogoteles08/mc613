@@ -26,10 +26,8 @@
 -------------------------------------------------------------------------------
 
 library ieee;
-library work;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-use work.main_pack.all;
 
 entity vga_ball is
 	generic (
@@ -39,20 +37,12 @@ entity vga_ball is
 		WORD_COL : integer := 8
 	);
   port (    
-    CLOCK_50                : in  std_logic;
-    KEY                     : in  std_logic;
-		START_GAME							: in std_logic;
-		STAGE_END								: in std_logic;
-		PLAY_AGAIN							: in std_logic;
-		NEW_WORD								: in word;
-		LOCKED_WORD							: in word;
-		LETTER_HIT							: in std_logic;
-		WORD_DESTROYED					: in std_logic;
-    VGA_R, VGA_G, VGA_B     : out std_logic_vector(7 downto 0);
-    VGA_HS, VGA_VS          : out std_logic;
+    CLOCK_50                	: in  std_logic;
+    KEY                     	: in  std_logic_vector(0 downto 0);
+    VGA_R, VGA_G, VGA_B     	: out std_logic_vector(7 downto 0);
+    VGA_HS, VGA_VS          	: out std_logic;
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
-    VGA_CLK                 : out std_logic;
-		GAME_OVER								: out std_logic
+    VGA_CLK                 	: out std_logic
     );
 end vga_ball;
 
@@ -116,21 +106,16 @@ architecture comportamento of vga_ball is
   signal sync, blank: std_logic;
 
   signal cor_atual : std_logic_vector(2 downto 0) := "001";
-  signal limpa : std_logic := '0';
   signal inic : std_logic := '0';
 	
-  signal font_word: std_logic_vector(7 downto 0);
-  signal rom_addr: std_logic_vector(10 downto 0);
-  
   type size_5_array is array (0 to 5) of integer;
   
   signal line_bases : size_5_array := (20, 20, 20, 20, 20, 20);
-  signal col_bases : size_5_array := (5, 110, 215, 320, 425, 530);
+  signal col_bases : size_5_array := (col_0, col_1, col_2, col_3, col_4, col_5);
 
   signal letter_col : size_5_array := (1, 2, 3, 4, 5, 10);
   signal print_enable : std_logic := '0';
   
-  signal att_col : std_logic := '0';
   
   signal letra_A : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
    "00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000");
@@ -221,12 +206,6 @@ begin  -- comportamento
 	 VGA_SYNC_N <= NOT sync;
 	 VGA_BLANK_N <= NOT blank;
 	 
-	-- instantiate font ROM
-   font_unit: entity work.font_rom  port map(
-				 clk	=>		CLOCK_50,
-				 addr	=>		rom_addr, 
-				 data	=>		font_word);  
-	
   -----------------------------------------------------------------------------
   -- PROCESS PARA PEDIR INFORMACOES DE FONT_ROM E IMPRIMIR NA TELA
   -----------------------------------------------------------------------------
@@ -235,9 +214,9 @@ begin  -- comportamento
   -- type   : sequential
   -- inputs :
   -- outputs: 
-  pega_linha: process (att_col)
+  pega_linha: process (CLOCK_50)
   begin  -- process conta_coluna
-    if att_col'event and att_col = '1' then  -- rising clock edge
+    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		if line >= line_bases(0) and line <= line_bases(0) + WORD_LINE - 1 and (col + 1) >= col_bases(0) and (col + 1) <= col_bases(0) + WORD_COL* letter_col(0) -1 then
 			print_enable <= letra_atual( (line-line_bases(0)) * WORD_COL + ((col + 1) mod WORD_COL) );
 		elsif line >= line_bases(1) and line <= line_bases(1) + WORD_LINE - 1 and col >= col_bases(1) and col <= col_bases(1) + WORD_COL* letter_col(1) -1 then
@@ -335,7 +314,6 @@ begin  -- comportamento
       col <= 0;
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if col_enable = '1' then
-		  att_col <= '1';
         if col = NUM_COL-1 then               -- conta de 0 a NUM_COL-1 (NUM_COL colunas)
           col <= 0;
         else
@@ -494,10 +472,8 @@ begin  -- comportamento
 			temp := '0';
 		 end if;
 	 end if;
-	 limpa <= temp;
   end process;
 
---  pixel <= cor_atual when line = pos_y and col = pos_x and limpa = '0' else "000";
   pixel <= "111" when print_enable = '1' else "000";
   
   -- O endereço de memória pode ser construído com essa fórmula simples,
@@ -637,7 +613,7 @@ begin  -- comportamento
   begin  -- process build_rstn
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       rstn <= temp;      
-      temp := KEY;
+      temp := KEY(0);
     end if;
   end process build_rstn;
 
