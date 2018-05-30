@@ -40,7 +40,6 @@ entity vga_ball is
 	);
   port (    
     CLOCK_50                : in std_logic;
-		TIMERR										: in std_logic;
     KEY                     : in std_logic;
 		START_GAME							: in std_logic;
 		STAGE_END								: in std_logic;
@@ -54,6 +53,7 @@ entity vga_ball is
     VGA_HS, VGA_VS          : out std_logic;
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
     VGA_CLK                 : out std_logic;
+		TIMER										: out std_logic;
 		GAME_OVER								: out std_logic
     );
 end vga_ball;
@@ -112,7 +112,7 @@ architecture comportamento of vga_ball is
   -- alimentado com um clock de 50MHz, ele demore 25ms (40fps) para contar até o final.
   
   signal contador : integer range 0 to 1250000 - 1;  -- contador
-  signal timer : std_logic;        -- vale '1' quando o contador chegar ao fim
+  signal timer_aux : std_logic;        -- vale '1' quando o contador chegar ao fim
   signal timer_rstn, timer_enable : std_logic;
   
   signal sync, blank: std_logic;
@@ -517,10 +517,10 @@ begin  -- comportamento
   -- inputs : estado, fim_escrita, timer
   -- outputs: proximo_estado, atualiza_pos_x, atualiza_pos_y, line_rstn,
   --          line_enable, col_rstn, col_enable, we, timer_enable, timer_rstn
-  logica_mealy: process (estado, fim_escrita, timer)
+  logica_mealy: process (estado, fim_escrita, timer_aux)
   begin  -- process logica_mealy
     case estado is
-      when inicio         => if timer = '1' then              
+      when inicio         => if timer_aux = '1' then
                                proximo_estado <= constroi_quadro;
                              else
                                proximo_estado <= inicio;
@@ -619,11 +619,13 @@ begin  -- comportamento
   p_timer: process (contador)
   begin  -- process p_timer
     if contador = 1250000 - 1 then
-      timer <= '1';
+      timer_aux <= '1';
     else
-      timer <= '0';
+      timer_aux <= '0';
     end if;
   end process p_timer;
+
+	timer <= timer_aux;
 
   -----------------------------------------------------------------------------
   -- Processos que sincronizam sinais assíncronos, de preferência com mais

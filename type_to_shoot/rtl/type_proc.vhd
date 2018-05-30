@@ -30,7 +30,6 @@ architecture rtl of type_proc is
 	component vga_ball
 		port (
 			CLOCK_50                : in  std_logic;
-			TIMER										: in std_logic;
 			KEY                     : in  std_logic;
 			START_GAME							: in std_logic;
 			STAGE_END								: in std_logic;
@@ -44,6 +43,7 @@ architecture rtl of type_proc is
 			VGA_HS, VGA_VS          : out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
 			VGA_CLK                 : out std_logic;
+			TIMER										: out std_logic;
 			GAME_OVER								: out std_logic
 		);
 	end component;
@@ -86,8 +86,7 @@ architecture rtl of type_proc is
   -- posição da bola, a fim de evitar que a animação fique excessivamente
   -- veloz. Aqui utilizamos um contador de 0 a 1250000, de modo que quando
   -- alimentado com um clock de 50MHz, ele demore 25ms (40fps) para contar até o final.
-	signal contador : integer range 0 to 1250000 - 1;  -- contador
-  signal timer : std_logic;        -- vale '1' quando o contador chegar ao fim
+	signal timer : std_logic;        -- vale '1' quando o contador chegar ao fim
 	
 	-- State machine signals
 	type state_t is (
@@ -120,7 +119,6 @@ begin
 	screen_processor: vga_ball
 		port map (
 			CLOCK_50				=> CLOCK_50,
-			TIMER						=> timer,
 			KEY							=> '1',
 			START_GAME			=> start_game,
 			STAGE_END				=> stage_end,
@@ -138,6 +136,7 @@ begin
 			VGA_BLANK_N			=> VGA_BLANK_N,
 			VGA_SYNC_N			=> VGA_SYNC_N,
 			VGA_CLK					=> VGA_CLK,
+			TIMER						=> timer,
 			GAME_OVER				=> game_over
 		);
 		
@@ -201,42 +200,4 @@ begin
 			end case;
 		end process;
 
-	-----------------------------------------------------------------------------
-  -- Processos do contador utilizado para atrasar a animação (evitar
-  -- que a atualização de quadros fique excessivamente veloz).
-  -----------------------------------------------------------------------------
-  -- purpose: Incrementa o contador a cada ciclo de clock
-  -- type   : sequential
-  -- inputs : CLOCK_50, timer_rstn
-  -- outputs: contador, timer
---  p_contador: process (CLOCK_50, timer_rstn)
-	p_contador: process (CLOCK_50)
-  begin  -- process p_contador
---    if timer_rstn = '0' then            -- asynchronous reset (active low)
---      contador <= 0;
-    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
---      if timer_enable = '1' then       
-        if contador = 1250000 - 1 then
-          contador <= 0;
-        else
-          contador <=  contador + 1;        
-        end if;
---      end if;
-    end if;
-  end process p_contador;
-
-  -- purpose: Calcula o sinal "timer" que indica quando o contador chegou ao tempo
-  --          final
-  -- type   : combinational
-  -- inputs : contador
-  -- outputs: timer
-  p_timer: process (contador)
-  begin  -- process p_timer
-    if contador = 1250000 - 1 then
-      timer <= '1';
-    else
-      timer <= '0';
-    end if;
-  end process p_timer;
-		
 end rtl;
