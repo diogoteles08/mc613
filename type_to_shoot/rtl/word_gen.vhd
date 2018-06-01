@@ -8,11 +8,11 @@ entity word_gen is
 		-- we define the words directly on code
 		num_words: integer := 5
 	);
-  port (
-    get_word : in std_logic;		
-		new_word: out word;
-		new_word_size: integer
-  );
+	port (
+		get_word		: in std_logic;
+		new_word		: out word;
+		new_word_size	: out integer
+	);
 end word_gen;
 
 architecture rtl of word_gen is
