@@ -26,8 +26,8 @@
 -------------------------------------------------------------------------------
 
 library ieee;
---library work;
---use work.main_pack.all;
+library work;
+use work.main_pack.all;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
@@ -41,10 +41,20 @@ entity vga_ball is
   port (    
     CLOCK_50                	: in  std_logic;
     KEY                     	: in  std_logic_vector(0 downto 0);
+    START_GAME		        : in  std_logic;
+    STAGE_END		        : in  std_logic;
+    PLAY_AGAIN		        : in  std_logic;
+    NEW_WORD		        : in  word;
+    NEW_WORD_SIZE		: in  integer;
+    LOCKED_WORD		        : in  word;
+    LETTER_HIT		        : in  std_logic;
+    WORD_DESTROYED		: in  std_logic;
     VGA_R, VGA_G, VGA_B     	: out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS          	: out std_logic;
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
     VGA_CLK                 	: out std_logic
+    TIMER			: out std_logic;
+    GAME_OVER		        : out std_logic
     );
 end vga_ball;
 
@@ -102,8 +112,6 @@ architecture comportamento of vga_ball is
   signal cor_atual : std_logic_vector(2 downto 0) := "001";
   signal inic : std_logic := '0';
 	
-  type size_6_array is array (0 to 5) of integer;
-  
   constant col_0 : integer := 5;
   constant col_1 : integer := 110;
   constant col_2 : integer := 215;
@@ -116,7 +124,7 @@ architecture comportamento of vga_ball is
   
   signal print_enable : std_logic := '0';
   signal new_letter : std_logic := '0';
-  type word is array (0 to 9) of integer;
+  --type word is array (0 to 9) of integer;
   
   type matriz_palavras is array (0 to 5) of word;
   signal letter_col : size_6_array := (10, 10, 10, 10, 10, 10);
