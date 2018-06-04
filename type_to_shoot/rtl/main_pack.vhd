@@ -5,6 +5,6 @@ package main_pack is
 	constant max_words: integer := 4; -- Defines the max number of words simultaneously on screen
 	constant max_word_length: integer := 10; -- Defines the max length of any word on the game
 
-	type word is array (0 to max_word_length-1) of integer;
+	subtype word is std_logic_vector(79 downto 0);
 	type word_table is array (max_words-1 downto 0) of word;
 end main_pack;

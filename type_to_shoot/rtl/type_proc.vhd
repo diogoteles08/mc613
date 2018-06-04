@@ -272,21 +272,20 @@ begin
 
 							-- letter_hit should be with 0 at this point
 
-							-- Procura pela palavra comecando com a letra digitada						
-							for i in 0 to max_words-1 loop
-								if i >= num_active_words then
-									exit;
-								end if;
-								
-								if active_words(i)(0) = char_pressed then
-									-- NAO FUNCIONA PARA PALAVRAS DE TAMANHO 1
-									next_state <= HIT_PROCESSING;
-									letter_hit <= '1';
-									locked_word_index <= i;
-									locked_word <= active_words(i);
-									current_letter_index <= 1;
-									exit;
-								end if;
+							-- Procura pela palavra comecando com a letra digitada
+							-- Similar a um decodificador de prioridade, os indices menores
+							-- tem maior prioridades
+							for i in max_words-1 downto 0 loop
+								if i < num_active_words then
+									if active_words(i)(0) = char_pressed then
+										-- NAO FUNCIONA PARA PALAVRAS DE TAMANHO 1
+										next_state <= HIT_PROCESSING;
+										letter_hit <= '1';
+										locked_word_index <= i;									
+										locked_word <= active_words(i);
+										current_letter_index <= 1;									
+									end if;
+								end if;															
 							end loop;
 
 							if letter_hit = '0' then
@@ -338,8 +337,7 @@ begin
 							next_state <= BEGIN_GAME;
 
 					end case;
-				end if;
-				
+				end if;				
 			end if;			
 		end process;
 
