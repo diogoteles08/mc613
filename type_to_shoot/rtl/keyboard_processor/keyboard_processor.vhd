@@ -65,7 +65,7 @@ begin
 		key_on <= key_on_aux(0) and to_std_logic(asc_code_aux /= -1);
 		
 		-- Converte o codigo do kbdex_ctrl para asc
-		with key_code(15 downto 0) select asc_code_aux <=
+		with key_code(7 downto 0) select asc_code_aux <=
 			65 when x"1C",
 			66 when x"32",
 			67 when x"21",

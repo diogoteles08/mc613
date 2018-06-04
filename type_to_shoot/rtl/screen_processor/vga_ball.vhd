@@ -40,7 +40,7 @@ entity vga_ball is
 	);
   port (    
     CLOCK_50                : in std_logic;
-    KEY                     : in std_logic;
+    KEY                     : in std_logic_vector(0 downto 0);
 		START_GAME							: in std_logic;
 		STAGE_END								: in std_logic;
 		PLAY_AGAIN							: in std_logic;
@@ -641,7 +641,7 @@ begin  -- comportamento
   begin  -- process build_rstn
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       rstn <= temp;      
-      temp := KEY;
+      temp := KEY(0);
     end if;
   end process build_rstn;
 
