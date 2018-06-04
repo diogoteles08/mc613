@@ -112,7 +112,8 @@ architecture comportamento of vga_ball is
   signal inic_splash : std_logic := '0';
   signal inic_limpa : std_logic := '0';
   signal locked_hits : integer range 0 to 10 := 0;
-	
+  signal my_play : std_logic := '0';
+  
   constant col_0 : integer := 5;
   constant col_1 : integer := 110;
   constant col_2 : integer := 215;
@@ -466,22 +467,24 @@ TIMER_P <= timer;
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		  if inic_limpa = '1' then
 				pixel <= "000";
-        elsif print_enable = '1' and inic_splash = '0' and col_enable = '1' then
+        elsif print_enable = '1' and inic_splash = '0' then
 				if col >= col_bases(0) and col < col_bases(0) + letter_col(0) * WORD_COL and indice = 0 then
-					pixel <= "011";
+					pixel <= "101";
 				elsif col >= col_bases(1) and col < col_bases(1) + letter_col(1) * WORD_COL and indice = 1 then
-					pixel <= "011";
+					pixel <= "101";
 				elsif col >= col_bases(2) and col < col_bases(2) + letter_col(2) * WORD_COL and indice = 2 then
-					pixel <= "011";
+					pixel <= "101";
 				elsif col >= col_bases(3) and col < col_bases(3) + letter_col(3) * WORD_COL and indice = 3 then
-					pixel <= "011";
+					pixel <= "101";
 				elsif col >= col_bases(4) and col < col_bases(4) + letter_col(4) * WORD_COL and indice = 4 then
-					pixel <= "011";
+					pixel <= "101";
 				else
 					pixel <= "111";
 				end if;
 			elsif inic_splash = '1' then
 				pixel <= tela_inicial( line + col*NUM_LINE);
+			elsif print_enable = '0' then
+				pixel <= "000";
 			end if;
 		  -- O endereço de memória pode ser construído com essa fórmula simples,
 		  -- a partir da linha e coluna atual
@@ -602,16 +605,16 @@ TIMER_P <= timer;
   -- inputs : estado, fim_escrita, timer
   -- outputs: proximo_estado, atualiza_pos_y, line_rstn,
   --          line_enable, col_rstn, col_enable, we, timer_enable, timer_rstn
-  logica_mealy: process (estado, fim_escrita, timer, PLAY_AGAIN, ja_limpei)
+  logica_mealy: process (estado, fim_escrita, timer, my_play, ja_limpei)
   begin  -- process logica_mealy
 	 inic_limpa 	  <= '0';
     case estado is
-      when inicio         => if timer = '1' and PLAY_AGAIN = '1' and ja_limpei = '0' then              
+      when inicio         => if timer = '1' and my_play = '1' and ja_limpei = '0' then              
                                proximo_estado <= limpa_tela;
 										 ja_limpei <= '1';
-									  elsif timer = '1' and PLAY_AGAIN = '1' then
+									  elsif timer = '1' and my_play = '1' then
 									    proximo_estado <= constroi_quadro;
-									  elsif timer ='1' and PLAY_AGAIN = '0' then
+									  elsif timer ='1' and my_play = '0' then
 										 proximo_estado <= show_splash;
                              else
                                proximo_estado <= inicio;
@@ -782,5 +785,11 @@ TIMER_P <= timer;
     end if;
   end process build_rstn;
   
+  start_button : process (CLOCK_50)
+  begin
+		if CLOCK_50'event and CLOCK_50 = '1' then
+			my_play <= my_play or not(KEY(1));
+		end if;
+	end process start_button;
 end comportamento;
 
