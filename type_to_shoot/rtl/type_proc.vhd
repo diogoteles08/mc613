@@ -9,7 +9,7 @@ entity type_proc is
     KEY		 : in std_logic_vector(0 downto 0);
     PS2_DATA : inout STD_LOGIC;
     PS2_CLK : inout STD_LOGIC;
-		VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
+	VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS            : out std_logic;
     VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
     VGA_CLK                   : out std_logic
@@ -78,7 +78,7 @@ architecture rtl of type_proc is
 	signal active_words: word_table;
 	signal num_active_words: integer;
 
-	-- Sinal dizendo se na fase atual nao surgirao novas palavras
+	-- Sinal dizendo se na fase atual nao surgirao novas palavras mais
 	signal no_more_words: std_logic; -- Internal signal
 
 	signal letter_miss: std_logic; -- Internal signal
@@ -106,10 +106,13 @@ architecture rtl of type_proc is
 		BEGIN_GAME,
 		LOCKED,
 		FREE,
+		HIT_PROCESSING,
+		MISS_PROCESSING,
 		GAME_LOST
 	);
 	signal state: state_t;
 	signal next_state: state_t;
+	signal insta_changing: std_logic;
 
 begin
 	bank: word_bank
@@ -164,9 +167,6 @@ begin
 		process (letter_hit)
 		begin
 			if letter_hit = '1' then
-				letter_hit <= '0';
-				kill_word <= '0';
-				stage_end <= '0';
 				-- TODO: Update ponctuation
 					-- It can also verify the "kill_word" signal
 					-- for different ponctuation
@@ -176,74 +176,107 @@ begin
 		process (letter_miss)
 		begin
 			if letter_miss = '1' then
-				letter_miss <= '0';
 				-- TODO: Update ponctuation
 			end if;
 		end process;
 
-		process (current_stage, start_game)
+		process (start_game, stage_end)
 		begin
-			if start_game then
-				start_game <= 0;
-				current_stage <= 0;
+			if start_game'event and start_game = '0'
+				or stage_end'event and stage_end = '0'
+			then
+				-- Quit process
+				exit;
 			end if;
 
-			-- On the new stage we start generating new words
-			no_more_words <= '0';
+			if start_game'event and start_game = '1' then
+				current_stage <= 0;
+			elsif stage_end'event and stage_end = '1' then
+				current_stage <= current_stage + 1;
+			end if;
 
 			-- TODO: Update stage data
+
 		end process;
 
-		process (timer)
+		process (CLOCK_50, timer, start_game, stage_end)
+			variable counter: integer := 0;
 		begin
-			-- TODO: Administrate generation of new words
-				-- Only need to deal with get_new_word
+			if timer'event and timer = '1' then
+				-- TODO: Administrate generation of new words
+					-- Just need to deal with get_new_word
+				if counter /= 100 then
+					counter := counter + 1;
+				else
+					counter := 0;
+					if num_active_words /= 5 then
+						get_new_word <= '1';
+					end if;
+				end if;
+			elsif CLOCK_50'event and CLOCK_50 = '1' then
+				get_new_word <= '0';
+			end if;
+
+			if start_game'event and start_game = '1' or
+				stage_end'event and stage_end = '1'
+			then
+				-- On the new stage we start generating new words
+				no_more_words <= '0';
+			end if;
 		end process;
 
-		-- We need to set it to 0 somewhere
-			-- Meybe on CLOCK_50
-		process (get_new_word)
+		process (key_on, game_over, insta_changing)
+			variable back_to_state: state_t
 		begin
-			get_new_word <= '0';
-		end process;
-
-		process (key_on, game_over)
-		begin
-			if game_over then
+			if game_over'event and game_over = '1' then
+				-- It can get here from any state
 				next_state <= GAME_LOST;
-			elsif key_on = '0' then
+				start_game <= '0';
+				letter_miss <= '0';
+				letter_hit <= '0';
+				kill_word <= '0';
+				stage_end <= '0';
+			elsif key_on'event and key_on = '0' or
+				insta_changing'event and insta_changing = '0'
+			then
 				next_state <= state;
-			else
+			elsif key_on'event and key_on = '1' or
+				insta_changing'event and insta_changing = '1'
+			then
 				case state is
 					when BEGIN_GAME =>
 						-- User pressed any key and game will begin
 						next_state <= FREE;
 						start_game <= '1';
-						play_again <= '0';
+						play_again <= '0'; -- DESCIDA DO PLAY_AGAIN NAO ESTA INSTANTANEA
 
 					when FREE =>
+						start_game <= '0'; -- DESCIDA DO START_GAME NAO ESTA INSTANTANEA
+
 						-- letter_hit should be with 0 at this point
 
 						-- Procura pela palavra comecando com a letra digitada
 						for i in 0 to num_active_words-1 loop
 							if active_words(i)(0) = char_pressed then
+								-- NAO FUNCIONA PARA PALAVRAS DE TAMANHO 1
+								next_state <= HIT_PROCESSING;
+								letter_hit <= '1';
 								locked_word_index <= i;
 								locked_word <= active_words(i);
-								letter_hit <= '1';
 								current_letter_index <= 1;
-								next_state <= LOCKED;
 								exit;
 							end if;
 						end loop;
 
 						if letter_hit = '0' then
+							next_state <= MISS_PROCESSING;
+							back_to_state <= FREE;
 							letter_miss <= '1';
-							next_state <= FREE;
 						end if;
 
 					when LOCKED =>
-						next_state <= LOCKED;
 						if active_words(locked_word_index)(current_letter_index) = char_pressed then
+							next_state <= HIT_PROCESSING;
 							letter_hit <= '1';
 							current_letter_index <= current_letter_index + 1;
 
@@ -252,17 +285,30 @@ begin
 								active_words(locked_word_index)(current_letter_index) = -1
 							then
 								kill_word <= '1';
-								next_state <= FREE;
 
 								-- Verifica se acabaram as palavras da fase
 								if num_active_words = 1 and no_more_words = '1' then
 									stage_end <= '1';
-									currente_stage <= current_stage + 1;
 								end if;
 							end if;
 						else
+							next_state <= MISS_PROCESSING;
+							back_to_state <= LOCKED;
 							letter_miss <= '1';
 						end if;
+
+					when HIT_PROCESSING =>
+						letter_hit <= '0';
+						if kill_word = '0' then
+							next_stage <= LOCKED;
+						else
+							next_stage <= FREE;
+							kill_word <= '0';
+							stage_end <= '0';
+
+					when MISS_PROCESSING =>
+						letter_miss <= '0';
+						next_stage <= back_to_stage;
 
 					when GAME_LOST =>
 						-- Player wants to play again
@@ -282,8 +328,12 @@ begin
   begin  -- process seq_fsm
     -- if rstn = '0' then                  -- asynchronous reset (active low)
       -- state <= inicio;
+	insta_changing <= '0';
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       state <= next_state;
+	  if next_state = HIT_PROCESSING or next_state = MISS_PROCESSING then
+		  insta_changing <= '1';
+	  end if;
     end if;
   end process seq_fsm;
 
