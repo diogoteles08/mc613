@@ -78,8 +78,8 @@ entity vgacon is
     --  Must also keep in mind that our native resolution is 640x480, and
     --  you can't cross these bounds (although you will seldom have enough
     --  on-chip memory to instantiate this module with higher res).
-    NUM_HORZ_PIXELS : natural := 640;  -- Number of horizontal pixels
-    NUM_VERT_PIXELS : natural := 480);  -- Number of vertical pixels
+    NUM_HORZ_PIXELS : natural := 320;  -- Number of horizontal pixels
+    NUM_VERT_PIXELS : natural := 240);  -- Number of vertical pixels
   
   port (
     clk50M, rstn              : in  std_logic;

@@ -26,8 +26,8 @@
 -------------------------------------------------------------------------------
 
 library ieee;
---library work;
---use work.main_pack.all;
+library work;
+use work.main_pack.all;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
@@ -124,22 +124,22 @@ architecture comportamento of vga_ball is
   signal print_enable : std_logic := '0';
   signal new_letter : std_logic := '0';
   
-  type letra_t is std_logic_vector(0 to WORD_COL * WORD_LINE - 1);
+  --type letra_t is array (0 to WORD_COL * WORD_LINE -1) of std_logic;
 
   type matriz_palavras is array (0 to 4) of word;
   signal letter_col : array5 := (10, 10, 10, 10, 10);
   signal palavras : matriz_palavras := (
-  (65, 65, 65, 65, 66, 66, 66, 66, 66, 66),
-  (70, 70, 70, 70, 70, 71, 71, 71, 71, 71),
-  (75, 75, 75, 75, 75, 76, 76, 76, 76, 76),
-  (70, 70, 70, 70, 70, 77, 77, 77, 77, 77),
-  (73, 73, 73, 70, 70, 71, 71, 71, 71, 71));
+  (76, 79, 71, 73, 67, 79, 83, 84, 85, 68),
+  (69, 72, 91, 91, 70, 71, 72, 73, 74, 75),
+  (65, 77, 79, 82, 75, 76, 76, 76, 76, 76),
+  (71, 72, 73, 74, 75, 76, 77, 78, 79, 80),
+  (76, 79, 71, 73, 67, 79, 83, 67, 89, 90));
 
-  type letras_atuais_t is array (0 to 4, 0 to 10) of letra_t;
+  type letras_atuais_t is array (0 to 4, 0 to 9) of std_logic_vector(0 to WORD_COL * WORD_LINE -1 );
 
   signal letras_atuais : letras_atuais_t;
 
-  type alfabeto_t is array (0 to 26) of letra_t;
+  type alfabeto_t is array (0 to 26) of std_logic_vector(0 to WORD_COL * WORD_LINE -1);
   signal alfa: alfabeto_t := 
   ("00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000", --'A'
 	"00000000000000001111110001100110011001100110011001111100011001100110011001100110011001101111110000000000000000000000000000000000", --'B'
@@ -268,127 +268,126 @@ begin  -- comportamento
   pega_linha: process (CLOCK_50)
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-		if col_enable = '1' then
-			if col >= col_bases(0) and col < col_bases(0) + WORD_COL * letter_col(0) then
+		if col_enable = '1' and line_enable = '1' then
+			if line >= line_bases(0) and line < line_bases(0) + WORD_LINE and col >= col_bases(0) and col < col_bases(0) + WORD_COL * letter_col(0) then
 				if (col < col_bases(0) + WORD_COL) and letter_col(0) >= 1 then
-					print_enable <= letras_atuais(0, 0)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 0)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 2*WORD_COL) and letter_col(0) >= 2 then
-					print_enable <= letras_atuais(0, 1)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 1)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 3*WORD_COL) and letter_col(0) >= 3 then
-					print_enable <= letras_atuais(0, 2)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 2)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 4*WORD_COL) and letter_col(0) >= 4 then
-					print_enable <= letras_atuais(0, 3)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 3)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 5*WORD_COL) and letter_col(0) >= 5 then
-					print_enable <= letras_atuais(0, 4)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 4)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 6*WORD_COL) and letter_col(0) >= 6 then
-					print_enable <= letras_atuais(0, 5)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 5)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 7*WORD_COL) and letter_col(0) >= 7 then
-					print_enable <= letras_atuais(0, 6)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 6)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 8*WORD_COL) and letter_col(0) >= 8 then
-					print_enable <= letras_atuais(0, 7)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 7)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 9*WORD_COL) and letter_col(0) >= 9 then
-					print_enable <= letras_atuais(0, 8)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 8)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				elsif (col < col_bases(0) + 10*WORD_COL) and letter_col(0) >= 10 then
-					print_enable <= letras_atuais(0, 9)(line-line_bases(0) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(0, 9)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				else
 					print_enable <= '0';
 				end if;
 		  
 				--print_enable <= alfa( ( palavras(0, (col - col_bases(0)) / WORD_COL) ) - 65);
-		  elsif col >= col_bases(1) and col < col_bases(1) + WORD_COL * letter_col(1) then
+		  elsif line >= line_bases(1) and line < line_bases(1) + WORD_LINE and col >= col_bases(1) and col < col_bases(1) + WORD_COL * letter_col(1) then
 				if (col < col_bases(1) + WORD_COL) and letter_col(1) >= 1 then
-					print_enable <= letras_atuais(1, 0)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 0)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 2*WORD_COL) and letter_col(1) >= 2 then
-					print_enable <= letras_atuais(1, 1)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 1)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 3*WORD_COL) and letter_col(1) >= 3 then
-					print_enable <= letras_atuais(1, 2)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 2)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 4*WORD_COL) and letter_col(1) >= 4 then
-					print_enable <= letras_atuais(1, 3)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 3)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 5*WORD_COL) and letter_col(1) >= 5 then
-					print_enable <= letras_atuais(1, 4)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 4)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 6*WORD_COL) and letter_col(1) >= 6 then
-					print_enable <= letras_atuais(1, 5)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 5)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 7*WORD_COL) and letter_col(1) >= 7 then
-					print_enable <= letras_atuais(1, 6)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 6)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 8*WORD_COL) and letter_col(1) >= 8 then
-					print_enable <= letras_atuais(1, 7)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 7)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 9*WORD_COL) and letter_col(1) >= 9 then
-					print_enable <= letras_atuais(1, 8)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 8)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				elsif (col < col_bases(1) + 10*WORD_COL) and letter_col(1) >= 10 then
-					print_enable <= letras_atuais(1, 9)(line-line_bases(1) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(1, 9)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				else
 					print_enable<= '0';
 				end if;
-		  elsif col >= col_bases(2) and col < col_bases(2) + WORD_COL * letter_col(2) then
+		  elsif line >= line_bases(2) and line < line_bases(2) + WORD_LINE and col >= col_bases(2) and col < col_bases(2) + WORD_COL * letter_col(2) then
 				if (col < col_bases(2) + WORD_COL) and letter_col(2) >= 1 then
-					print_enable <= letras_atuais(2, 0)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 0)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 2*WORD_COL) and letter_col(2) >= 2 then
-					print_enable <= letras_atuais(2, 1)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 1)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 3*WORD_COL) and letter_col(2) >= 3 then
-					print_enable <= letras_atuais(2, 2)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 2)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 4*WORD_COL) and letter_col(2) >= 4 then
-					print_enable <= letras_atuais(2, 3)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 3)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 5*WORD_COL) and letter_col(2) >= 5 then
-					print_enable <= letras_atuais(2, 4)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 4)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 6*WORD_COL) and letter_col(2) >= 6 then
-					print_enable <= letras_atuais(2, 5)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 5)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 7*WORD_COL) and letter_col(2) >= 7 then
-					print_enable <= letras_atuais(2, 6)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 6)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 8*WORD_COL) and letter_col(2) >= 8 then
-					print_enable <= letras_atuais(2, 7)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 7)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 9*WORD_COL) and letter_col(2) >= 9 then
-					print_enable <= letras_atuais(2, 8)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 8)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(2) + 10*WORD_COL) and letter_col(2) >= 10 then
-					print_enable <= letras_atuais(2, 9)(line-line_bases(2) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(2, 9)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				else
 					print_enable <= '0';
 				end if;
-		  elsif col >= col_bases(3) and col < col_bases(3) + WORD_COL * letter_col(3) then
+		  elsif line >= line_bases(3) and line < line_bases(3) + WORD_LINE and col >= col_bases(3) and col < col_bases(3) + WORD_COL * letter_col(3) then
 				if (col < col_bases(3) + WORD_COL) and letter_col(3) >= 1 then
-					print_enable <= letras_atuais(3, 0)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 0)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 2*WORD_COL) and letter_col(3) >= 2 then
-					print_enable <= letras_atuais(3, 1)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 1)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 3*WORD_COL) and letter_col(3) >= 3 then
-					print_enable <= letras_atuais(3, 2)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 2)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 4*WORD_COL) and letter_col(3) >= 4 then
-					print_enable <= letras_atuais(3, 3)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 3)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 5*WORD_COL) and letter_col(3) >= 5 then
-					print_enable <= letras_atuais(3, 4)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 4)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 6*WORD_COL) and letter_col(3) >= 6 then
-					print_enable <= letras_atuais(3, 5)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 5)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 7*WORD_COL) and letter_col(3) >= 7 then
-					print_enable <= letras_atuais(3, 6)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 6)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 8*WORD_COL) and letter_col(3) >= 8 then
-					print_enable <= letras_atuais(3, 7)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 7)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 9*WORD_COL) and letter_col(3) >= 9 then
-					print_enable <= letras_atuais(3, 8)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 8)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				elsif (col < col_bases(3) + 10*WORD_COL) and letter_col(3) >= 10 then
-					print_enable <= letras_atuais(3, 9)(line-line_bases(3) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(3, 9)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				else
 					print_enable <= '0';
 				end if;
-		  elsif col >= col_bases(4) and col < col_bases(4) + WORD_COL * letter_col(4) then
+		  elsif line >= line_bases(4) and line < line_bases(4) + WORD_LINE and col >= col_bases(4) and col < col_bases(4) + WORD_COL * letter_col(4) then
 				if (col < col_bases(4) + WORD_COL) and letter_col(4) >= 1 then
-					print_enable <= letras_atuais(4, 0)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));	
+					print_enable <= letras_atuais(4, 0)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));	
 				elsif (col < col_bases(4) + 2*WORD_COL) and letter_col(4) >= 2 then
-					print_enable <= letras_atuais(4, 1)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 1)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 3*WORD_COL) and letter_col(4) >= 3 then
-					print_enable <= letras_atuais(4, 2)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 2)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 4*WORD_COL) and letter_col(4) >= 4 then
-					print_enable <= letras_atuais(4, 3)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 3)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 5*WORD_COL) and letter_col(4) >= 5 then
-					print_enable <= letras_atuais(4, 4)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 4)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 6*WORD_COL) and letter_col(4) >= 6 then
-					print_enable <= letras_atuais(4, 5)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 5)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 7*WORD_COL) and letter_col(4) >= 7 then
-					print_enable <= letras_atuais(4, 6)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 6)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 8*WORD_COL) and letter_col(4) >= 8 then
-					print_enable <= letras_atuais(4, 7)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 7)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 9*WORD_COL) and letter_col(4) >= 9 then
-					print_enable <= letras_atuais(4, 8)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
+					print_enable <= letras_atuais(4, 8)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				elsif (col < col_bases(4) + 10*WORD_COL) and letter_col(4) >= 10 then
-					print_enable <= letras_atuais(4, 9)(line-line_bases(4) * WORD_COL + (col mod WORD_COL));
-					
+					print_enable <= letras_atuais(4, 9)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				else
 					print_enable <= '0';
 				end if;
@@ -442,59 +441,69 @@ begin  -- comportamento
   begin  -- process conta_coluna
     --letra_atual <= alfa( ( palavras(0)((col - col_bases(0)) / WORD_COL) ) - 65);
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-            letras_atuais(0, 0) <= alfa ( (palavras(0)(0) - 65) );
-            letras_atuais(0, 1) <= alfa ( (palavras(0)(1) - 65) );
-            letras_atuais(0, 2) <= alfa ( (palavras(0)(2) - 65) );
-            letras_atuais(0, 3) <= alfa ( (palavras(0)(3) - 65) );
-            letras_atuais(0, 4) <= alfa ( (palavras(0)(4) - 65) );
-            letras_atuais(0, 5) <= alfa ( (palavras(0)(5) - 65) );
-            letras_atuais(0, 6) <= alfa ( (palavras(0)(6) - 65) );
-            letras_atuais(0, 7) <= alfa ( (palavras(0)(7) - 65) );
-            letras_atuais(0, 8) <= alfa ( (palavras(0)(8) - 65) );
-            letras_atuais(0, 9) <= alfa ( (palavras(0)(9) - 65) );
-            letras_atuais(1, 0) <= alfa ( (palavras(1)(0) - 65) );
-            letras_atuais(1, 1) <= alfa ( (palavras(1)(1) - 65) );
-            letras_atuais(1, 2) <= alfa ( (palavras(1)(2) - 65) );
-            letras_atuais(1, 3) <= alfa ( (palavras(1)(3) - 65) );
-            letras_atuais(1, 4) <= alfa ( (palavras(1)(4) - 65) );
-            letras_atuais(1, 5) <= alfa ( (palavras(1)(5) - 65) );
-            letras_atuais(1, 6) <= alfa ( (palavras(1)(6) - 65) );
-            letras_atuais(1, 7) <= alfa ( (palavras(1)(7) - 65) );
-            letras_atuais(1, 8) <= alfa ( (palavras(1)(8) - 65) );
-            letras_atuais(1, 9) <= alfa ( (palavras(1)(9) - 65) );
-            letras_atuais(2, 0) <= alfa ( (palavras(2)(0) - 65) );
-            letras_atuais(2, 1) <= alfa ( (palavras(2)(1) - 65) );
-            letras_atuais(2, 2) <= alfa ( (palavras(2)(2) - 65) );
-            letras_atuais(2, 3) <= alfa ( (palavras(2)(3) - 65) );
-            letras_atuais(2, 4) <= alfa ( (palavras(2)(4) - 65) );
-            letras_atuais(2, 5) <= alfa ( (palavras(2)(5) - 65) );
-            letras_atuais(2, 6) <= alfa ( (palavras(2)(6) - 65) );
-            letras_atuais(2, 7) <= alfa ( (palavras(2)(7) - 65) );
-            letras_atuais(2, 8) <= alfa ( (palavras(2)(8) - 65) );
-            letras_atuais(2, 9) <= alfa ( (palavras(2)(9) - 65) );
-            letras_atuais(3, 0) <= alfa ( (palavras(3)(0) - 65) );
-            letras_atuais(3, 1) <= alfa ( (palavras(3)(1) - 65) );
-            letras_atuais(3, 2) <= alfa ( (palavras(3)(2) - 65) );
-            letras_atuais(3, 3) <= alfa ( (palavras(3)(3) - 65) );
-            letras_atuais(3, 4) <= alfa ( (palavras(3)(4) - 65) );
-            letras_atuais(3, 5) <= alfa ( (palavras(3)(5) - 65) );
-            letras_atuais(3, 6) <= alfa ( (palavras(3)(6) - 65) );
-            letras_atuais(3, 7) <= alfa ( (palavras(3)(7) - 65) );
-            letras_atuais(3, 8) <= alfa ( (palavras(3)(8) - 65) );
-            letras_atuais(3, 9) <= alfa ( (palavras(3)(9) - 65) );
-            letras_atuais(4, 0) <= alfa ( (palavras(4)(0) - 65) );
-            letras_atuais(4, 1) <= alfa ( (palavras(4)(1) - 65) );
-            letras_atuais(4, 2) <= alfa ( (palavras(4)(2) - 65) );
-            letras_atuais(4, 3) <= alfa ( (palavras(4)(3) - 65) );
-            letras_atuais(4, 4) <= alfa ( (palavras(4)(4) - 65) );
-            letras_atuais(4, 5) <= alfa ( (palavras(4)(5) - 65) );
-            letras_atuais(4, 6) <= alfa ( (palavras(4)(6) - 65) );
-            letras_atuais(4, 7) <= alfa ( (palavras(4)(7) - 65) );
-            letras_atuais(4, 8) <= alfa ( (palavras(4)(8) - 65) );
-            letras_atuais(4, 9) <= alfa ( (palavras(4)(9) - 65) );
+        if print_enable = '1' then
+				pixel <= "111";
+		   else
+				pixel <= "000";
+			end if;
+		  --pixel <= "111" when print_enable = '1' else "000";
+		  
+		  -- O endereço de memória pode ser construído com essa fórmula simples,
+		  -- a partir da linha e coluna atual
+		  addr  <= col + (NUM_COL * line);   
     end if;
   end process troca_letra_atual;
-		  
+
+	letras_atuais(0, 0) <= alfa ( (palavras(0)(0) - 65) );
+	letras_atuais(0, 1) <= alfa ( (palavras(0)(1) - 65) );
+	letras_atuais(0, 2) <= alfa ( (palavras(0)(2) - 65) );
+	letras_atuais(0, 3) <= alfa ( (palavras(0)(3) - 65) );
+	letras_atuais(0, 4) <= alfa ( (palavras(0)(4) - 65) );
+	letras_atuais(0, 5) <= alfa ( (palavras(0)(5) - 65) );
+	letras_atuais(0, 6) <= alfa ( (palavras(0)(6) - 65) );
+	letras_atuais(0, 7) <= alfa ( (palavras(0)(7) - 65) );
+	letras_atuais(0, 8) <= alfa ( (palavras(0)(8) - 65) );
+	letras_atuais(0, 9) <= alfa ( (palavras(0)(9) - 65) );
+	letras_atuais(1, 0) <= alfa ( (palavras(1)(0) - 65) );
+	letras_atuais(1, 1) <= alfa ( (palavras(1)(1) - 65) );
+	letras_atuais(1, 2) <= alfa ( (palavras(1)(2) - 65) );
+	letras_atuais(1, 3) <= alfa ( (palavras(1)(3) - 65) );
+	letras_atuais(1, 4) <= alfa ( (palavras(1)(4) - 65) );
+	letras_atuais(1, 5) <= alfa ( (palavras(1)(5) - 65) );
+	letras_atuais(1, 6) <= alfa ( (palavras(1)(6) - 65) );
+	letras_atuais(1, 7) <= alfa ( (palavras(1)(7) - 65) );
+	letras_atuais(1, 8) <= alfa ( (palavras(1)(8) - 65) );
+	letras_atuais(1, 9) <= alfa ( (palavras(1)(9) - 65) );
+	letras_atuais(2, 0) <= alfa ( (palavras(2)(0) - 65) );
+	letras_atuais(2, 1) <= alfa ( (palavras(2)(1) - 65) );
+	letras_atuais(2, 2) <= alfa ( (palavras(2)(2) - 65) );
+	letras_atuais(2, 3) <= alfa ( (palavras(2)(3) - 65) );
+	letras_atuais(2, 4) <= alfa ( (palavras(2)(4) - 65) );
+	letras_atuais(2, 5) <= alfa ( (palavras(2)(5) - 65) );
+	letras_atuais(2, 6) <= alfa ( (palavras(2)(6) - 65) );
+	letras_atuais(2, 7) <= alfa ( (palavras(2)(7) - 65) );
+	letras_atuais(2, 8) <= alfa ( (palavras(2)(8) - 65) );
+	letras_atuais(2, 9) <= alfa ( (palavras(2)(9) - 65) );
+	letras_atuais(3, 0) <= alfa ( (palavras(3)(0) - 65) );
+	letras_atuais(3, 1) <= alfa ( (palavras(3)(1) - 65) );
+	letras_atuais(3, 2) <= alfa ( (palavras(3)(2) - 65) );
+	letras_atuais(3, 3) <= alfa ( (palavras(3)(3) - 65) );
+	letras_atuais(3, 4) <= alfa ( (palavras(3)(4) - 65) );
+	letras_atuais(3, 5) <= alfa ( (palavras(3)(5) - 65) );
+	letras_atuais(3, 6) <= alfa ( (palavras(3)(6) - 65) );
+	letras_atuais(3, 7) <= alfa ( (palavras(3)(7) - 65) );
+	letras_atuais(3, 8) <= alfa ( (palavras(3)(8) - 65) );
+	letras_atuais(3, 9) <= alfa ( (palavras(3)(9) - 65) );
+	letras_atuais(4, 0) <= alfa ( (palavras(4)(0) - 65) );
+	letras_atuais(4, 1) <= alfa ( (palavras(4)(1) - 65) );
+	letras_atuais(4, 2) <= alfa ( (palavras(4)(2) - 65) );
+	letras_atuais(4, 3) <= alfa ( (palavras(4)(3) - 65) );
+	letras_atuais(4, 4) <= alfa ( (palavras(4)(4) - 65) );
+	letras_atuais(4, 5) <= alfa ( (palavras(4)(5) - 65) );
+	letras_atuais(4, 6) <= alfa ( (palavras(4)(6) - 65) );
+	letras_atuais(4, 7) <= alfa ( (palavras(4)(7) - 65) );
+	letras_atuais(4, 8) <= alfa ( (palavras(4)(8) - 65) );
+	letras_atuais(4, 9) <= alfa ( (palavras(4)(9) - 65) );
   -----------------------------------------------------------------------------
   -- Processos que controlam contadores de linhas e coluna para varrer
   -- todos os endereços da memória de vídeo, no momento de construir um quadro.
@@ -670,11 +679,6 @@ begin  -- comportamento
 --	 end if;
 --    end process;
 
-  pixel <= "111" when print_enable = '1' else "000";
-  
-  -- O endereço de memória pode ser construído com essa fórmula simples,
-  -- a partir da linha e coluna atual
-  addr  <= col + (NUM_COL * line);
 
   -----------------------------------------------------------------------------
   -- Processos que definem a FSM (finite state machine), nossa máquina
