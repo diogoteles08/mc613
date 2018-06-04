@@ -53,7 +53,7 @@ entity vga_ball is
     VGA_HS, VGA_VS          	: out std_logic;
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
     VGA_CLK                 	: out std_logic;
-	 LEDR								: out std_logic_vector(4 downto 0)
+	 LEDR								: out std_logic_vector(4 downto 0);
     TIMER_P			: out std_logic;
     GAME_OVER		        : out std_logic
     );
