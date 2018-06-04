@@ -40,7 +40,7 @@ entity vga_ball is
 	);
   port (    
     CLOCK_50                	: in  std_logic;
-    KEY                     	: in  std_logic_vector(0 downto 0);
+    KEY                     	: in  std_logic_vector(1 downto 0);
     --START_GAME		        : in  std_logic;
     --STAGE_END		        : in  std_logic;
     --PLAY_AGAIN		        : in  std_logic;
@@ -52,7 +52,8 @@ entity vga_ball is
     VGA_R, VGA_G, VGA_B     	: out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS          	: out std_logic;
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
-    VGA_CLK                 	: out std_logic
+    VGA_CLK                 	: out std_logic;
+	 LEDR								: out std_logic_vector(4 downto 0)
     --TIMER			: out std_logic;
     --GAME_OVER		        : out std_logic
     );
@@ -60,9 +61,15 @@ end vga_ball;
 
 architecture comportamento of vga_ball is
   
+   type splash is array (0 to NUM_LINE * NUM_COL - 1) of std_logic_vector(2 downto 0);
+	signal tela_inicial: splash;
+	attribute ram_init_file : string;
+	attribute ram_init_file of tela_inicial : signal is "start_1.mif";
+   signal tela_troca_estagio : splash;
+	attribute ram_init_file of tela_troca_estagio : signal is "troca_1.mif";
+	
   signal rstn : std_logic;              -- reset active low para nossos
                                         -- circuitos sequenciais.
-  
   -- Interface com a memória de vídeo do controlador
 
   signal we : std_logic;                        -- write enable ('1' p/ escrita)
@@ -77,25 +84,18 @@ architecture comportamento of vga_ball is
 
   signal col_rstn : std_logic;          -- reset do contador de colunas
   signal col_enable : std_logic;        -- enable do contador de colunas
-
+  signal col_splash : std_logic;
   signal line_rstn : std_logic;          -- reset do contador de linhas
   signal line_enable : std_logic;        -- enable do contador de linhas
-
+  signal line_splash : std_logic;
   signal fim_escrita : std_logic;       -- '1' quando um quadro terminou de ser
                                         -- escrito na memória de vídeo
-
-  -- Sinais que armazem a posição de uma bola, que deverá ser desenhada
-  -- na tela de acordo com sua posição.
-
-  signal pos_x : integer range 0 to NUM_COL-1;  -- coluna atual da bola
-  signal pos_y : integer range 0 to NUM_LINE-1;   -- linha atual da bola
-
   signal atualiza_pos_y : std_logic;    -- se '1' = as palavras mudam sua pos. no eixo y
 
   -- Especificação dos tipos e sinais da máquina de estados de controle
-  type estado_t is (show_splash, inicio, constroi_quadro, desce_palavras);
-  signal estado: estado_t := show_splash;
-  signal proximo_estado: estado_t := show_splash;
+  type estado_t is (show_splash, inicio, constroi_quadro, desce_palavras, limpa_tela);
+  signal estado: estado_t := inicio;
+  signal proximo_estado: estado_t := inicio;
 
   -- Sinais para um contador utilizado para atrasar a atualização da
   -- posição da bola, a fim de evitar que a animação fique excessivamente
@@ -109,8 +109,14 @@ architecture comportamento of vga_ball is
   signal sync, blank: std_logic;
 
   signal cor_atual : std_logic_vector(2 downto 0) := "001";
-  signal inic : std_logic := '0';
+  signal inic_splash : std_logic := '0';
+  signal inic_limpa : std_logic := '0';
+
+  
+  signal STAR_GAME : std_logic := '1';
+  signal PLAY_AGAIN : std_logic := '0';
 	
+  signal human_timer : integer range 0 to 1250000 - 1 := 0;
   constant col_0 : integer := 5;
   constant col_1 : integer := 110;
   constant col_2 : integer := 215;
@@ -118,13 +124,13 @@ architecture comportamento of vga_ball is
   constant col_4 : integer := 425;
   constant col_5 : integer := 530;
 
-  signal line_bases : array5 := (20, 20, 20, 20, 20);
+  signal line_bases : array5 := (10, 10, 10, 10, 10);
   signal col_bases : array5 := (col_0, col_1, col_2, col_3, col_4);
 
   signal print_enable : std_logic := '0';
-  signal new_letter : std_logic := '0';
-  
-  --type letra_t is array (0 to WORD_COL * WORD_LINE -1) of std_logic;
+  signal ja_limpei : std_logic := '0';
+
+  type letra_t is array (0 to WORD_COL * WORD_LINE -1) of std_logic;
 
   type matriz_palavras is array (0 to 4) of word;
   signal letter_col : array5 := (10, 10, 10, 10, 10);
@@ -135,11 +141,11 @@ architecture comportamento of vga_ball is
   (71, 72, 73, 74, 75, 76, 77, 78, 79, 80),
   (76, 79, 71, 73, 67, 79, 83, 67, 89, 90));
 
-  type letras_atuais_t is array (0 to 4, 0 to 9) of std_logic_vector(0 to WORD_COL * WORD_LINE -1 );
+  type letras_atuais_t is array (0 to 4, 0 to 9) of letra_t;
 
   signal letras_atuais : letras_atuais_t;
 
-  type alfabeto_t is array (0 to 26) of std_logic_vector(0 to WORD_COL * WORD_LINE -1);
+  type alfabeto_t is array (0 to 26) of letra_t;
   signal alfa: alfabeto_t := 
   ("00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000", --'A'
 	"00000000000000001111110001100110011001100110011001111100011001100110011001100110011001101111110000000000000000000000000000000000", --'B'
@@ -257,8 +263,25 @@ begin  -- comportamento
     VGA_SYNC_N <= NOT sync;
     VGA_BLANK_N <= NOT blank;
 	 
+	 
   -----------------------------------------------------------------------------
-  -- PROCESS PARA PEDIR INFORMACOES DE FONT_ROM E IMPRIMIR NA TELA
+  -- PROCESS PARA IMPRIMIR A TELA INICIAL DO JOGO
+  -----------------------------------------------------------------------------
+
+  -- purpose: 
+  -- type   : sequential
+  -- inputs :
+  -- outputs: 
+--  imprime_tela_inicial: process (CLOCK_50)
+--  begin
+--		if CLOCK_50'event and CLOCK_50 = '1' then
+--			if inic_splash = '1' then
+--				
+--			end if;
+--		end if;
+--  end process imprime_tela_inicial;
+  -----------------------------------------------------------------------------
+  -- PROCESS PARA VERIFICAR ONDE ESTAMOS E IMPRIMIR NA TELA
   -----------------------------------------------------------------------------
 
   -- purpose: 
@@ -411,14 +434,14 @@ begin  -- comportamento
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		if atualiza_pos_y = '1' then
 			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
-                                --GAME_OVER <= '1';
-				line_bases(0) <= 20;
-				line_bases(1) <= 20;
-				line_bases(2) <= 20; 
-				line_bases(3) <= 20;
-				line_bases(4) <= 20; 
+            --GAME_OVER <= '1';
+				line_bases(0) <= 10;
+				line_bases(1) <= 10;
+				line_bases(2) <= 10; 
+				line_bases(3) <= 10;
+				line_bases(4) <= 10; 
 			else
-                                --GAME_OVER <= '0';
+            --GAME_OVER <= '0';
 				line_bases(0) <= line_bases(0) + 1;
 				line_bases(1) <= line_bases(1) + 1;
 				line_bases(2) <= line_bases(2) + 1;
@@ -441,13 +464,13 @@ begin  -- comportamento
   begin  -- process conta_coluna
     --letra_atual <= alfa( ( palavras(0)((col - col_bases(0)) / WORD_COL) ) - 65);
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-        if print_enable = '1' then
-				pixel <= "111";
-		   else
+		  if inic_limpa = '1' then
 				pixel <= "000";
+        elsif print_enable = '1' and inic_splash = '0' and col_enable = '1' then
+				pixel <= "111";
+			else	
+				pixel <= tela_inicial( line + col*NUM_LINE);
 			end if;
-		  --pixel <= "111" when print_enable = '1' else "000";
-		  
 		  -- O endereço de memória pode ser construído com essa fórmula simples,
 		  -- a partir da linha e coluna atual
 		  addr  <= col + (NUM_COL * line);   
@@ -519,7 +542,7 @@ begin  -- comportamento
     if col_rstn = '0' then                  -- asynchronous reset (active low)
       col <= 0;
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-      if col_enable = '1' then
+      if col_enable = '1' or col_splash = '1' then
         if col = NUM_COL-1 then               -- conta de 0 a NUM_COL-1 (NUM_COL colunas)
           col <= 0;
         else
@@ -541,12 +564,12 @@ begin  -- comportamento
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       -- o contador de linha só incrementa quando o contador de colunas
       -- chegou ao fim (valor NUM_COL-1)
-      if line_enable = '1' and col = NUM_COL-1 then
+      if (line_enable = '1' or line_splash = '1' ) and col = NUM_COL-1 then
         if line = NUM_LINE-1 then               -- conta de 0 a NUM_LINE-1 (NUM_LINE linhas)
           line <= 0;
         else
           line <= line + 1;  
-        end if;        
+        end if;
       end if;
     end if;
   end process conta_linha;
@@ -555,132 +578,8 @@ begin  -- comportamento
   -- o quadro terminou de ser escrito na memória de vídeo, para que
   -- possamos avançar para o próximo estado.
   fim_escrita <= '1' when (line = NUM_LINE-1) and (col = NUM_COL-1) else '0'; 
-
-  -----------------------------------------------------------------------------
-  -- Abaixo estão processos relacionados com a atualização da posição da
-  -- bola. Todos são controlados por sinais de enable de modo que a posição
-  -- só é de fato atualizada quando o controle (uma máquina de estados)
-  -- solicitar.
-  -----------------------------------------------------------------------------
-
-  -- purpose: Este processo irá atualizar a coluna atual da bola,
-  --          alterando sua posição no próximo quadro a ser desenhado.
-  -- type   : sequential
-  -- inputs : CLOCK_50, rstn
-  -- outputs: pos_x
---  p_atualiza_pos_x: process (CLOCK_50, rstn)
---    type direcao_t is (direita, esquerda);
---    variable direcao : direcao_t := direita;
---  begin  -- process p_atualiza_pos_x
---    if rstn = '0' then                  -- asynchronous reset (active low)
---      pos_x <= 0;
---    elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
---      if atualiza_pos_x = '1' then
---        if direcao = direita then         
---          if pos_x = NUM_COL-1 then
---            direcao := esquerda;  
---          else
---            pos_x <= pos_x + 1;
---          end if;        
---        else  -- se a direcao é esquerda
---          if pos_x = 0 then
---            direcao := direita;
---          else
---            pos_x <= pos_x - 1;
---          end if;
---        end if;
---      end if;
---    end if;
---  end process p_atualiza_pos_x;
-
-  -- purpose: Este processo irá atualizar a linha atual da bola,
-  --          alterando sua posição no próximo quadro a ser desenhado.
-  -- type   : sequential
-  -- inputs : CLOCK_50, rstn
-  -- outputs: pos_y
---  p_atualiza_pos_y: process (CLOCK_50, rstn)
---    type direcao_t is (desce, sobe);
---    variable direcao : direcao_t := desce;
---  begin  -- process p_atualiza_pos_x
---    if rstn = '0' then                  -- asynchronous reset (active low)
---      pos_y <= 0;
---    elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
---      if atualiza_pos_y = '1' then
---        if direcao = desce then         
---          if pos_y = NUM_LINE-1 then
---            direcao := sobe;  
---          else
---            pos_y <= pos_y + 1;
---          end if;        
---        else  -- se a direcao é para subir
---          if pos_y = 0 then
---            direcao := desce;
---          else
---            pos_y <= pos_y - 1;
---          end if;
---        end if;
---      end if;
---    end if;
---  end process p_atualiza_pos_y;
-
-  -----------------------------------------------------------------------------
-  -- Brilho do pixel
-  -----------------------------------------------------------------------------
-  -- O brilho do pixel é branco quando os contadores deatualiza_pos_y linha e coluna, que
-  -- indicam o endereço do pixel sendo escrito para o quadro atual, casam com a
-  -- posição da bola (sinais pos_x e pos_y). Caso contrário,
-  -- o pixel é preto.
---  
---  process(CLOCK_50)
---		variable na_quina : std_logic := '0';
---  begin
---		if CLOCK_50'event and CLOCK_50 = '1' then
---			if line = pos_y and col = pos_x then	
---				if inic = '1' then
---					cor_atual <= "001";			
---				elsif (line = NUM_LINE-1 or line = 0) and (col = NUM_COL-1 or col = 0) then
---					if na_quina = '0' then
---						na_quina := '1';
---						if cor_atual = "111" then 
---							cor_atual <= "010";	
---						elsif cor_atual = "110" then
---							cor_atual <= "001";
---						else
---							cor_atual <= cor_atual + "010";
---						end if;			
---					end if;
---				elsif (line = NUM_LINE-1 or line = 0 or col = NUM_COL-1 or col = 0) then
---					if na_quina = '0' then
---						na_quina := '1';
---						if cor_atual = "111" then 
---							cor_atual <= "001";				
---						else
---							cor_atual <= cor_atual + "001";
---						end if;			
---					end if;										
---				else
---					na_quina := '0';					
---				end if;
---			end if;
---		end if;
---  end process;
   
---  process (CLOCK_50, rstn)
---		variable temp: std_logic := '0';
---  begin
---    if rstn = '0' then  -- rising clock edge
---		temp := '1';
---		inic <= '1';
---	 elsif CLOCK_50'event and CLOCK_50 = '1' then
---		inic <= '0';
---		 if fim_escrita = '1' then
---			temp := '0';
---		 end if;
---	 end if;
---    end process;
-
-
-  -----------------------------------------------------------------------------
+  -----------------------------------------   -- asynchronous reset (active lo------------------------------------
   -- Processos que definem a FSM (finite state machine), nossa máquina
   -- de estados de controle.
   -----------------------------------------------------------------------------
@@ -691,11 +590,17 @@ begin  -- comportamento
   -- inputs : estado, fim_escrita, timer
   -- outputs: proximo_estado, atualiza_pos_y, line_rstn,
   --          line_enable, col_rstn, col_enable, we, timer_enable, timer_rstn
-  logica_mealy: process (estado, fim_escrita, timer)
+  logica_mealy: process (estado, fim_escrita, timer, PLAY_AGAIN, ja_limpei)
   begin  -- process logica_mealy
+	 inic_limpa 	  <= '0';
     case estado is
-      when inicio         => if timer = '1' then              
-                               proximo_estado <= constroi_quadro;
+      when inicio         => if timer = '1' and PLAY_AGAIN = '1' and ja_limpei = '0' then              
+                               proximo_estado <= limpa_tela;
+										 ja_limpei <= '1';
+									  elsif timer = '1' and PLAY_AGAIN = '1' then
+									    proximo_estado <= constroi_quadro;
+									  elsif timer ='1' and PLAY_AGAIN = '0' then
+										 proximo_estado <= show_splash;
                              else
                                proximo_estado <= inicio;
                              end if;
@@ -704,9 +609,15 @@ begin  -- comportamento
                              line_enable    <= '0';
                              col_rstn       <= '0';  -- reset é active low!
                              col_enable     <= '0';
+									  line_splash    <= '0';
+									  col_splash     <= '0';
                              we             <= '0';
                              timer_rstn     <= '1';  -- reset é active low!
                              timer_enable   <= '1';
+									  inic_splash    <= '0';
+									  inic_limpa 	  <= '0';
+
+									  LEDR <= "00001";
 
       when constroi_quadro=> if fim_escrita = '1' then
                                proximo_estado <= desce_palavras;
@@ -718,9 +629,16 @@ begin  -- comportamento
                              line_enable    <= '1';
                              col_rstn       <= '1';
                              col_enable     <= '1';
+									  line_splash    <= '0';
+									  col_splash     <= '0';
                              we             <= '1';
                              timer_rstn     <= '0'; 
                              timer_enable   <= '0';
+									  inic_splash    <= '0';
+									  inic_limpa 	  <= '0';
+									  inic_limpa 	  <= '0';
+									  LEDR <= "00010";
+
 
       when desce_palavras => proximo_estado <= inicio;
                              atualiza_pos_y <= '1';
@@ -728,20 +646,59 @@ begin  -- comportamento
                              line_enable    <= '0';
                              col_rstn       <= '1';
                              col_enable     <= '0';
-                             we             <= '0';
+                             line_splash    <= '0';
+									  col_splash     <= '0';
+									  we             <= '0';
                              timer_rstn     <= '0'; 
                              timer_enable   <= '0';
+									  inic_splash     <= '0';
+									  inic_limpa 	  <= '0';
+									  inic_limpa 	  <= '0';
+									  LEDR <= "00100";
 
-      when others         => proximo_estado <= inicio;
+
+      when show_splash    => if fim_escrita = '1' then
+											proximo_estado <= inicio;
+									  else
+											proximo_estado <= show_splash;
+									  end if;
                              atualiza_pos_y <= '0';
                              line_rstn      <= '1';
                              line_enable    <= '0';
                              col_rstn       <= '1';
                              col_enable     <= '0';
-                             we             <= '0';
-                             timer_rstn     <= '1'; 
+									  line_splash    <= '1';
+									  col_splash     <= '1';
+                             we             <= '1';
+                             timer_rstn     <= '0'; 
                              timer_enable   <= '0';
-      
+									  inic_splash    <= '1';
+									  inic_limpa 	  <= '0';
+
+									  LEDR <= "01000";
+									  
+		 when OTHERS        => if fim_escrita = '1' then
+											proximo_estado <= inicio;
+											ja_limpei <= '1';
+									  else
+											proximo_estado <= limpa_tela;
+									  end if;
+									  ja_limpei <= '1';
+                             atualiza_pos_y <= '0';
+                             line_rstn      <= '1';
+                             line_enable    <= '1';
+                             col_rstn       <= '1';
+                             col_enable     <= '1';
+									  line_splash    <= '0';
+									  col_splash     <= '0';
+                             we             <= '1';
+                             timer_rstn     <= '0'; 
+                             timer_enable   <= '0';
+									  inic_splash    <= '0';
+									  inic_limpa 	  <= '1';
+									  LEDR <= "10000";
+		
+
     end case;
   end process logica_mealy;
   
@@ -781,6 +738,20 @@ begin  -- comportamento
     end if;
   end process p_contador;
 
+--  p_humano: process (CLOCK_50)
+--  begin
+--		if CLOCK_50'event and CLOCK_50 = '1' then
+--		if contador = 0 then
+--			if human_timer = 500 - 1 then
+--					human_timer <= 0;
+--					PLAY_AGAIN <= '1';		
+--				else
+--					human_timer <= human_timer + 1;
+--				end if;
+--			end if;
+--		end if;
+--  end process p_humano;
+  
   -- purpose: Calcula o sinal "timer" que indica quando o contador chegou aotemp := KEY(0);
   --          final
   -- type   : combinational
@@ -789,8 +760,8 @@ begin  -- comportamento
   p_timer: process (contador)
   begin  -- process p_timer
     if contador = 1250000 - 1 then
-      timer <= '1';
-    else
+	   timer <= '1';
+	 else
       timer <= '0';
     end if;
   end process p_timer;
@@ -805,14 +776,20 @@ begin  -- comportamento
   -- inputs : CLOCK_50
   -- outputs: rstn
   build_rstn: process (CLOCK_50)
-    variable temp : std_logic;          -- flipflop intermediario
+    variable temp : std_logic := '1';          -- flipflop intermediario
   begin  -- process build_rstn
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-      rstn <= temp;      
-      temp := KEY(0);
+      rstn <= temp;
+		temp := KEY(0);
     end if;
   end process build_rstn;
 
+   start_button: process (CLOCK_50)
+  begin  
+    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
+		PLAY_AGAIN <= not(KEY(1)) or PLAY_AGAIN;
+    end if;
+  end process start_button;
   
 end comportamento;
 
