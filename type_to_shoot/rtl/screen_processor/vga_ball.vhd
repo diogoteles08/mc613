@@ -41,21 +41,21 @@ entity vga_ball is
   port (    
     CLOCK_50                	: in  std_logic;
     KEY                     	: in  std_logic_vector(1 downto 0);
-    --START_GAME		        : in  std_logic;
-    --STAGE_END		        : in  std_logic;
-    --PLAY_AGAIN		        : in  std_logic;
-    --NEW_WORD		        : in  word;
-    --NEW_WORD_SIZE		: in  integer;
-    --LOCKED_WORD		        : in  word;
-    --LETTER_HIT		        : in  std_logic;
-    --WORD_DESTROYED		: in  std_logic;
+    START_GAME		        : in  std_logic;
+    STAGE_END		        : in  std_logic;
+    PLAY_AGAIN		        : in  std_logic;
+    NEW_WORD		        : in  word;
+    NEW_WORD_SIZE		: in  integer;
+    LOCKED_WORD		        : in  word;
+    LETTER_HIT		        : in  std_logic;
+    WORD_DESTROYED		: in  std_logic;
     VGA_R, VGA_G, VGA_B     	: out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS          	: out std_logic;
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
     VGA_CLK                 	: out std_logic;
 	 LEDR								: out std_logic_vector(4 downto 0)
-    --TIMER			: out std_logic;
-    --GAME_OVER		        : out std_logic
+    TIMER_P			: out std_logic;
+    GAME_OVER		        : out std_logic
     );
 end vga_ball;
 
@@ -111,12 +111,8 @@ architecture comportamento of vga_ball is
   signal cor_atual : std_logic_vector(2 downto 0) := "001";
   signal inic_splash : std_logic := '0';
   signal inic_limpa : std_logic := '0';
-
-  
-  signal STAR_GAME : std_logic := '1';
-  signal PLAY_AGAIN : std_logic := '0';
+  signal locked_hits : integer range 0 to 10 := 0;
 	
-  signal human_timer : integer range 0 to 1250000 - 1 := 0;
   constant col_0 : integer := 5;
   constant col_1 : integer := 110;
   constant col_2 : integer := 215;
@@ -129,7 +125,7 @@ architecture comportamento of vga_ball is
 
   signal print_enable : std_logic := '0';
   signal ja_limpei : std_logic := '0';
-
+  signal indice : integer range 0 to 6 := 5;
   type letra_t is array (0 to WORD_COL * WORD_LINE -1) of std_logic;
 
   type matriz_palavras is array (0 to 4) of word;
@@ -264,22 +260,26 @@ begin  -- comportamento
     VGA_BLANK_N <= NOT blank;
 	 
 	 
-  -----------------------------------------------------------------------------
-  -- PROCESS PARA IMPRIMIR A TELA INICIAL DO JOGO
-  -----------------------------------------------------------------------------
+ -- PROCESS PARA VERIFICAR SE ALGUMA PALAVRA FOI DESTRUIDA E QUAL
+   -----------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
+ 
+ 
+   -- purpose: 
+   -- type   : 
+   -- inputs :
+   -- outputs: 
+procura_indice: process (LETTER_HIT)
+  begin
+		for i in 0 to 4 loop
+			if palavras(i)(0) = LOCKED_WORD(0) and palavras(i)(1) = LOCKED_WORD(1) and palavras(i)(2) = LOCKED_WORD(2)  and palavras(i)(3) = LOCKED_WORD(3)   and palavras(i)(4) = LOCKED_WORD(4)   and palavras(i)(5) = LOCKED_WORD(5)   and palavras(i)(6) = LOCKED_WORD(6)   and palavras(i)(7) = LOCKED_WORD(7)  and palavras(i)(8) = LOCKED_WORD(8)  and palavras(i)(9) = LOCKED_WORD(9) then
+					indice <= i;
+			end if;
+		end loop;
+		locked_hits <= locked_hits + 1;
+end process procura_indice;
 
-  -- purpose: 
-  -- type   : sequential
-  -- inputs :
-  -- outputs: 
---  imprime_tela_inicial: process (CLOCK_50)
---  begin
---		if CLOCK_50'event and CLOCK_50 = '1' then
---			if inic_splash = '1' then
---				
---			end if;
---		end if;
---  end process imprime_tela_inicial;
+TIMER_P <= timer;
   -----------------------------------------------------------------------------
   -- PROCESS PARA VERIFICAR ONDE ESTAMOS E IMPRIMIR NA TELA
   -----------------------------------------------------------------------------
@@ -467,8 +467,20 @@ begin  -- comportamento
 		  if inic_limpa = '1' then
 				pixel <= "000";
         elsif print_enable = '1' and inic_splash = '0' and col_enable = '1' then
-				pixel <= "111";
-			else	
+				if col >= col_bases(0) and col < col_bases(0) + letter_col(0) * WORD_COL and indice = 0 then
+					pixel <= "011";
+				elsif col >= col_bases(1) and col < col_bases(1) + letter_col(1) * WORD_COL and indice = 1 then
+					pixel <= "011";
+				elsif col >= col_bases(2) and col < col_bases(2) + letter_col(2) * WORD_COL and indice = 2 then
+					pixel <= "011";
+				elsif col >= col_bases(3) and col < col_bases(3) + letter_col(3) * WORD_COL and indice = 3 then
+					pixel <= "011";
+				elsif col >= col_bases(4) and col < col_bases(4) + letter_col(4) * WORD_COL and indice = 4 then
+					pixel <= "011";
+				else
+					pixel <= "111";
+				end if;
+			elsif inic_splash = '1' then
 				pixel <= tela_inicial( line + col*NUM_LINE);
 			end if;
 		  -- O endereço de memória pode ser construído com essa fórmula simples,
@@ -737,20 +749,6 @@ begin  -- comportamento
       end if;
     end if;
   end process p_contador;
-
---  p_humano: process (CLOCK_50)
---  begin
---		if CLOCK_50'event and CLOCK_50 = '1' then
---		if contador = 0 then
---			if human_timer = 500 - 1 then
---					human_timer <= 0;
---					PLAY_AGAIN <= '1';		
---				else
---					human_timer <= human_timer + 1;
---				end if;
---			end if;
---		end if;
---  end process p_humano;
   
   -- purpose: Calcula o sinal "timer" que indica quando o contador chegou aotemp := KEY(0);
   --          final
@@ -783,13 +781,6 @@ begin  -- comportamento
 		temp := KEY(0);
     end if;
   end process build_rstn;
-
-   start_button: process (CLOCK_50)
-  begin  
-    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
-		PLAY_AGAIN <= not(KEY(1)) or PLAY_AGAIN;
-    end if;
-  end process start_button;
   
 end comportamento;
 
