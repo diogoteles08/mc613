@@ -5,7 +5,7 @@ use work.main_pack.all;
 
 entity keyboard_processor is
   port (
-		ps2_data	: inout std_logic;
+		ps2_dat	: inout std_logic;
 		ps2_clk		:	inout	std_logic;
     clock 		: in std_logic;
 		key_on		: out std_logic;
@@ -52,7 +52,7 @@ begin
 			clkfreq => clockfreq
 		)
 		port map (
-			ps2_data => ps2_data,
+			ps2_data => ps2_dat,
 			ps2_clk => ps2_clk,
 			clk => clock,
 			en => '1',

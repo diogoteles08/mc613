@@ -1,3 +1,4 @@
+
 library ieee;
 library work;
 use ieee.std_logic_1164.all;
@@ -7,7 +8,7 @@ entity type_proc is
   port (
     CLOCK_50 : in std_logic;
     KEY		 : in std_logic_vector(2 downto 0);
-    PS2_DATA : inout STD_LOGIC;
+    PS2_DAT : inout STD_LOGIC;
     PS2_CLK : inout STD_LOGIC;
 		VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS            : out std_logic;
@@ -64,7 +65,7 @@ architecture rtl of type_proc is
 
 	component keyboard_processor
 		port (
-			ps2_data	: inout std_logic;
+			ps2_dat	: inout std_logic;
 			ps2_clk		:	inout	std_logic;
 			clock 		: in std_logic;
 			key_on		: out std_logic;
@@ -146,7 +147,7 @@ begin
 
 	keyboard: keyboard_processor
 		port map (
-			ps2_data 	=> PS2_DATA,
+			ps2_dat 	=> PS2_DAT,
 			ps2_clk 	=> PS2_CLk,
 			clock			=> CLOCK_50,
 			key_on		=> key_on,

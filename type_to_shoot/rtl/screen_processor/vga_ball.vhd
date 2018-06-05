@@ -138,11 +138,11 @@ architecture comportamento of vga_ball is
   type matriz_palavras is array (0 to 4) of word;
   signal letter_col : array5 := (10, 10, 10, 10, 10);
   signal palavras : matriz_palavras := (
+		letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a,
+		letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a,
 		no_word,
 		no_word,
-		no_word,
-		no_word,
-		no_word
+		letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a
 	);
 
   type letras_atuais_t is array (0 to 4, 0 to 9) of letra_t;
@@ -746,7 +746,7 @@ GAME_OVER <= local_game_over;
                              we             <= '1';
                              timer_rstn     <= '0'; 
                              timer_enable   <= '0';
-									  inic_splash    <= '1';
+									  inic_splash    <= '0';
 									  inic_limpa 	  <= '0';
 									  inic_over 	  <= '1';
 									  LEDR <= "10001";
