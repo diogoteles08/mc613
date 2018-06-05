@@ -46,6 +46,7 @@ entity vga_ball is
     START_GAME		        : in  std_logic;
     STAGE_END		        : in  std_logic;
     PLAY_AGAIN		        : in  std_logic;
+		INSERT_WORD							: in std_logic;
     NEW_WORD		        : in  word;
     NEW_WORD_SIZE		: in  integer;
     LOCKED_WORD		        : in  word;

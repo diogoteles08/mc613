@@ -13,7 +13,7 @@ entity type_proc is
     VGA_HS, VGA_VS            : out std_logic;
     VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
     VGA_CLK                   : out std_logic;
-	 LEDR								: out std_logic_vector(9 downto 0)
+		LEDR											: out std_logic_vector(9 downto 0)
   );
 end type_proc;
 
@@ -46,6 +46,7 @@ architecture rtl of type_proc is
 			START_GAME							: in std_logic;
 			STAGE_END								: in std_logic;
 			PLAY_AGAIN							: in std_logic;
+			INSERT_WORD							: in std_logic;
 			NEW_WORD								: in word;
 			NEW_WORD_SIZE						: in integer;
 			LOCKED_WORD							: in word;
@@ -56,7 +57,8 @@ architecture rtl of type_proc is
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
 			VGA_CLK                 : out std_logic;
 			TIMER_P									: out std_logic;
-			GAME_OVER								: out std_logic
+			GAME_OVER								: out std_logic;
+			LEDR										: out std_logic_vector(4 downto 0)
 		);
 	end component;
 
@@ -121,7 +123,8 @@ begin
 	
 	-- Leds for testing
 	LEDR(0) <= key_on;
-
+	LEDR(1) <= letter_hit;
+	LEDR(2) <= letter_miss;
 
 	bank: word_bank
 		port map (
@@ -157,6 +160,7 @@ begin
 			START_GAME			=> start_game,
 			STAGE_END				=> stage_end,
 			PLAY_AGAIN			=> play_again,
+			INSERT_WORD			=> get_new_word,
 			NEW_WORD				=> new_word,
 			NEW_WORD_SIZE		=> new_word_size,
 			LOCKED_WORD 		=> locked_word,
@@ -171,7 +175,8 @@ begin
 			VGA_SYNC_N			=> VGA_SYNC_N,
 			VGA_CLK					=> VGA_CLK,
 			TIMER_P					=> timer,
-			GAME_OVER				=> game_over
+			GAME_OVER				=> game_over,
+			LEDR						=> LEDR(9 downto 5)
 		);
 		
 		process (letter_hit)
@@ -231,14 +236,14 @@ begin
 			variable back_to_state: state_t;
 		begin
 			if CLOCK_50'event and CLOCK_50 = '1' then
-                                if KEY(1) = '1' then
-                                    -- Reset game
-                                    next_state <= BEGIN_GAME;
-                                    start_game <= '0';
-                                    letter_miss <= '0';
-                                    letter_hit <= '0';
-                                    kill_word <= '0';
-                                    stage_end <= '0';				
+				if KEY(1) = '1' then
+					-- Reset game
+					next_state <= BEGIN_GAME;
+					start_game <= '0';
+					letter_miss <= '0';
+					letter_hit <= '0';
+					kill_word <= '0';
+					stage_end <= '0';				
 
 				elsif game_over = '1' and state /= GAME_LOST then
 					-- It can get here from any state
@@ -290,16 +295,27 @@ begin
 							for i in max_words-1 downto 0 loop
 								if i < num_active_words then
 									if active_words(i)(7 downto 0) = char_pressed then
-										-- NAO FUNCIONA PARA PALAVRAS DE TAMANHO 1
 										next_state <= HIT_PROCESSING;
 										letter_hit <= '1';
 										locked_word_index <= i;									
 										locked_word <= active_words(i);
-										current_letter_index <= 1;									
-									end if;
-								end if;															
-							end loop;
+										current_letter_index <= 1;
+										
+										-- Verifica se terminou a palavra
+										if current_letter_index = max_word_length or
+											active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char
+										then
+											kill_word <= '1';
 
+											-- Verifica se acabaram as palavras da fase
+											if num_active_words = 1 and no_more_words = '1' then
+												stage_end <= '1';
+											end if;
+										end if;
+									end if;
+								end if;
+							end loop;
+							
 							if letter_hit = '0' then
 								next_state <= MISS_PROCESSING;
 								back_to_state := FREE;
