@@ -2,10 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.main_pack.all;
 
-entity word_bank is
-	generic (		
-		max_words: integer := 20
-	);
+entity word_bank is	
   port (
 		clock							: in std_logic;
     kill_word					: in std_logic;
@@ -38,7 +35,7 @@ begin
 				end loop;
 				
 				num_words_aux <= num_words_aux - 1;
-				words_aux(num_words_aux) <= (others => 0); -- Limpa o espaco no fim da lista
+				words_aux(num_words_aux) <= no_word; -- Limpa o espaco no fim da lista
 			end if;		
 		end if;
 	end process;

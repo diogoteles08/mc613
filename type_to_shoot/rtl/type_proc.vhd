@@ -9,7 +9,7 @@ entity type_proc is
     KEY		 : in std_logic_vector(0 downto 0);
     PS2_DATA : inout STD_LOGIC;
     PS2_CLK : inout STD_LOGIC;
-	VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
+		VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS            : out std_logic;
     VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
     VGA_CLK                   : out std_logic
