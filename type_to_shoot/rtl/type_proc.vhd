@@ -12,7 +12,8 @@ entity type_proc is
 		VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS            : out std_logic;
     VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
-    VGA_CLK                   : out std_logic
+    VGA_CLK                   : out std_logic;
+	 LEDR								: out std_logic_vector(9 downto 0)
   );
 end type_proc;
 
@@ -117,14 +118,19 @@ architecture rtl of type_proc is
 	signal insta_changing: std_logic;
 
 begin
+	
+	-- Leds for testing
+	LEDR(0) <= key_on;
+
+
 	bank: word_bank
 		port map (
-			clock								=> CLOCK_50,
+			clock							=> CLOCK_50,
 			kill_word 					=> kill_word,
-			word_to_kill_index 	=> locked_word_index,
+			word_to_kill_index 		=> locked_word_index,
 			insert_new_word			=> get_new_word,
 			new_word						=> new_word,
-			words 							=> active_words,
+			words 						=> active_words,
 			num_words 					=> num_active_words
 		);
 
@@ -225,7 +231,16 @@ begin
 			variable back_to_state: state_t;
 		begin
 			if CLOCK_50'event and CLOCK_50 = '1' then
-				if game_over = '1' and state /= GAME_LOST then
+                                if KEY(1) = '1' then
+                                    -- Reset game
+                                    next_state <= GAME_BEGIN;
+                                    start_game <= '0';
+                                    letter_miss <= '0';
+                                    letter_hit <= '0';
+                                    kill_word <= '0';
+                                    stage_end <= '0';				
+
+				elsif game_over = '1' and state /= GAME_LOST then
 					-- It can get here from any state
 					next_state <= GAME_LOST;
 					start_game <= '0';
