@@ -6,7 +6,7 @@ use work.main_pack.all;
 entity type_proc is
   port (
     CLOCK_50 : in std_logic;
-    KEY		 : in std_logic_vector(0 downto 0);
+    KEY		 : in std_logic_vector(1 downto 0);
     PS2_DATA : inout STD_LOGIC;
     PS2_CLK : inout STD_LOGIC;
 		VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
@@ -44,7 +44,7 @@ architecture rtl of type_proc is
 	component vga_ball
 		port (
 			CLOCK_50                : in  std_logic;
-			KEY                     : in  std_logic_vector(0 downto 0);
+			KEY                     : in  std_logic_vector(1 downto 0);
 			START_GAME							: in std_logic;
 			STAGE_END								: in std_logic;
 			PLAY_AGAIN							: in std_logic;
@@ -57,7 +57,7 @@ architecture rtl of type_proc is
 			VGA_HS, VGA_VS          : out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
 			VGA_CLK                 : out std_logic;
-			TIMER										: out std_logic;
+			TIMER_P										: out std_logic;
 			GAME_OVER								: out std_logic
 		);
 	end component;
@@ -167,7 +167,7 @@ begin
 			VGA_BLANK_N			=> VGA_BLANK_N,
 			VGA_SYNC_N			=> VGA_SYNC_N,
 			VGA_CLK					=> VGA_CLK,
-			TIMER						=> timer,
+			TIMER_P						=> timer,
 			GAME_OVER				=> game_over
 		);
 		
