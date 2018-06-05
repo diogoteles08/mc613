@@ -1,5 +1,7 @@
 library ieee;
+library work;
 use ieee.std_logic_1164.all;
+use work.main_pack.all;
 
 entity keyboard_processor is
   port (
@@ -7,7 +9,7 @@ entity keyboard_processor is
 		ps2_clk		:	inout	std_logic;
     clock 		: in std_logic;
 		key_on		: out std_logic;
-		asc_code	: out integer
+		asc_code	: out char
   );
 end keyboard_processor;
 
@@ -43,7 +45,7 @@ architecture rtl of keyboard_processor is
 	
 	signal key_code: std_logic_vector(47 downto 0);
 	signal key_on_aux: std_logic_vector(2 downto 0);
-	signal asc_code_aux: integer;
+	signal asc_code_aux: char;
 begin
 	controller: kbdex_ctrl
 		generic map (
@@ -62,37 +64,37 @@ begin
 	
 		-- key_on eh ativado quando alguma tecla eh pressionada e
 		-- quando essa tecla e uma letra		
-		key_on <= key_on_aux(0) and to_std_logic(asc_code_aux /= -1);
+		key_on <= key_on_aux(0) and to_std_logic(asc_code_aux /= no_char);
 		
 		-- Converte o codigo do kbdex_ctrl para asc
 		with key_code(7 downto 0) select asc_code_aux <=
-			65 when x"1C",
-			66 when x"32",
-			67 when x"21",
-			68 when x"23",
-			69 when x"24",
-			70 when x"2B",
-			71 when x"34",
-			72 when x"33",
-			73 when x"43",
-			74 when x"3B",
-			75 when x"42",
-			76 when x"4B",
-			77 when x"3A",
-			78 when x"31",
-			79 when x"44",
-			80 when x"4D",
-			81 when x"15",
-			82 when x"2D",
-			83 when x"1B",
-			84 when x"2C",
-			85 when x"3C",
-			86 when x"2A",
-			87 when x"1D",
-			88 when x"22",
-			89 when x"35",
-			90 when x"1A",
-			-1 when others;
+			x"41" when x"1C", -- A
+			x"42" when x"32", -- B
+			x"43" when x"21", -- C
+			x"44" when x"23", -- D
+			x"45" when x"24", -- E
+			x"46" when x"2B", -- F
+			x"47" when x"34", -- G
+			x"48" when x"33", -- H
+			x"49" when x"43", -- I
+			x"4A" when x"3B", -- J
+			x"4B" when x"42", -- K
+			x"4C" when x"4B", -- L
+			x"4D" when x"3A", -- M
+			x"4E" when x"31", -- N
+			x"4F" when x"44", -- O
+			x"50" when x"4D", -- P
+			x"51" when x"15", -- Q
+			x"52" when x"2D", -- R
+			x"53" when x"1B", -- S
+			x"54" when x"2C", -- T
+			x"55" when x"3C", -- U
+			x"56" when x"2A", -- V
+			x"57" when x"1D", -- W
+			x"58" when x"22", -- X
+			x"59" when x"35", -- Y
+			x"5A" when x"1A", -- Z
+			no_char when others;
 			
 		asc_code <= asc_code_aux;
 end rtl;

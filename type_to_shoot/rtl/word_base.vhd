@@ -10,10 +10,10 @@ package word_base is
 
 	-- ONLY UPPER CASE
 	constant word_base: word_arr := (
-		"BOBOA",
-		"BABAO",
-		"PAPAI",
-		"GUIDO",
-		"PATA "
+		"BOBOABOBOA",
+		"BABAOBABAO",
+		"PAPAIPAPAI",
+		"GUIDOGUIDO",
+		"PATA PATA "
 	);
 end word_base;

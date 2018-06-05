@@ -30,6 +30,8 @@ library work;
 use work.main_pack.all;
 use ieee.std_logic_1164.all;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
+USE ieee.numeric_std.ALL;
+
 
 entity vga_ball is
 	generic (
@@ -132,11 +134,12 @@ architecture comportamento of vga_ball is
   type matriz_palavras is array (0 to 4) of word;
   signal letter_col : array5 := (10, 10, 10, 10, 10);
   signal palavras : matriz_palavras := (
-  (76, 79, 71, 73, 67, 79, 83, 84, 85, 68),
-  (69, 72, 91, 91, 70, 71, 72, 73, 74, 75),
-  (65, 77, 79, 82, 75, 76, 76, 76, 76, 76),
-  (71, 72, 73, 74, 75, 76, 77, 78, 79, 80),
-  (76, 79, 71, 73, 67, 79, 83, 67, 89, 90));
+		no_word,
+		no_word,
+		no_word,
+		no_word,
+		no_word
+	);
 
   type letras_atuais_t is array (0 to 4, 0 to 9) of letra_t;
 
@@ -492,56 +495,57 @@ TIMER_P <= timer;
     end if;
   end process troca_letra_atual;
 
-	letras_atuais(0, 0) <= alfa ( (palavras(0)(0) - 65) );
-	letras_atuais(0, 1) <= alfa ( (palavras(0)(1) - 65) );
-	letras_atuais(0, 2) <= alfa ( (palavras(0)(2) - 65) );
-	letras_atuais(0, 3) <= alfa ( (palavras(0)(3) - 65) );
-	letras_atuais(0, 4) <= alfa ( (palavras(0)(4) - 65) );
-	letras_atuais(0, 5) <= alfa ( (palavras(0)(5) - 65) );
-	letras_atuais(0, 6) <= alfa ( (palavras(0)(6) - 65) );
-	letras_atuais(0, 7) <= alfa ( (palavras(0)(7) - 65) );
-	letras_atuais(0, 8) <= alfa ( (palavras(0)(8) - 65) );
-	letras_atuais(0, 9) <= alfa ( (palavras(0)(9) - 65) );
-	letras_atuais(1, 0) <= alfa ( (palavras(1)(0) - 65) );
-	letras_atuais(1, 1) <= alfa ( (palavras(1)(1) - 65) );
-	letras_atuais(1, 2) <= alfa ( (palavras(1)(2) - 65) );
-	letras_atuais(1, 3) <= alfa ( (palavras(1)(3) - 65) );
-	letras_atuais(1, 4) <= alfa ( (palavras(1)(4) - 65) );
-	letras_atuais(1, 5) <= alfa ( (palavras(1)(5) - 65) );
-	letras_atuais(1, 6) <= alfa ( (palavras(1)(6) - 65) );
-	letras_atuais(1, 7) <= alfa ( (palavras(1)(7) - 65) );
-	letras_atuais(1, 8) <= alfa ( (palavras(1)(8) - 65) );
-	letras_atuais(1, 9) <= alfa ( (palavras(1)(9) - 65) );
-	letras_atuais(2, 0) <= alfa ( (palavras(2)(0) - 65) );
-	letras_atuais(2, 1) <= alfa ( (palavras(2)(1) - 65) );
-	letras_atuais(2, 2) <= alfa ( (palavras(2)(2) - 65) );
-	letras_atuais(2, 3) <= alfa ( (palavras(2)(3) - 65) );
-	letras_atuais(2, 4) <= alfa ( (palavras(2)(4) - 65) );
-	letras_atuais(2, 5) <= alfa ( (palavras(2)(5) - 65) );
-	letras_atuais(2, 6) <= alfa ( (palavras(2)(6) - 65) );
-	letras_atuais(2, 7) <= alfa ( (palavras(2)(7) - 65) );
-	letras_atuais(2, 8) <= alfa ( (palavras(2)(8) - 65) );
-	letras_atuais(2, 9) <= alfa ( (palavras(2)(9) - 65) );
-	letras_atuais(3, 0) <= alfa ( (palavras(3)(0) - 65) );
-	letras_atuais(3, 1) <= alfa ( (palavras(3)(1) - 65) );
-	letras_atuais(3, 2) <= alfa ( (palavras(3)(2) - 65) );
-	letras_atuais(3, 3) <= alfa ( (palavras(3)(3) - 65) );
-	letras_atuais(3, 4) <= alfa ( (palavras(3)(4) - 65) );
-	letras_atuais(3, 5) <= alfa ( (palavras(3)(5) - 65) );
-	letras_atuais(3, 6) <= alfa ( (palavras(3)(6) - 65) );
-	letras_atuais(3, 7) <= alfa ( (palavras(3)(7) - 65) );
-	letras_atuais(3, 8) <= alfa ( (palavras(3)(8) - 65) );
-	letras_atuais(3, 9) <= alfa ( (palavras(3)(9) - 65) );
-	letras_atuais(4, 0) <= alfa ( (palavras(4)(0) - 65) );
-	letras_atuais(4, 1) <= alfa ( (palavras(4)(1) - 65) );
-	letras_atuais(4, 2) <= alfa ( (palavras(4)(2) - 65) );
-	letras_atuais(4, 3) <= alfa ( (palavras(4)(3) - 65) );
-	letras_atuais(4, 4) <= alfa ( (palavras(4)(4) - 65) );
-	letras_atuais(4, 5) <= alfa ( (palavras(4)(5) - 65) );
-	letras_atuais(4, 6) <= alfa ( (palavras(4)(6) - 65) );
-	letras_atuais(4, 7) <= alfa ( (palavras(4)(7) - 65) );
-	letras_atuais(4, 8) <= alfa ( (palavras(4)(8) - 65) );
-	letras_atuais(4, 9) <= alfa ( (palavras(4)(9) - 65) );
+	-- se a letra cagar 7 downto 0
+	letras_atuais(0, 0) <= alfa (to_integer(unsigned(palavras(0)(7 downto 0))) - 65);
+	letras_atuais(0, 1) <= alfa (to_integer(unsigned(palavras(0)(15 downto 8))) - 65);
+	letras_atuais(0, 2) <= alfa (to_integer(unsigned(palavras(0)(23 downto 16))) - 65);
+	letras_atuais(0, 3) <= alfa (to_integer(unsigned(palavras(0)(31 downto 24))) - 65);
+	letras_atuais(0, 4) <= alfa (to_integer(unsigned(palavras(0)(39 downto 32))) - 65);
+	letras_atuais(0, 5) <= alfa (to_integer(unsigned(palavras(0)(47 downto 40))) - 65);
+	letras_atuais(0, 6) <= alfa (to_integer(unsigned(palavras(0)(55 downto 48))) - 65);
+	letras_atuais(0, 7) <= alfa (to_integer(unsigned(palavras(0)(63 downto 56))) - 65);
+	letras_atuais(0, 8) <= alfa (to_integer(unsigned(palavras(0)(71 downto 64))) - 65);
+	letras_atuais(0, 9) <= alfa (to_integer(unsigned(palavras(0)(79 downto 72))) - 65);
+	letras_atuais(1, 0) <= alfa (to_integer(unsigned(palavras(1)(7 downto 0))) - 65);
+	letras_atuais(1, 1) <= alfa (to_integer(unsigned(palavras(1)(15 downto 8))) - 65);
+	letras_atuais(1, 2) <= alfa (to_integer(unsigned(palavras(1)(23 downto 16))) - 65);
+	letras_atuais(1, 3) <= alfa (to_integer(unsigned(palavras(1)(31 downto 24))) - 65);
+	letras_atuais(1, 4) <= alfa (to_integer(unsigned(palavras(1)(39 downto 32))) - 65);
+	letras_atuais(1, 5) <= alfa (to_integer(unsigned(palavras(1)(47 downto 40))) - 65);
+	letras_atuais(1, 6) <= alfa (to_integer(unsigned(palavras(1)(55 downto 48))) - 65);
+	letras_atuais(1, 7) <= alfa (to_integer(unsigned(palavras(1)(63 downto 56))) - 65);
+	letras_atuais(1, 8) <= alfa (to_integer(unsigned(palavras(1)(71 downto 64))) - 65);
+	letras_atuais(1, 9) <= alfa (to_integer(unsigned(palavras(1)(79 downto 72))) - 65);
+	letras_atuais(2, 0) <= alfa (to_integer(unsigned(palavras(2)(7 downto 0))) - 65);
+	letras_atuais(2, 1) <= alfa (to_integer(unsigned(palavras(2)(15 downto 8))) - 65);
+	letras_atuais(2, 2) <= alfa (to_integer(unsigned(palavras(2)(23 downto 16))) - 65);
+	letras_atuais(2, 3) <= alfa (to_integer(unsigned(palavras(2)(31 downto 24))) - 65);
+	letras_atuais(2, 4) <= alfa (to_integer(unsigned(palavras(2)(39 downto 32))) - 65);
+	letras_atuais(2, 5) <= alfa (to_integer(unsigned(palavras(2)(47 downto 40))) - 65);
+	letras_atuais(2, 6) <= alfa (to_integer(unsigned(palavras(2)(55 downto 48))) - 65);
+	letras_atuais(2, 7) <= alfa (to_integer(unsigned(palavras(2)(63 downto 56))) - 65);
+	letras_atuais(2, 8) <= alfa (to_integer(unsigned(palavras(2)(71 downto 64))) - 65);
+	letras_atuais(2, 9) <= alfa (to_integer(unsigned(palavras(2)(79 downto 72))) - 65);
+	letras_atuais(3, 0) <= alfa (to_integer(unsigned(palavras(3)(7 downto 0))) - 65);
+	letras_atuais(3, 1) <= alfa (to_integer(unsigned(palavras(3)(15 downto 8))) - 65);
+	letras_atuais(3, 2) <= alfa (to_integer(unsigned(palavras(3)(23 downto 16))) - 65);
+	letras_atuais(3, 3) <= alfa (to_integer(unsigned(palavras(3)(31 downto 24))) - 65);
+	letras_atuais(3, 4) <= alfa (to_integer(unsigned(palavras(3)(39 downto 32))) - 65);
+	letras_atuais(3, 5) <= alfa (to_integer(unsigned(palavras(3)(47 downto 40))) - 65);
+	letras_atuais(3, 6) <= alfa (to_integer(unsigned(palavras(3)(55 downto 48))) - 65);
+	letras_atuais(3, 7) <= alfa (to_integer(unsigned(palavras(3)(63 downto 56))) - 65);
+	letras_atuais(3, 8) <= alfa (to_integer(unsigned(palavras(3)(71 downto 64))) - 65);
+	letras_atuais(3, 9) <= alfa (to_integer(unsigned(palavras(3)(79 downto 72))) - 65);
+	letras_atuais(4, 0) <= alfa (to_integer(unsigned(palavras(4)(7 downto 0))) - 65);
+	letras_atuais(4, 1) <= alfa (to_integer(unsigned(palavras(4)(15 downto 8))) - 65);
+	letras_atuais(4, 2) <= alfa (to_integer(unsigned(palavras(4)(23 downto 16))) - 65);
+	letras_atuais(4, 3) <= alfa (to_integer(unsigned(palavras(4)(31 downto 24))) - 65);
+	letras_atuais(4, 4) <= alfa (to_integer(unsigned(palavras(4)(39 downto 32))) - 65);
+	letras_atuais(4, 5) <= alfa (to_integer(unsigned(palavras(4)(47 downto 40))) - 65);
+	letras_atuais(4, 6) <= alfa (to_integer(unsigned(palavras(4)(55 downto 48))) - 65);
+	letras_atuais(4, 7) <= alfa (to_integer(unsigned(palavras(4)(63 downto 56))) - 65);
+	letras_atuais(4, 8) <= alfa (to_integer(unsigned(palavras(4)(71 downto 64))) - 65);
+	letras_atuais(4, 9) <= alfa (to_integer(unsigned(palavras(4)(79 downto 72))) - 65);
   -----------------------------------------------------------------------------
   -- Processos que controlam contadores de linhas e coluna para varrer
   -- todos os endereços da memória de vídeo, no momento de construir um quadro.

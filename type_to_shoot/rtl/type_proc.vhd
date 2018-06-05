@@ -18,10 +18,7 @@ end type_proc;
 
 architecture rtl of type_proc is
 
-	component word_bank
-		generic (		
-			max_words: integer := max_words
-		);
+	component word_bank		
 		port (
 			clock							: in std_logic;
 			kill_word 				: in std_logic;
@@ -57,7 +54,7 @@ architecture rtl of type_proc is
 			VGA_HS, VGA_VS          : out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
 			VGA_CLK                 : out std_logic;
-			TIMER_P										: out std_logic;
+			TIMER_P									: out std_logic;
 			GAME_OVER								: out std_logic
 		);
 	end component;
@@ -68,7 +65,7 @@ architecture rtl of type_proc is
 			ps2_clk		:	inout	std_logic;
 			clock 		: in std_logic;
 			key_on		: out std_logic;
-			asc_code	: out integer
+			asc_code	: out char
 		);
 	end component;	
 
@@ -92,7 +89,7 @@ architecture rtl of type_proc is
 	signal kill_word: std_logic;
 
 	signal key_on: std_logic;
-	signal char_pressed: integer;
+	signal char_pressed: char;
 
 	signal current_stage: integer;
 	signal start_game: std_logic;
@@ -167,7 +164,7 @@ begin
 			VGA_BLANK_N			=> VGA_BLANK_N,
 			VGA_SYNC_N			=> VGA_SYNC_N,
 			VGA_CLK					=> VGA_CLK,
-			TIMER_P						=> timer,
+			TIMER_P					=> timer,
 			GAME_OVER				=> game_over
 		);
 		
@@ -277,7 +274,7 @@ begin
 							-- tem maior prioridades
 							for i in max_words-1 downto 0 loop
 								if i < num_active_words then
-									if active_words(i)(0) = char_pressed then
+									if active_words(i)(7 downto 0) = char_pressed then
 										-- NAO FUNCIONA PARA PALAVRAS DE TAMANHO 1
 										next_state <= HIT_PROCESSING;
 										letter_hit <= '1';
@@ -295,14 +292,14 @@ begin
 							end if;
 
 						when LOCKED =>
-							if active_words(locked_word_index)(current_letter_index) = char_pressed then
+							if active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = char_pressed then
 								next_state <= HIT_PROCESSING;
 								letter_hit <= '1';
 								current_letter_index <= current_letter_index + 1;
 
 								-- Verifica se terminou a palavra
 								if current_letter_index = max_word_length or
-									active_words(locked_word_index)(current_letter_index) = -1
+									active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char
 								then
 									kill_word <= '1';
 
