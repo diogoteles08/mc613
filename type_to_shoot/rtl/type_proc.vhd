@@ -6,7 +6,7 @@ use work.main_pack.all;
 entity type_proc is
   port (
     CLOCK_50 : in std_logic;
-    KEY		 : in std_logic_vector(1 downto 0);
+    KEY		 : in std_logic_vector(2 downto 0);
     PS2_DATA : inout STD_LOGIC;
     PS2_CLK : inout STD_LOGIC;
 		VGA_R, VGA_G, VGA_B       : out std_logic_vector(7 downto 0);
@@ -42,7 +42,7 @@ architecture rtl of type_proc is
 	component vga_ball
 		port (
 			CLOCK_50                : in  std_logic;
-			KEY                     : in  std_logic_vector(1 downto 0);
+			KEY                     : in  std_logic_vector(2 downto 0);
 			START_GAME							: in std_logic;
 			STAGE_END								: in std_logic;
 			PLAY_AGAIN							: in std_logic;
@@ -233,7 +233,7 @@ begin
 			if CLOCK_50'event and CLOCK_50 = '1' then
                                 if KEY(1) = '1' then
                                     -- Reset game
-                                    next_state <= GAME_BEGIN;
+                                    next_state <= BEGIN_GAME;
                                     start_game <= '0';
                                     letter_miss <= '0';
                                     letter_hit <= '0';

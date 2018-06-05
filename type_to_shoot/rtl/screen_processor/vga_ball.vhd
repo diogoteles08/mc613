@@ -42,7 +42,7 @@ entity vga_ball is
 	);
   port (    
     CLOCK_50                	: in  std_logic;
-    KEY                     	: in  std_logic_vector(1 downto 0);
+    KEY                     	: in  std_logic_vector(2 downto 0);
     START_GAME		        : in  std_logic;
     STAGE_END		        : in  std_logic;
     PLAY_AGAIN		        : in  std_logic;
@@ -67,8 +67,8 @@ architecture comportamento of vga_ball is
 	signal tela_inicial: splash;
 	attribute ram_init_file : string;
 	attribute ram_init_file of tela_inicial : signal is "start_1.mif";
-   signal tela_troca_estagio : splash;
-	attribute ram_init_file of tela_troca_estagio : signal is "troca_1.mif";
+	signal tela_over : splash;
+	attribute ram_init_file of tela_over : signal is "over.mif";
 	
   signal rstn : std_logic;              -- reset active low para nossos
                                         -- circuitos sequenciais.
@@ -95,7 +95,7 @@ architecture comportamento of vga_ball is
   signal atualiza_pos_y : std_logic;    -- se '1' = as palavras mudam sua pos. no eixo y
 
   -- Especificação dos tipos e sinais da máquina de estados de controle
-  type estado_t is (show_splash, inicio, constroi_quadro, desce_palavras, limpa_tela);
+  type estado_t is (show_splash, inicio, constroi_quadro, desce_palavras, limpa_tela, show_over);
   signal estado: estado_t := inicio;
   signal proximo_estado: estado_t := inicio;
 
@@ -113,9 +113,12 @@ architecture comportamento of vga_ball is
   signal cor_atual : std_logic_vector(2 downto 0) := "001";
   signal inic_splash : std_logic := '0';
   signal inic_limpa : std_logic := '0';
+  signal inic_over : std_logic := '0';
+  signal local_game_over : std_logic := '0';
+
   signal locked_hits : integer range 0 to 10 := 0;
   signal my_play : std_logic := '0';
-  
+  signal new_game : std_logic := '0';
   constant col_0 : integer := 5;
   constant col_1 : integer := 110;
   constant col_2 : integer := 215;
@@ -284,6 +287,7 @@ procura_indice: process (LETTER_HIT)
 end process procura_indice;
 
 TIMER_P <= timer;
+GAME_OVER <= local_game_over;
   -----------------------------------------------------------------------------
   -- PROCESS PARA VERIFICAR ONDE ESTAMOS E IMPRIMIR NA TELA
   -----------------------------------------------------------------------------
@@ -438,14 +442,14 @@ TIMER_P <= timer;
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		if atualiza_pos_y = '1' then
 			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
-            --GAME_OVER <= '1';
-				line_bases(0) <= 10;
-				line_bases(1) <= 10;
-				line_bases(2) <= 10; 
-				line_bases(3) <= 10;
-				line_bases(4) <= 10; 
+            local_game_over <= '1';
+--				line_bases(0) <= 10;
+--				line_bases(1) <= 10;
+--				line_bases(2) <= 10; 
+--				line_bases(3) <= 10;
+--				line_bases(4) <= 10; 
 			else
-            --GAME_OVER <= '0';
+            local_game_over <= '0';
 				line_bases(0) <= line_bases(0) + 1;
 				line_bases(1) <= line_bases(1) + 1;
 				line_bases(2) <= line_bases(2) + 1;
@@ -486,6 +490,8 @@ TIMER_P <= timer;
 				end if;
 			elsif inic_splash = '1' then
 				pixel <= tela_inicial( line + col*NUM_LINE);
+			elsif inic_over = '1' then
+			   pixel <= tela_over( line + col*NUM_LINE);
 			elsif print_enable = '0' then
 				pixel <= "000";
 			end if;
@@ -616,10 +622,14 @@ TIMER_P <= timer;
       when inicio         => if timer = '1' and my_play = '1' and ja_limpei = '0' then              
                                proximo_estado <= limpa_tela;
 										 ja_limpei <= '1';
-									  elsif timer = '1' and my_play = '1' then
+									  elsif timer = '1' and my_play = '1' and local_game_over = '0' then
 									    proximo_estado <= constroi_quadro;
-									  elsif timer ='1' and my_play = '0' then
+									  elsif timer ='1' and my_play = '0' and local_game_over = '0' then
 										 proximo_estado <= show_splash;
+									  elsif timer = '1' and new_game = '0' and local_game_over = '1' then
+										 proximo_estado <= show_over;
+									  elsif timer = '1' and new_game = '1' and local_game_over = '1' then
+									    proximo_estado <= show_splash;
                              else
                                proximo_estado <= inicio;
                              end if;
@@ -635,6 +645,7 @@ TIMER_P <= timer;
                              timer_enable   <= '1';
 									  inic_splash    <= '0';
 									  inic_limpa 	  <= '0';
+									  inic_over 	  <= '0';
 
 									  LEDR <= "00001";
 
@@ -655,7 +666,7 @@ TIMER_P <= timer;
                              timer_enable   <= '0';
 									  inic_splash    <= '0';
 									  inic_limpa 	  <= '0';
-									  inic_limpa 	  <= '0';
+									  inic_over 	  <= '0';
 									  LEDR <= "00010";
 
 
@@ -672,7 +683,7 @@ TIMER_P <= timer;
                              timer_enable   <= '0';
 									  inic_splash     <= '0';
 									  inic_limpa 	  <= '0';
-									  inic_limpa 	  <= '0';
+									  inic_over 	  <= '0';
 									  LEDR <= "00100";
 
 
@@ -693,10 +704,11 @@ TIMER_P <= timer;
                              timer_enable   <= '0';
 									  inic_splash    <= '1';
 									  inic_limpa 	  <= '0';
+									  inic_over 	  <= '0';
 
 									  LEDR <= "01000";
 									  
-		 when OTHERS        => if fim_escrita = '1' then
+		 when limpa_tela       => if fim_escrita = '1' then
 											proximo_estado <= inicio;
 											ja_limpei <= '1';
 									  else
@@ -715,8 +727,28 @@ TIMER_P <= timer;
                              timer_enable   <= '0';
 									  inic_splash    <= '0';
 									  inic_limpa 	  <= '1';
+									  inic_over 	  <= '0';
 									  LEDR <= "10000";
-		
+									  
+		  when OTHERS 			  => if fim_escrita = '1' then
+											proximo_estado <= inicio;
+									  else
+											proximo_estado <= show_over;
+									  end if;
+                             atualiza_pos_y <= '0';
+                             line_rstn      <= '1';
+                             line_enable    <= '0';
+                             col_rstn       <= '1';
+                             col_enable     <= '0';
+									  line_splash    <= '1';
+									  col_splash     <= '1';
+                             we             <= '1';
+                             timer_rstn     <= '0'; 
+                             timer_enable   <= '0';
+									  inic_splash    <= '1';
+									  inic_limpa 	  <= '0';
+									  inic_over 	  <= '1';
+									  LEDR <= "10001";
 
     end case;
   end process logica_mealy;
@@ -793,6 +825,7 @@ TIMER_P <= timer;
   begin
 		if CLOCK_50'event and CLOCK_50 = '1' then
 			my_play <= my_play or not(KEY(1));
+			new_game <= new_game or not(KEY(2));
 		end if;
 	end process start_button;
 end comportamento;
