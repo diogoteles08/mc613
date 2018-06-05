@@ -65,8 +65,8 @@ architecture comportamento of vga_ball is
 	signal tela_inicial: splash;
 	attribute ram_init_file : string;
 	attribute ram_init_file of tela_inicial : signal is "start_1.mif";
-   signal tela_troca_estagio : splash;
-	attribute ram_init_file of tela_troca_estagio : signal is "troca_1.mif";
+   signal tela_over : splash;
+	attribute ram_init_file of tela_over : signal is "over.mif";
 	
   signal rstn : std_logic;              -- reset active low para nossos
                                         -- circuitos sequenciais.
@@ -267,7 +267,7 @@ begin  -- comportamento
  
  
    -- purpose: 
-   -- type   : 
+   -- type   : _1
    -- inputs :
    -- outputs: 
 procura_indice: process (LETTER_HIT)
@@ -435,14 +435,14 @@ TIMER_P <= timer;
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		if atualiza_pos_y = '1' then
 			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
-            --GAME_OVER <= '1';
-				line_bases(0) <= 10;
-				line_bases(1) <= 10;
-				line_bases(2) <= 10; 
-				line_bases(3) <= 10;
-				line_bases(4) <= 10; 
+            GAME_OVER <= '1';
+--				line_bases(0) <= 10;
+--				line_bases(1) <= 10;
+--				line_bases(2) <= 10; 
+--				line_bases(3) <= 10;
+--				line_bases(4) <= 10; 
 			else
-            --GAME_OVER <= '0';
+            GAME_OVER <= '0';
 				line_bases(0) <= line_bases(0) + 1;
 				line_bases(1) <= line_bases(1) + 1;
 				line_bases(2) <= line_bases(2) + 1;
@@ -483,6 +483,8 @@ TIMER_P <= timer;
 				end if;
 			elsif inic_splash = '1' then
 				pixel <= tela_inicial( line + col*NUM_LINE);
+			elsif inic_over = '1' then
+			   pixel <= tela_over( line + col*NUM_LINE);
 			elsif print_enable = '0' then
 				pixel <= "000";
 			end if;
@@ -612,10 +614,14 @@ TIMER_P <= timer;
       when inicio         => if timer = '1' and my_play = '1' and ja_limpei = '0' then              
                                proximo_estado <= limpa_tela;
 										 ja_limpei <= '1';
-									  elsif timer = '1' and my_play = '1' then
+									  elsif timer = '1' and my_play = '1' and GAME_OVER = '0' then
 									    proximo_estado <= constroi_quadro;
-									  elsif timer ='1' and my_play = '0' then
+									  elsif timer ='1' and my_play = '0' and GAME_OVER = '0' then
 										 proximo_estado <= show_splash;
+									  elsif timer = '1' and my_play = '0' and GAME_OVER = '1' then
+										 proximo_estado <= show_over;
+									  elsif timer = '1' and my_play = '1' and GAME_OVER = '1' then
+									    proximo_estado <= show_splash;
                              else
                                proximo_estado <= inicio;
                              end if;
@@ -639,6 +645,7 @@ TIMER_P <= timer;
                              else
                                proximo_estado <= constroi_quadro;
                              end if;
+									  my_play 		  <= '0';
                              atualiza_pos_y <= '0';
                              line_rstn      <= '1';
                              line_enable    <= '1';
@@ -689,10 +696,11 @@ TIMER_P <= timer;
                              timer_enable   <= '0';
 									  inic_splash    <= '1';
 									  inic_limpa 	  <= '0';
+									  inic_over      <= '0';
 
 									  LEDR <= "01000";
 									  
-		 when OTHERS        => if fim_escrita = '1' then
+		 when limpa_tela       => if fim_escrita = '1' then
 											proximo_estado <= inicio;
 											ja_limpei <= '1';
 									  else
@@ -711,7 +719,29 @@ TIMER_P <= timer;
                              timer_enable   <= '0';
 									  inic_splash    <= '0';
 									  inic_limpa 	  <= '1';
+									  inic_over      <= '0';
+									  
 									  LEDR <= "10000";
+		when OTHERS				  => if fim_escrita = '1' then
+											proximo_estado <= inicio;
+									  else
+											proximo_estado <= show_over;
+									  end if;
+                             atualiza_pos_y <= '0';
+                             line_rstn      <= '1';
+                             line_enable    <= '0';
+                             col_rstn       <= '1';
+                             col_enable     <= '0';
+									  line_splash    <= '1';
+									  col_splash     <= '1';
+                             we             <= '1';
+                             timer_rstn     <= '0'; 
+                             timer_enable   <= '0';
+									  inic_splash    <= '0';
+									  inic_limpa 	  <= '0';
+									  inic_over      <= '1';
+
+									  LEDR <= "10001";
 		
 
     end case;
