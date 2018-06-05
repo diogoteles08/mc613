@@ -115,8 +115,8 @@ architecture rtl of type_proc is
 		MISS_PROCESSING,
 		GAME_LOST
 	);
-	signal state: state_t;
-	signal next_state: state_t;
+	signal state: state_t := BEGIN_GAME;
+	signal next_state: state_t := BEGIN_GAME;
 	signal insta_changing: std_logic;
 
 begin
@@ -125,6 +125,7 @@ begin
 	LEDR(0) <= key_on;
 	LEDR(1) <= letter_hit;
 	LEDR(2) <= letter_miss;
+	LEDR(3) <= start_game;
 
 	bank: word_bank
 		port map (
