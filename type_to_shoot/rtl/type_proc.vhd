@@ -129,21 +129,21 @@ architecture rtl of type_proc is
 	signal r_lost : std_logic := '0';
 begin
 	
-	-- Leds for testing
-	LEDR(0) <= key_on;
-	LEDR(1) <= letter_hit;
-	LEDR(2) <= letter_miss;
-	LEDR(3) <= kill_word;
-	LEDR(4) <= game_over;
-	LEDR(5) <= get_new_word;
-	LEDR(6) <= '1' when num_active_words = max_words else '0';
-	
-	with state select LEDR(9 downto 7) <= 
-		"111" when BEGIN_GAME,
-		"001" when LOCKED,
-		"010" when FREE,
-		"011" when WAIT_RELEASE,		
-		"000" when GAME_LOST;
+--	-- Leds for testing
+--	LEDR(0) <= key_on;
+--	LEDR(1) <= letter_hit;
+--	LEDR(2) <= letter_miss;
+--	LEDR(3) <= kill_word;
+--	LEDR(4) <= game_over;
+--	LEDR(5) <= get_new_word;
+--	LEDR(6) <= '1' when num_active_words = max_words else '0';
+--	
+--	with state select LEDR(9 downto 7) <= 
+--		"111" when BEGIN_GAME,
+--		"001" when LOCKED,
+--		"010" when FREE,
+--		"011" when WAIT_RELEASE,		
+--		"000" when GAME_LOST;
 
 	bank: word_bank
 		port map (
