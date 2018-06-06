@@ -279,12 +279,22 @@ begin  -- comportamento
    -- type   : 
    -- inputs :
    -- outputs: 
-procura_indice: process (INSERT_WORD)
+procura_indice: process (CLOCK_50)
   begin
-		if INSERT_WORD'event and INSERT_WORD = '1' then
-			palavras(empty_position) <= NEW_WORD;
-			palavras_size(empty_position) <= NEW_WORD_SIZE;
-			empty_positions(empty_position) <= 0;
+		if CLOCK_50'event and CLOCK_50 = '1' then
+			if INSERT_WORD = '1' then
+				palavras(empty_position) <= NEW_WORD;
+				palavras_size(empty_position) <= NEW_WORD_SIZE;
+				empty_positions(empty_position) <= 0;
+			elsif WORD_DESTROYED = '1' then
+				empty_positions(indice_locked) <= 1;
+			elsif local_game_over = '1' then
+				for i in 0 to max_words-1 loop
+					palavras(i) <= no_word;
+					palavras_size(i) <= 0;
+					empty_positions(i) <= 1;
+				end loop;
+			end if;
 		end if;
 end process procura_indice;
 
@@ -296,13 +306,21 @@ end process procura_indice;
    -- inputs :
    -- outputs: 
 procura_empty_position: process (CLOCK_50)
+	variable found_position : std_logic;
+	variable aux_position : integer;
   begin
 		if CLOCK_50'event and CLOCK_50 = '1' then
+			found_position := '0';
 			for i in 0 to max_words-1 loop
 				if empty_positions(i) = 1 then
-					empty_position <= i;
+					found_position := '1';
+					aux_position := i;
 				end if;
 			end loop;
+			
+			if found_position = '1' then
+				empty_position <= aux_position;
+			end if;
 		end if;
 end process procura_empty_position;
  
@@ -318,23 +336,26 @@ end process procura_empty_position;
    -- type   : 
    -- inputs :
    -- outputs: 
-procura_indice_locked: process (LOCKED_EVENT)
-	variable trying_to_lock : std_logic;
+procura_indice_locked: process (CLOCK_50)
+	variable word_index : integer := max_words;
+	variable found_word : std_logic; 
   begin
-		if LOCKED_EVENT'event and LOCKED_EVENT = '1' then
-			for i in 0 to max_words-1 loop
-				trying_to_lock := '1';
-				for j in 0 to max_word_length*8 -1 loop
-					if palavras(i)(j) /= LOCKED_WORD(j) then
-						trying_to_lock := '0';
+		if CLOCK_50'event and CLOCK_50 = '1' then
+			if LOCKED_EVENT = '1' then
+				found_word := '0';
+				for i in 0 to max_words-1 loop
+					if palavras(i) = LOCKED_WORD then
+						word_index := i;
+						found_word := '1';
 					end if;
 				end loop;
-				if trying_to_lock = '1' then
-					indice_locked <= i;
-				else
-					indice_locked <= max_words;
+				
+				if found_word = '1' then
+					indice_locked <= word_index;
 				end if;
-			end loop;
+			elsif local_game_over = '1' then
+				indice_locked <= max_words;
+			end if;
 		end if;
 end process procura_indice_locked;
 
@@ -354,11 +375,11 @@ GAME_OVER <= local_game_over;
 		if col_enable = '1' and line_enable = '1' then
 			if line >= line_bases(0) and line < line_bases(0) + WORD_LINE and col >= col_bases(0) and col < col_bases(0) + WORD_COL * palavras_size(0) then
 				if (col < col_bases(0) + WORD_COL) and palavras_size(0) >= 1 then
-					if indice_locked = 0 and LETTER_HITS >= 1 then
-						print_enable <= '0';
-					else
-						print_enable <= letras_atuais(0, 0)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-					end if;
+													if indice_locked = 0 and LETTER_HITS >= 1 then
+															print_enable <= '0';
+													else
+															print_enable <= letras_atuais(0, 0)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
+													end if;
 				elsif (col < col_bases(0) + 2*WORD_COL) and palavras_size(0) >= 2 then
                                         if indice_locked = 0 and LETTER_HITS >= 2 then
                                                 print_enable <= '0';
@@ -372,43 +393,43 @@ GAME_OVER <= local_game_over;
                                             print_enable <= letras_atuais(0, 2)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 4*WORD_COL) and palavras_size(0) >= 4 then
-                                        if indice_locked = 0 and LETTER_HITS >= 3 then
+                                        if indice_locked = 0 and LETTER_HITS >= 4 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 3)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 													 end if;
 				elsif (col < col_bases(0) + 5*WORD_COL) and palavras_size(0) >= 5 then
-                                        if indice_locked = 0 and LETTER_HITS >= 4 then
+                                        if indice_locked = 0 and LETTER_HITS >= 5 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 4)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 6*WORD_COL) and palavras_size(0) >= 6 then
-                                        if indice_locked = 0 and LETTER_HITS >= 5 then
+                                        if indice_locked = 0 and LETTER_HITS >= 6 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 5)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 7*WORD_COL) and palavras_size(0) >= 7 then
-                                        if indice_locked = 0 and LETTER_HITS >= 6 then
+                                        if indice_locked = 0 and LETTER_HITS >= 7 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 6)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 8*WORD_COL) and palavras_size(0) >= 8 then
-                                        if indice_locked = 0 and LETTER_HITS >= 7 then
+                                        if indice_locked = 0 and LETTER_HITS >= 8 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 7)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 9*WORD_COL) and palavras_size(0) >= 9 then
-                                        if indice_locked = 0 and LETTER_HITS >= 8 then
+                                        if indice_locked = 0 and LETTER_HITS >= 9 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 8)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 10*WORD_COL) and palavras_size(0) >= 10 then
-                                        if indice_locked = 0 and LETTER_HITS >= 9 then
+                                        if indice_locked = 0 and LETTER_HITS >= 10 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 9)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
@@ -693,7 +714,9 @@ GAME_OVER <= local_game_over;
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		local_game_over <= '0';
-		if atualiza_pos_y = '1' then
+		if WORD_DESTROYED = '1' then
+			line_bases(indice_locked) <= 10;
+		elsif atualiza_pos_y = '1' then
 			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
             local_game_over <= '1';
 				line_bases(0) <= 10;
@@ -709,10 +732,8 @@ GAME_OVER <= local_game_over;
 				line_bases(3) <= line_bases(3) + 1;
 				line_bases(4) <= line_bases(4) + 1;
 			end if;
-		elsif WORD_DESTROYED = '1' then
-			line_bases(indice_locked) <= 10;
 		end if;
-    end if;
+	 end if;
   end process desce_linha;
   
    -----------------------------------------------------------------------------
@@ -965,7 +986,7 @@ GAME_OVER <= local_game_over;
 											  LEDR(9 downto 5) <= "00001";
 											  
 					when OTHERS		 =>  if PLAY_AGAIN = '1' then		-- wait_action
-													estado <= show_inicio;
+													estado <= inicio;
 											  elsif START_GAME = '1' then
 													estado <= constroi_quadro;
 											  else
