@@ -46,17 +46,19 @@ entity vga_ball is
     START_GAME		        : in  std_logic;
     STAGE_END		        : in  std_logic;
     PLAY_AGAIN		        : in  std_logic;
-	 INSERT_WORD							: in std_logic;
+		INSERT_WORD							: in std_logic;
     NEW_WORD		        : in  word;
     NEW_WORD_SIZE		: in  integer;
     LOCKED_WORD		        : in  word;
     LETTER_HIT		        : in  std_logic;
     WORD_DESTROYED		: in  std_logic;
+		NUM_HITS								: in integer;
+		NUM_MISSES							: in integer;
     VGA_R, VGA_G, VGA_B     	: out std_logic_vector(7 downto 0);
     VGA_HS, VGA_VS          	: out std_logic;
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
     VGA_CLK                 	: out std_logic;
-	 LEDR								: out std_logic_vector(4 downto 0);
+		LEDR								: out std_logic_vector(4 downto 0);
     TIMER_P			: out std_logic;
     GAME_OVER		        : out std_logic
     );

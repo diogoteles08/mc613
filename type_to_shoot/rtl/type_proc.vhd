@@ -53,6 +53,8 @@ architecture rtl of type_proc is
 			LOCKED_WORD							: in word;
 			LETTER_HIT							: in std_logic;
 			WORD_DESTROYED					: in std_logic;
+			NUM_HITS								: in integer;
+			NUM_MISSES							: in integer;
 			VGA_R, VGA_G, VGA_B     : out std_logic_vector(7 downto 0);
 			VGA_HS, VGA_VS          : out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
@@ -88,6 +90,9 @@ architecture rtl of type_proc is
 
 	signal letter_miss: std_logic; -- Internal signal
 	signal letter_hit: std_logic; -- Internal signal
+	
+	signal num_hits		: integer;
+	signal num_misses	: integer;
 
 	signal kill_word: std_logic;
 
@@ -120,18 +125,7 @@ architecture rtl of type_proc is
 
 begin
 	
-	-- Leds for testing
-	LEDR(2 downto 0) <= "000" when state = BEGIN_GAME else
-			  "001" when state = LOCKED else
-			  "010" when state = FREE else
-			  "011" when state = HIT_PROCESSING else
-			  "100" when state = MISS_PROCESSING else
-			  "101" when state = GAME_LOST;
-	
-	--LEDR(0) <= '1' when state = BEGIN_GAME; key_on;
-	--LEDR(1) <= letter_hit;
-	--LEDR(2) <= letter_miss;
-	--LEDR(3) <= start_game;
+	-- Leds for testing	
 
 	bank: word_bank
 		port map (
@@ -173,6 +167,8 @@ begin
 			LOCKED_WORD 		=> locked_word,
 			LETTER_HIT  		=> letter_hit,
 			WORD_DESTROYED	=> kill_word,
+			NUM_HITS				=> num_hits,
+			NUM_MISSES			=> num_misses,
 			VGA_R						=> VGA_R,
 			VGA_G						=> VGA_G,
 			VGA_B						=> VGA_B,
@@ -189,15 +185,15 @@ begin
 		process (letter_hit)
 		begin
 			if letter_hit = '1' then
-				-- TODO: Update ponctuation
-					-- It can also verify the "kill_word" signal
-					-- for different ponctuation
+				num_hits <= num_hits + 1;
+				-- TODO: Update ponctuation					
 			end if;
 		end process;
 
 		process (letter_miss)
 		begin
 			if letter_miss = '1' then
+				num_misses <= num_misses + 1;
 				-- TODO: Update ponctuation
 			end if;
 		end process;
@@ -249,7 +245,7 @@ begin
 			variable found_word: std_logic;
 		begin
 			if CLOCK_50'event and CLOCK_50 = '1' then
-				if KEY(0) = '1' then
+				if KEY(0) = '0' then
 					-- Reset game
 					next_state <= BEGIN_GAME;
 					start_game <= '0';
