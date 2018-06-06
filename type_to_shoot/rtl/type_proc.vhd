@@ -342,6 +342,7 @@ begin
 											if max_word_length = 1 then
 												kill_word <= '1';
 												next_state := FREE;
+												current_letter_index := 0;
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -352,6 +353,7 @@ begin
 											elsif active_words(i)(15 downto 8) = no_char then											
 												kill_word <= '1';
 												next_state := FREE;
+												current_letter_index := 0;
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -382,6 +384,7 @@ begin
 									if current_letter_index = max_word_length then
 										kill_word <= '1';
 										next_state := FREE;
+										current_letter_index := 0;
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
@@ -392,6 +395,7 @@ begin
 									elsif active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char then
 										kill_word <= '1';
 										next_state := FREE;
+										current_letter_index := 0;
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
