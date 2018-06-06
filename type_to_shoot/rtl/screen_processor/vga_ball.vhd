@@ -98,7 +98,6 @@ architecture comportamento of vga_ball is
   -- Especificação dos tipos e sinais da máquina de estados de controle
   type estado_t is (show_inicio, inicio, constroi_quadro, desce_palavras, show_over, wait_action);
   signal estado: estado_t := inicio;
-  signal proximo_estado: estado_t := inicio;
 
   -- Sinais para um contador utilizado para atrasar a atualização da
   -- posição da bola, a fim de evitar que a animação fique excessivamente
@@ -333,7 +332,7 @@ procura_indice_locked: process (LETTER_HIT)
 			for i in 0 to max_words-1 loop
 				trying_to_lock := '1';
 				for j in 0 to max_word_length-1 loop
-					if j >= locked_hits and palavras(i)(j) /= LOCKED_WORD(j) then
+					if palavras(i)(j) /= LOCKED_WORD(j) then
 						trying_to_lock := '0';
 					end if;
 				end loop;
@@ -347,6 +346,8 @@ procura_indice_locked: process (LETTER_HIT)
 				--palavras(indice_locked)( (8*(locked_hits+1))-1 downto (8*locked_hits) -1) <= no_char;
 				--palavras(indice_locked)(7 downto 0) <= no_char;
 				locked_hits <= locked_hits + 1;
+			else
+				locked_hits <= 0;
 			end if;
 		end if;
 end process procura_indice_locked;
@@ -877,7 +878,7 @@ GAME_OVER <= local_game_over;
   -- purpose: 
   -- type   : 
   -- inputs : 
-  -- outputs: proximo_estado, atualiza_pos_y, line_rstn,
+  -- outputs: atualiza_pos_y, line_rstn,
   --          line_enable, col_rstn, col_enable, we, timer_enable, timer_rstn
   logica_mealy: process (CLOCK_50)
   begin  -- process logica_mealy
@@ -886,8 +887,7 @@ GAME_OVER <= local_game_over;
 			estado <= show_over;
 		else
 				case estado is
-				when inicio         => --proximo_estado <= show_inicio;
-											  estado <= show_inicio;
+				when inicio         => estado <= show_inicio;
 											  atualiza_pos_y <= '0';
 											  line_rstn      <= '0';  -- reset é active low!
 											  line_enable    <= '0';
@@ -902,10 +902,8 @@ GAME_OVER <= local_game_over;
 											  LEDR(9 downto 5) <= "10000";
 
 				when constroi_quadro => if fim_escrita = '1' then
-												 --proximo_estado <= desce_palavras;
 												 estado <= desce_palavras;
 											  else
-												 --proximo_estado <= constroi_quadro;
 												estado <= constroi_quadro;
 											  end if;
 											  atualiza_pos_y <= '0';
@@ -938,14 +936,11 @@ GAME_OVER <= local_game_over;
 											  over_screen 	  <= '0';
 											  LEDR(9 downto 5) <= "00100";
 
-				when show_inicio    => if START_GAME = '1' then
-													--proximo_estado <= constroi_quadro;
-													estado <= constroi_quadro;
-											  elsif fim_escrita = '1' then
---													proximo_estado <= wait_action;
+				when show_inicio    => --if START_GAME = '1' then
+												--	estado <= constroi_quadro;
+											  if fim_escrita = '1' then
 													estado <= wait_action;
 											  else
---													proximo_estado <= show_inicio;
 													estado <= show_inicio;
 											  end if;
 											  atualiza_pos_y <= '0';
@@ -961,14 +956,11 @@ GAME_OVER <= local_game_over;
 
 											  LEDR(9 downto 5) <= "00010";
 											  
-				  when show_over 	 =>  if PLAY_AGAIN = '1' then
-													--proximo_estado <= inicio;
-													estado <= inicio;
-											  elsif fim_escrita = '1' then
-													--proximo_estado <= wait_action;
+				  when show_over 	 =>  --if PLAY_AGAIN = '1' then
+												--	estado <= inicio;
+											  if fim_escrita = '1' then
 													estado <= wait_action;
 											  else
-													--proximo_estado <= show_over;
 													estado <= show_over;
 											  end if;
 											  atualiza_pos_y <= '0';
@@ -984,13 +976,10 @@ GAME_OVER <= local_game_over;
 											  LEDR(9 downto 5) <= "00001";
 											  
 					when OTHERS		 =>  if PLAY_AGAIN = '1' then		-- wait_action
-													--proximo_estado <= show_inicio;
 													estado <= show_inicio;
 											  elsif START_GAME = '1' then
-													--proximo_estado <= constroi_quadro;
 													estado <= constroi_quadro;
 											  else
-													--proximo_estado <= wait_action;
 													estado <= wait_action;
 											  end if;
 											  atualiza_pos_y <= '0';
@@ -1029,19 +1018,6 @@ GAME_OVER <= local_game_over;
 --		end if;
 --  end process verifica_tecla;
   
-  -- purpose: Avança a FSM para o próximo estado
-  -- type   : sequential
-  -- inputs : CLOCK_50, rstn, proximo_estado
-  -- outputs: estado
---  seq_fsm: process (CLOCK_50, rstn)
---  begin  -- process seq_fsm
---    if rstn = '0' then                  -- asynchronous reset (active low)
---      estado <= inicio;
---    elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
---      estado <= proximo_estado;
---    end if;
---  end process seq_fsm;
-
   -----------------------------------------------------------------------------
   -- Processos do contador utilizado para atrasar a animação (evitar
   -- que a atualização de quadros fique excessivamente veloz).
