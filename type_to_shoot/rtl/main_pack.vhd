@@ -13,6 +13,7 @@ package main_pack is
 	-- Number representing the space or no character
 	constant no_char: std_logic_vector := "01011011"; -- 91
 	constant no_word: std_logic_vector := no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char;
+	constant no_table: word_table := (no_word, no_word, no_word, no_word, no_word);
 	
 	type array5 is array (0 to max_words-1) of integer;	
 	

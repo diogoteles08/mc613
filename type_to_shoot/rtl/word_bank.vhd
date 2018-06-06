@@ -4,6 +4,7 @@ use work.main_pack.all;
 
 entity word_bank is	
   port (
+		reset							: in std_logic;
 		clock							: in std_logic;
     kill_word					: in std_logic;
 		word_to_kill_index: in integer;
@@ -18,11 +19,14 @@ architecture rtl of word_bank is
 begin
 	-- insercao e remocao podem ser feitos ao mesmo tempo, soh da erro quando
 	-- o numero de palavras jah eh o maximo e se tenta excluir e inserir ao mesmo tempo
-	process(clock)
-		variable words_aux: word_table;
+	process(clock, reset)
+		variable words_aux: word_table := no_table;
 		variable num_words_aux: integer := 0;
 	begin
-		if clock'event and clock = '1' then
+		if reset = '1' then
+			num_words_aux := 0;
+			words_aux := no_table;
+		elsif clock'event and clock = '1' then
 			if insert_new_word = '1' then
 				words_aux(num_words_aux) := new_word;
 				num_words_aux := num_words_aux + 1;

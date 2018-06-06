@@ -6,6 +6,7 @@ use work.word_base.all;
 
 entity word_gen is	
 	port (
+		reset				: in std_logic;
 		get_word		: in std_logic;
 		new_word		: out word;
 		new_word_size	: out integer
@@ -15,9 +16,11 @@ end word_gen;
 architecture rtl of word_gen is
 	signal index: integer := 0;
 begin
-	process(get_word)		
+	process(get_word, reset)		
 	begin
-		if get_word'EVENT and get_word = '1' then		
+		if reset = '1' then
+			index <= 0;
+		elsif get_word'EVENT and get_word = '1' then
 			if index = num_words-1 then
 				index <= 0;
 			else

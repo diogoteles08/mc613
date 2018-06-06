@@ -21,6 +21,7 @@ architecture rtl of type_proc is
 
 	component word_bank		
 		port (
+			reset							: in std_logic;
 			clock							: in std_logic;
 			kill_word 				: in std_logic;
 			word_to_kill_index: in integer;
@@ -33,6 +34,7 @@ architecture rtl of type_proc is
 
 	component word_gen
 		port (
+			reset				: in std_logic;
 			get_word		: in std_logic;
 			new_word		: out word;
 			new_word_size	: out integer
@@ -108,6 +110,8 @@ architecture rtl of type_proc is
 	signal game_over: std_logic;
 	signal play_again: std_logic;
 	
+	signal reset: std_logic;
+	
 	-- Sinais para um contador utilizado para atrasar a atualização da
   -- posição da bola, a fim de evitar que a animação fique excessivamente
   -- veloz. Aqui utilizamos um contador de 0 a 1250000, de modo que quando
@@ -149,19 +153,23 @@ begin
 --		"011" when WAIT_RELEASE,		
 --		"000" when GAME_LOST;
 
+	reset <= KEY(0);
+
 	bank: word_bank
 		port map (
-			clock							=> CLOCK_50,
+			reset								=> reset,
+			clock								=> CLOCK_50,
 			kill_word 					=> kill_word,
-			word_to_kill_index 		=> locked_word_index,
+			word_to_kill_index 	=> locked_word_index,
 			insert_new_word			=> get_new_word,
 			new_word						=> new_word,
-			words 						=> active_words,
+			words 							=> active_words,
 			num_words 					=> num_active_words
 		);
 
 	generator: word_gen
 		port map (
+			reset					=> reset,
 			get_word			=> get_new_word,
 			new_word			=> new_word,
 			new_word_size	=> new_word_size
@@ -268,7 +276,7 @@ begin
 			variable found_word: std_logic;
 		begin
 			if CLOCK_50'event and CLOCK_50 = '1' then
-				if KEY(0) = '0' then
+				if reset = '0' then
 					-- Reset game
 					state <= BEGIN_GAME;
 					start_game <= '0';
