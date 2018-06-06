@@ -61,7 +61,7 @@ architecture rtl of type_proc is
 			VGA_CLK                 : out std_logic;
 			TIMER_P									: out std_logic;
 			GAME_OVER								: out std_logic;
-			LEDR										: out std_logic_vector(4 downto 0)
+			LEDR										: out std_logic_vector(9 downto 0)
 		);
 	end component;
 
@@ -123,6 +123,12 @@ architecture rtl of type_proc is
 	signal state: state_t := BEGIN_GAME;
 	signal next_state: state_t := BEGIN_GAME;
 
+	signal r_begin : std_logic := '0';
+	signal r_locked : std_logic := '0';
+	signal r_free : std_logic := '0';
+	signal r_hit : std_logic := '0';
+	signal r_miss : std_logic := '0';
+	signal r_lost : std_logic := '0';
 begin
 	
 	-- Leds for testing
@@ -141,6 +147,25 @@ begin
 --		"011" when HIT_PROCESSING,
 --		"100" when MISS_PROCESSING,
 --		"000" when GAME_LOST;
+--	r_begin <= '1' when (state = BEGIN_GAME or r_begin = '1') else '0';
+--	r_locked <= '1' when (state = LOCKED or r_locked = '1') else '0';
+--	r_free <= '1' when (state = BEGIN_GAME or r_free = '1') else '0';
+--	r_hit <= '1' when (state = HIT_PROCESSING or r_hit = '1') else '0';
+--	r_miss <= '1' when (state = MISS_PROCESSING or r_miss = '1') else '0';
+--	r_lost <= '1' when (state = GAME_LOST or r_lost = '1') else '0';
+	
+--	-- Leds for testing
+--	LEDR(2 downto 0) <= "111" when state = BEGIN_GAME else
+--			  "001" when state = LOCKED else
+--			  "010" when state = FREE else
+--			  "011" when state = HIT_PROCESSING else
+--			  "100" when state = MISS_PROCESSING else
+--			  "101" when state = GAME_LOST;
+--	LEDR(5 downto 0) <= r_begin&r_locked&r_free&r_hit&r_miss&r_lost;
+	--LEDR(0) <= '1' when state = BEGIN_GAME; key_on;
+	--LEDR(1) <= letter_hit;
+	--LEDR(2) <= letter_miss;
+	--LEDR(3) <= start_game;
 
 	bank: word_bank
 		port map (
@@ -194,7 +219,7 @@ begin
 			VGA_CLK					=> VGA_CLK,
 			TIMER_P					=> timer,
 			GAME_OVER				=> game_over,
-			LEDR						=> LEDR(9 downto 5)
+			LEDR						=> LEDR(9 downto 0)
 		);
 		
 		process (letter_hit)
@@ -302,7 +327,6 @@ begin
 						
 						when BEGIN_GAME =>
 							play_again <= '0';
-							
 							if key_on = '1' then
 								-- User pressed any key and game will begin
 								state <= FREE;
@@ -311,7 +335,7 @@ begin
 						
 						when FREE =>
 							start_game <= '0';
-							
+
 							if key_on = '1' then								
 								
 								-- Procura pela palavra comecando com a letra digitada
