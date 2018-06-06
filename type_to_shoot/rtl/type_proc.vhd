@@ -262,7 +262,7 @@ begin
 			if CLOCK_50'event and CLOCK_50 = '1' then
 				if KEY(0) = '0' then
 					-- Reset game
-					next_state <= BEGIN_GAME;
+					state <= BEGIN_GAME;
 					start_game <= '0';
 					letter_miss <= '0';
 					letter_hit <= '0';
@@ -271,16 +271,15 @@ begin
 
 				elsif game_over = '1' and state /= GAME_LOST then
 					-- It can get here from any state
-					next_state <= GAME_LOST;
+					state <= GAME_LOST;
 					start_game <= '0';
 					letter_miss <= '0';
 					letter_hit <= '0';
 					kill_word <= '0';
 					stage_end <= '0';
 
-				else
-					next_state <= state;
-					
+				else					
+				
 					case state is
 
 						-- Estados independentes do teclado
@@ -288,16 +287,16 @@ begin
 						when HIT_PROCESSING =>
 							letter_hit <= '0';
 							if kill_word = '0' then
-								next_state <= LOCKED;
+								state <= LOCKED;
 							else
-								next_state <= FREE;
+								state <= FREE;
 								kill_word <= '0';
 								stage_end <= '0';
 							end if;
 
 						when MISS_PROCESSING =>
 							letter_miss <= '0';
-							next_state <= back_to_state;
+							state <= back_to_state;
 
 						-----------------------------------
 						
@@ -306,7 +305,7 @@ begin
 							
 							if key_on = '1' then
 								-- User pressed any key and game will begin
-								next_state <= FREE;
+								state <= FREE;
 								start_game <= '1';								
 							end if;						
 						
@@ -322,7 +321,7 @@ begin
 								for i in max_words-1 downto 0 loop
 									if i < num_active_words then
 										if active_words(i)(7 downto 0) = char_pressed then
-											next_state <= HIT_PROCESSING;
+											state <= HIT_PROCESSING;
 											found_word := '1';
 											letter_hit <= '1';
 											locked_word_index <= i;									
@@ -352,7 +351,7 @@ begin
 								end loop;
 								
 								if found_word = '0' then
-									next_state <= MISS_PROCESSING;
+									state <= MISS_PROCESSING;
 									back_to_state := FREE;
 									letter_miss <= '1';
 								end if;
@@ -362,7 +361,7 @@ begin
 							if key_on = '1' then
 								-- Verifica se o usuario digitou a letra esperada
 								if active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = char_pressed then
-									next_state <= HIT_PROCESSING;
+									state <= HIT_PROCESSING;
 									letter_hit <= '1';
 									current_letter_index := current_letter_index + 1;
 
@@ -386,7 +385,7 @@ begin
 									end if;
 
 								else
-									next_state <= MISS_PROCESSING;
+									state <= MISS_PROCESSING;
 									back_to_state := LOCKED;
 									letter_miss <= '1';
 								end if;
@@ -396,7 +395,7 @@ begin
 							if key_on = '1' then
 								-- Player wants to play again
 								play_again <= '1';
-								next_state <= BEGIN_GAME;
+								state <= BEGIN_GAME;
 							end if;
 							
 					end case;								
@@ -409,13 +408,13 @@ begin
   -- inputs : CLOCK_50, rstn, next_state
   -- outputs: state
   -- seq_fsm: process (CLOCK_50, rstn)
-  seq_fsm: process (CLOCK_50)
-  begin  -- process seq_fsm
-    -- if rstn = '0' then                  -- asynchronous reset (active low)
-      -- state <= inicio;		
-    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge			
-      state <= next_state;			
-    end if;
-  end process seq_fsm;
+--  seq_fsm: process (CLOCK_50)
+--  begin  -- process seq_fsm
+--    -- if rstn = '0' then                  -- asynchronous reset (active low)
+--      -- state <= inicio;		
+--    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge			
+--      state <= next_state;			
+--    end if;
+--  end process seq_fsm;
 
 end rtl;
