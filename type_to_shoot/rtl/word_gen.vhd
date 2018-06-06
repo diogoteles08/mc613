@@ -18,7 +18,7 @@ architecture rtl of word_gen is
 begin
 	process(get_word, reset)		
 	begin
-		if reset = '1' then
+		if reset = '0' then
 			index <= 0;
 		elsif get_word'EVENT and get_word = '1' then
 			if index = num_words-1 then

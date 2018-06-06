@@ -869,7 +869,7 @@ GAME_OVER <= local_game_over;
   logica_mealy: process (CLOCK_50, reset)
   begin  -- process logica_mealy
 	 -- Reset assincrono
-	 if reset = '1' then
+	 if reset = '0' then
 		estado <= inicio;
 	 elsif CLOCK_50'event and CLOCK_50 = '1' then
 		if local_game_over = '1' then

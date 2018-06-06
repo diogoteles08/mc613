@@ -23,7 +23,7 @@ begin
 		variable words_aux: word_table := no_table;
 		variable num_words_aux: integer := 0;
 	begin
-		if reset = '1' then
+		if reset = '0' then
 			num_words_aux := 0;
 			words_aux := no_table;
 		elsif clock'event and clock = '1' then

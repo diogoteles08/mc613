@@ -153,7 +153,7 @@ begin
 --		"011" when WAIT_RELEASE,		
 --		"000" when GAME_LOST;
 
-	reset <= not KEY(0);
+	reset <= KEY(0);
 
 	bank: word_bank
 		port map (
