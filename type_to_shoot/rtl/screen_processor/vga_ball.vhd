@@ -125,6 +125,17 @@ architecture comportamento of vga_ball is
   constant col_4 : integer := 425;
   constant col_5 : integer := 530;
 
+  constant stage_0 : integer := 1;
+  constant stage_1 : integer := 1;
+  constant stage_2 : integer := 2;
+  constant stage_3 : integer := 3;
+  constant stage_4 : integer := 5;
+  constant stage_5 : integer := 8;
+  constant stage_6 : integer := 13;
+  constant stage_7 : integer := 21;
+  constant stage_8 : integer := 34;
+  constant stage_9 : integer := 55;
+  
   signal line_bases : array5 := (10, 10, 10, 10, 10);
   signal col_bases : array5 := (col_0, col_1, col_2, col_3, col_4);
   
@@ -282,7 +293,7 @@ begin  -- comportamento
 procura_indice: process (CLOCK_50)
   begin
 		if CLOCK_50'event and CLOCK_50 = '1' then
-			if local_game_over = '1' or reset = '0' then
+			if local_game_over = '1' or reset = '0' or estado = inicio then
 				for i in 0 to max_words-1 loop
 					empty_positions(i) <= 1;
 				end loop;
@@ -292,7 +303,8 @@ procura_indice: process (CLOCK_50)
 				empty_positions(empty_position) <= 0;
 			elsif WORD_DESTROYED = '1' then
 				empty_positions(indice_locked) <= 1;
-			
+				palavras(indice_locked) <= no_word;
+				palavras_size(indice_locked) <= 0;
 			end if;
 		end if;
 end process procura_indice;
@@ -352,7 +364,9 @@ procura_indice_locked: process (CLOCK_50)
 				if found_word = '1' then
 					indice_locked <= word_index;
 				end if;
-			elsif local_game_over = '1' then
+			elsif WORD_DESTROYED = '1' then
+				indice_locked <= max_words;
+			elsif local_game_over = '1' or reset = '0' then
 				indice_locked <= max_words;
 			end if;
 		end if;
@@ -715,6 +729,12 @@ GAME_OVER <= local_game_over;
 		local_game_over <= '0';
 		if WORD_DESTROYED = '1' then
 			line_bases(indice_locked) <= 10;
+		elsif reset = '0' or estado = inicio then
+			line_bases(0) <= 10;
+			line_bases(1) <= 10;
+			line_bases(2) <= 10; 
+			line_bases(3) <= 10;
+			line_bases(4) <= 10;
 		elsif atualiza_pos_y = '1' then
 			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
             local_game_over <= '1';

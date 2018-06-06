@@ -285,6 +285,7 @@ begin
 					letter_hit <= '0';
 					kill_word <= '0';
 					stage_end <= '0';				
+					current_letter_index := 0;
 
 				elsif game_over = '1' and state /= GAME_LOST then
 					-- It can get here from any state
@@ -295,7 +296,7 @@ begin
 					letter_hit <= '0';
 					kill_word <= '0';
 					stage_end <= '0';
-
+					current_letter_index := 0;
 				else										
 					case state is
 
