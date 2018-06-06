@@ -44,7 +44,7 @@ architecture rtl of type_proc is
 	component vga_ball
 		port (
 			CLOCK_50                : in  std_logic;
-			KEY                     : in  std_logic_vector(2 downto 0);
+			RESET                   : in  std_logic;
 			START_GAME							: in std_logic;
 			STAGE_END								: in std_logic;
 			PLAY_AGAIN							: in std_logic;
@@ -153,7 +153,7 @@ begin
 --		"011" when WAIT_RELEASE,		
 --		"000" when GAME_LOST;
 
-	reset <= KEY(0);
+	reset <= not KEY(0);
 
 	bank: word_bank
 		port map (
@@ -187,7 +187,7 @@ begin
 	screen_processor: vga_ball
 		port map (
 			CLOCK_50				=> CLOCK_50,
-			KEY							=> KEY,
+			RESET						=> reset,
 			START_GAME			=> start_game,
 			STAGE_END				=> stage_end,
 			PLAY_AGAIN			=> play_again,

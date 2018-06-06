@@ -42,7 +42,7 @@ entity vga_ball is
 	);
   port (    
     CLOCK_50                	: in  std_logic;
-    KEY                     	: in  std_logic_vector(2 downto 0);
+    RESET                     	: in  std_logic;
     START_GAME		        : in  std_logic;
     STAGE_END		        : in  std_logic;
     PLAY_AGAIN		        : in  std_logic;
@@ -866,9 +866,12 @@ GAME_OVER <= local_game_over;
   -- inputs : 
   -- outputs: atualiza_pos_y, line_rstn,
   --          line_enable, col_rstn, col_enable, we, timer_enable, timer_rstn
-  logica_mealy: process (CLOCK_50)
+  logica_mealy: process (CLOCK_50, reset)
   begin  -- process logica_mealy
-	 if CLOCK_50'event and CLOCK_50 = '1' then
+	 -- Reset assincrono
+	 if reset = '1' then
+		estado <= inicio;
+	 elsif CLOCK_50'event and CLOCK_50 = '1' then
 		if local_game_over = '1' then
 			estado <= show_over;
 		else
@@ -1055,7 +1058,7 @@ GAME_OVER <= local_game_over;
   begin  -- process build_rstn
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       rstn <= temp;
-		temp := KEY(0);
+		temp := reset;
     end if;
   end process build_rstn;
   
