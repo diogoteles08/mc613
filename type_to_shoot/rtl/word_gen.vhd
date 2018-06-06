@@ -26,6 +26,6 @@ begin
 		end if;
 		
 		new_word <= str_to_std(word_base(index));
-		new_word_size <= 1;
+		new_word_size <= 4;
 	end process;		
 end rtl;

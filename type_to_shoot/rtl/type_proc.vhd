@@ -1,4 +1,3 @@
-
 library ieee;
 library work;
 use ieee.std_logic_1164.all;
@@ -61,7 +60,7 @@ architecture rtl of type_proc is
 			VGA_CLK                 : out std_logic;
 			TIMER_P									: out std_logic;
 			GAME_OVER								: out std_logic;
-			LEDR										: out std_logic_vector(4 downto 0)
+			LEDR										: out std_logic_vector(9 downto 0)
 		);
 	end component;
 
@@ -122,6 +121,12 @@ architecture rtl of type_proc is
 	signal state: state_t := BEGIN_GAME;
 	signal next_state: state_t := BEGIN_GAME;
 
+	signal r_begin : std_logic := '0';
+	signal r_locked : std_logic := '0';
+	signal r_free : std_logic := '0';
+	signal r_hit : std_logic := '0';
+	signal r_miss : std_logic := '0';
+	signal r_lost : std_logic := '0';
 begin
 	
 	-- Leds for testing
@@ -191,8 +196,8 @@ begin
 			VGA_SYNC_N			=> VGA_SYNC_N,
 			VGA_CLK					=> VGA_CLK,
 			TIMER_P					=> timer,
-			GAME_OVER				=> game_over,
-			LEDR						=> open
+			GAME_OVER				=> game_over,			
+			LEDR						=> LEDR(9 downto 0)
 		);
 		
 		process (letter_hit)
@@ -300,7 +305,7 @@ begin
 								next_state := FREE;
 								start_game <= '1';								
 							end if;						
-
+							
 						when FREE =>							
 							if key_on = '1' then
 								state <= WAIT_RELEASE;
