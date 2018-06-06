@@ -44,7 +44,7 @@ architecture rtl of type_proc is
 
 	component word_gen
 		port (
-			reset				: in std_logic;
+			reset				: in std_logic; -- Active low
 			get_word		: in std_logic;
 			new_word		: out word;
 			new_word_size	: out integer
@@ -54,7 +54,7 @@ architecture rtl of type_proc is
 	component screen_proc
 		port (
 			CLOCK_50                : in  std_logic;
-			RESET                   : in  std_logic;
+			RESET                   : in  std_logic; -- Active low
 			START_GAME							: in std_logic;
 			STAGE_END								: in std_logic;
 			PLAY_AGAIN							: in std_logic;
@@ -172,7 +172,7 @@ begin
 		"011" when WAIT_RELEASE,		
 		"000" when GAME_LOST;
 
-	reset <= KEY(0);
+	reset <= KEY(0); -- Active low	
 
 	velocidade_hex : bin2dec 
 		port map (
@@ -221,7 +221,7 @@ begin
 
 	generator: word_gen
 		port map (
-			reset					=> reset,
+			reset					=> reset, -- Active low
 			get_word			=> get_new_word,
 			new_word			=> new_word,
 			new_word_size	=> new_word_size
@@ -239,7 +239,7 @@ begin
 	screen_processor: screen_proc
 		port map (
 			CLOCK_50				=> CLOCK_50,
-			RESET						=> reset,
+			RESET						=> reset, -- Active low
 			START_GAME			=> start_game,
 			STAGE_END				=> stage_end,
 			PLAY_AGAIN			=> play_again,
@@ -338,11 +338,12 @@ begin
 			variable next_state: state_t;
 			variable current_letter_index: integer;
 			variable found_word: std_logic;
-		begin
-			if CLOCK_50'event and CLOCK_50 = '1' then
+		begin		
+			if CLOCK_50'event and CLOCK_50 = '1' then								
 				if reset = '0' then
 					-- Reset game
-					state <= BEGIN_GAME;
+					state <= WAIT_RELEASE;
+					next_state := BEGIN_GAME;
 					start_game <= '0';
 					play_again <= '0';
 					letter_miss <= '0';
@@ -353,7 +354,9 @@ begin
 
 				elsif game_over = '1' and state /= GAME_LOST then
 					-- It can get here from any state
-					state <= GAME_LOST;
+					state <= WAIT_RELEASE;
+					next_state := GAME_LOST;
+					reset_word_bank <= '0'; -- Active low
 					start_game <= '0';
 					play_again <= '0';
 					letter_miss <= '0';
@@ -365,6 +368,7 @@ begin
 					case state is
 
 						when WAIT_RELEASE =>
+							reset_word_bank <= '1'; -- Active low
 							letter_hit <= '0';
 							letter_miss <= '0';
 							kill_word <= '0';
@@ -406,6 +410,7 @@ begin
 											-- Verifica se chegamos no tamanho maximo da palavra
 											if max_word_length = 1 then
 												kill_word <= '1';
+												current_letter_index := 0;
 												next_state := FREE;
 												current_letter_index := 0;
 
@@ -417,6 +422,7 @@ begin
 											-- Verifica se chegamos no fim da palavra
 											elsif active_words(i)(15 downto 8) = no_char then											
 												kill_word <= '1';
+												current_letter_index := 0;
 												next_state := FREE;
 												current_letter_index := 0;
 
@@ -448,6 +454,7 @@ begin
 									-- Verifica se chegamos no tamanho maximo da palavra
 									if current_letter_index = max_word_length then
 										kill_word <= '1';
+										current_letter_index := 0;
 										next_state := FREE;
 										current_letter_index := 0;
 
@@ -459,6 +466,7 @@ begin
 									-- Verifica se chegamos no fim da palavra
 									elsif active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char then
 										kill_word <= '1';
+										current_letter_index := 0;
 										next_state := FREE;
 										current_letter_index := 0;
 
