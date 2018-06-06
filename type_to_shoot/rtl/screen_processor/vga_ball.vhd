@@ -343,12 +343,15 @@ procura_indice_locked: process (LETTER_HIT)
 					indice_locked <= max_words;
 				end if;
 			end loop;
-			if locked_hits <= 9 then
-				--palavras(indice_locked)( (8*(locked_hits+1))-1 downto (8*locked_hits) -1) <= no_char;
-				--palavras(indice_locked)(7 downto 0) <= no_char;
-				locked_hits <= locked_hits + 1;
-			else
-				locked_hits <= 0;
+			
+			if indice_locked /= max_words then
+				if locked_hits < palavras_size(indice_locked) then
+					--palavras(indice_locked)( (8*(locked_hits+1))-1 downto (8*locked_hits) -1) <= no_char;
+					--palavras(indice_locked)(7 downto 0) <= no_char;
+					locked_hits <= locked_hits + 1;
+				else
+					locked_hits <= 0;
+				end if;
 			end if;
 		end if;
 end process procura_indice_locked;

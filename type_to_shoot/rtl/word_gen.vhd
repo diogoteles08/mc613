@@ -19,9 +19,9 @@ begin
 	begin
 		if get_word'EVENT and get_word = '1' then		
 			if index = num_words-1 then
-				index := 0;
+				index <= 0;
 			else
-				index := index + 1;
+				index <= index + 1;
 			end if;
 		end if;
 		
