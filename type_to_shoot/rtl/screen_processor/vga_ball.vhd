@@ -282,18 +282,17 @@ begin  -- comportamento
 procura_indice: process (CLOCK_50)
   begin
 		if CLOCK_50'event and CLOCK_50 = '1' then
-			if INSERT_WORD = '1' then
+			if local_game_over = '1' or reset = '0' then
+				for i in 0 to max_words-1 loop
+					empty_positions(i) <= 1;
+				end loop;
+			elsif INSERT_WORD = '1' then
 				palavras(empty_position) <= NEW_WORD;
 				palavras_size(empty_position) <= NEW_WORD_SIZE;
 				empty_positions(empty_position) <= 0;
 			elsif WORD_DESTROYED = '1' then
 				empty_positions(indice_locked) <= 1;
-			elsif local_game_over = '1' then
-				for i in 0 to max_words-1 loop
-					palavras(i) <= no_word;
-					palavras_size(i) <= 0;
-					empty_positions(i) <= 1;
-				end loop;
+			
 			end if;
 		end if;
 end process procura_indice;
