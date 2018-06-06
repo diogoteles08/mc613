@@ -125,7 +125,22 @@ architecture rtl of type_proc is
 
 begin
 	
-	-- Leds for testing	
+	-- Leds for testing
+--	LEDR(0) <= key_on;
+--	LEDR(1) <= letter_hit;
+--	LEDR(2) <= letter_miss;
+--	LEDR(3) <= kill_word;
+--	LEDR(4) <= game_over;
+--	LEDR(5) <= get_new_word;
+--	LEDR(6) <= '1' when num_active_words = max_words else '0';
+--	
+--	with state select LEDR(9 downto 7) <= 
+--		"111" when BEGIN_GAME,
+--		"001" when LOCKED,
+--		"010" when FREE,
+--		"011" when HIT_PROCESSING,
+--		"100" when MISS_PROCESSING,
+--		"000" when GAME_LOST;
 
 	bank: word_bank
 		port map (
@@ -213,7 +228,7 @@ begin
 					if timer = '1' then 
 						-- TODO: Administrate generation of new words
 						-- Just need to deal with get_new_word
-						if counter /= 5 then
+						if counter /= 20 then
 							counter := counter + 1;
 						else
 							counter := 0;
@@ -263,7 +278,9 @@ begin
 					kill_word <= '0';
 					stage_end <= '0';
 
-				else 				
+				else
+					next_state <= state;
+					
 					case state is
 
 						-- Estados independentes do teclado
@@ -285,16 +302,18 @@ begin
 						-----------------------------------
 						
 						when BEGIN_GAME =>
+							play_again <= '0';
+							
 							if key_on = '1' then
 								-- User pressed any key and game will begin
 								next_state <= FREE;
-								start_game <= '1';
-								play_again <= '0'; -- DESCIDA DO PLAY_AGAIN NAO ESTA INSTANTANEA
+								start_game <= '1';								
 							end if;						
 						
 						when FREE =>
-							if key_on = '1' then
-								start_game <= '0'; -- DESCIDA DO START_GAME NAO ESTA INSTANTANEA
+							start_game <= '0';
+							
+							if key_on = '1' then								
 								
 								-- Procura pela palavra comecando com a letra digitada
 								-- Similar a um decodificador de prioridade, os indices menores
