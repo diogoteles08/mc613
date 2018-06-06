@@ -3,9 +3,9 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 package main_pack is
-	constant max_words: integer := 4; -- Defines the max number of words simultaneously on screen
+	constant max_words: integer := 5; -- Defines the max number of words simultaneously on screen
 	constant max_word_length: integer := 10; -- Defines the max length of any word on the game	
-	
+		
 	subtype char is std_logic_vector(7 downto 0);
 	subtype word is std_logic_vector(max_word_length*8 - 1 downto 0);	
 	type word_table is array (max_words-1 downto 0) of word;
@@ -14,7 +14,7 @@ package main_pack is
 	constant no_char: std_logic_vector := "01011011"; -- 91
 	constant no_word: std_logic_vector := no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char;
 	
-	type array5 is array (0 to 4) of integer;	
+	type array5 is array (0 to max_words-1) of integer;	
 	
 	-- asc values on std_vector
 	constant letter_a: char := x"41"; -- A

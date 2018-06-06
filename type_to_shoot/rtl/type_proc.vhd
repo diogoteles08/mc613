@@ -123,10 +123,17 @@ architecture rtl of type_proc is
 begin
 	
 	-- Leds for testing
-	LEDR(0) <= key_on;
-	LEDR(1) <= letter_hit;
-	LEDR(2) <= letter_miss;
-	LEDR(3) <= start_game;
+	LEDR(2 downto 0) <= "000" when state = BEGIN_GAME else
+			  "001" when state = LOCKED else
+			  "010" when state = FREE else
+			  "011" when state = HIT_PROCESSING else
+			  "100" when state = MISS_PROCESSING else
+			  "101" when state = GAME_LOST;
+	
+	--LEDR(0) <= '1' when state = BEGIN_GAME; key_on;
+	--LEDR(1) <= letter_hit;
+	--LEDR(2) <= letter_miss;
+	--LEDR(3) <= start_game;
 
 	bank: word_bank
 		port map (
@@ -210,7 +217,7 @@ begin
 				if timer = '1' then 
 					-- TODO: Administrate generation of new words
 					-- Just need to deal with get_new_word
-					if counter /= 100 then
+					if counter /= 5 then
 						counter := counter + 1;
 					else
 						counter := 0;

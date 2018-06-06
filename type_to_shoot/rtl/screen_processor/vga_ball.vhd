@@ -46,7 +46,7 @@ entity vga_ball is
     START_GAME		        : in  std_logic;
     STAGE_END		        : in  std_logic;
     PLAY_AGAIN		        : in  std_logic;
-		INSERT_WORD							: in std_logic;
+	 INSERT_WORD							: in std_logic;
     NEW_WORD		        : in  word;
     NEW_WORD_SIZE		: in  integer;
     LOCKED_WORD		        : in  word;
@@ -117,7 +117,11 @@ architecture comportamento of vga_ball is
   signal inic_over : std_logic := '0';
   signal local_game_over : std_logic := '0';
 
-  signal locked_hits : integer range 0 to 10 := 0;
+  
+  --signal teste_new_word : word := letter_a&letter_b&no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char;
+  --signal teste_new_word_size : integer := 2;
+  
+  signal locked_hits : integer range 0 to max_word_length := 0;
   signal my_play : std_logic := '0';
   signal new_game : std_logic := '0';
   constant col_0 : integer := 5;
@@ -129,23 +133,32 @@ architecture comportamento of vga_ball is
 
   signal line_bases : array5 := (10, 10, 10, 10, 10);
   signal col_bases : array5 := (col_0, col_1, col_2, col_3, col_4);
+  
+  signal empty_positions :  array5 := (1, 1, 1, 1, 1);
+  signal empty_position :  integer range 0 to max_words-1;
 
   signal print_enable : std_logic := '0';
   signal ja_limpei : std_logic := '0';
-  signal indice : integer range 0 to 6 := 5;
+  signal inserted_funcionando : std_logic := '0';
+  
+  -- comeca alocado em uma coluna que nao existe
+  signal indice_locked : integer range 0 to max_words := max_words;
+  
+  
   type letra_t is array (0 to WORD_COL * WORD_LINE -1) of std_logic;
 
-  type matriz_palavras is array (0 to 4) of word;
-  signal letter_col : array5 := (10, 10, 10, 10, 10);
+  type matriz_palavras is array (0 to max_words-1) of word;
+  
+  signal palavras_size: array5 := (0, 0, 0, 0, 0);
+  
   signal palavras : matriz_palavras := (
-		letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a,
-		letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a,
 		no_word,
 		no_word,
-		letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a&letter_a
-	);
+		no_word,
+		no_word,
+		no_word);
 
-  type letras_atuais_t is array (0 to 4, 0 to 9) of letra_t;
+  type letras_atuais_t is array (0 to max_words-1, 0 to max_word_length-1) of letra_t;
 
   signal letras_atuais : letras_atuais_t;
 
@@ -266,9 +279,49 @@ begin  -- comportamento
 	 
     VGA_SYNC_N <= NOT sync;
     VGA_BLANK_N <= NOT blank;
-	 
-	 
- -- PROCESS PARA VERIFICAR SE ALGUMA PALAVRA FOI DESTRUIDA E QUAL
+
+ -- PROCESS PARA BUSCAR UMA POSICAO LIVRE PALAVRA NA MATRIZ DE PALAVRAS
+   -----------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
+   -- purpose: 
+   -- type   : 
+   -- inputs :
+   -- outputs: 
+	
+	inserted_funcionando <= INSERT_WORD or inserted_funcionando;
+	
+	LEDR <= "000" & INSERT_WORD & inserted_funcionando;
+procura_indice: process (INSERT_WORD)
+  begin
+		if INSERT_WORD'event and INSERT_WORD = '1' then
+			palavras(empty_position) <= NEW_WORD;
+			palavras_size(empty_position) <= NEW_WORD_SIZE;
+			empty_positions(empty_position) <= 0;
+		end if;
+end process procura_indice;
+
+ -- PROCESS PARA BUSCAR UMA POSICAO LIVRE PALAVRA NA MATRIZ DE PALAVRAS
+   -----------------------------------------------------------------------------
+   -----------------------------------------------------------------------------
+   -- purpose: 
+   -- type   : 
+   -- inputs :
+   -- outputs: 
+procura_empty_position: process (CLOCK_50)
+  begin
+		if CLOCK_50'event and CLOCK_50 = '1' then
+			for i in 0 to max_words-1 loop
+				if empty_positions(i) = 1 then
+					empty_position <= i;
+				end if;
+			end loop;
+		end if;
+end process procura_empty_position;
+ 
+ 
+ -- ISSO DAQUI NAO VAI FUNCIONAR PARA PALAVRAS IGUAIS NA TELA
+ -- ELE VAI SEMPRE LOCKAR NA PALAVRA MAIS A DIREITA NA TELA
+ -- PROCESS PARA VERIFICAR SE ALGUMA PALAVRA FOI DESTRUIDA E QUAL FOI
    -----------------------------------------------------------------------------
    -----------------------------------------------------------------------------
  
@@ -277,15 +330,30 @@ begin  -- comportamento
    -- type   : 
    -- inputs :
    -- outputs: 
-procura_indice: process (LETTER_HIT)
+procura_indice_locked: process (LETTER_HIT)
+	variable trying_to_lock : std_logic;
   begin
-		for i in 0 to 4 loop
-			if palavras(i)(0) = LOCKED_WORD(0) and palavras(i)(1) = LOCKED_WORD(1) and palavras(i)(2) = LOCKED_WORD(2)  and palavras(i)(3) = LOCKED_WORD(3)   and palavras(i)(4) = LOCKED_WORD(4)   and palavras(i)(5) = LOCKED_WORD(5)   and palavras(i)(6) = LOCKED_WORD(6)   and palavras(i)(7) = LOCKED_WORD(7)  and palavras(i)(8) = LOCKED_WORD(8)  and palavras(i)(9) = LOCKED_WORD(9) then
-					indice <= i;
+		if LETTER_HIT'event and LETTER_HIT = '1' then
+			for i in 0 to max_words-1 loop
+				trying_to_lock := '1';
+				for j in 0 to max_word_length-1 loop
+					if j >= locked_hits and palavras(i)(j) /= LOCKED_WORD(j) then
+						trying_to_lock := '0';
+					end if;
+				end loop;
+				if trying_to_lock = '1' then
+					indice_locked <= i;
+				else
+					indice_locked <= max_words;
+				end if;
+			end loop;
+			if locked_hits <= 9 then
+				--palavras(indice_locked)( (8*(locked_hits+1))-1 downto (8*locked_hits) -1) <= no_char;
+				--palavras(indice_locked)(7 downto 0) <= no_char;
+				locked_hits <= locked_hits + 1;
 			end if;
-		end loop;
-		locked_hits <= locked_hits + 1;
-end process procura_indice;
+		end if;
+end process procura_indice_locked;
 
 TIMER_P <= timer;
 GAME_OVER <= local_game_over;
@@ -301,124 +369,124 @@ GAME_OVER <= local_game_over;
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		if col_enable = '1' and line_enable = '1' then
-			if line >= line_bases(0) and line < line_bases(0) + WORD_LINE and col >= col_bases(0) and col < col_bases(0) + WORD_COL * letter_col(0) then
-				if (col < col_bases(0) + WORD_COL) and letter_col(0) >= 1 then
+			if line >= line_bases(0) and line < line_bases(0) + WORD_LINE and col >= col_bases(0) and col < col_bases(0) + WORD_COL * palavras_size(0) then
+				if (col < col_bases(0) + WORD_COL) and palavras_size(0) >= 1 then
 					print_enable <= letras_atuais(0, 0)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 2*WORD_COL) and letter_col(0) >= 2 then
+				elsif (col < col_bases(0) + 2*WORD_COL) and palavras_size(0) >= 2 then
 					print_enable <= letras_atuais(0, 1)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 3*WORD_COL) and letter_col(0) >= 3 then
+				elsif (col < col_bases(0) + 3*WORD_COL) and palavras_size(0) >= 3 then
 					print_enable <= letras_atuais(0, 2)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 4*WORD_COL) and letter_col(0) >= 4 then
+				elsif (col < col_bases(0) + 4*WORD_COL) and palavras_size(0) >= 4 then
 					print_enable <= letras_atuais(0, 3)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 5*WORD_COL) and letter_col(0) >= 5 then
+				elsif (col < col_bases(0) + 5*WORD_COL) and palavras_size(0) >= 5 then
 					print_enable <= letras_atuais(0, 4)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 6*WORD_COL) and letter_col(0) >= 6 then
+				elsif (col < col_bases(0) + 6*WORD_COL) and palavras_size(0) >= 6 then
 					print_enable <= letras_atuais(0, 5)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 7*WORD_COL) and letter_col(0) >= 7 then
+				elsif (col < col_bases(0) + 7*WORD_COL) and palavras_size(0) >= 7 then
 					print_enable <= letras_atuais(0, 6)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 8*WORD_COL) and letter_col(0) >= 8 then
+				elsif (col < col_bases(0) + 8*WORD_COL) and palavras_size(0) >= 8 then
 					print_enable <= letras_atuais(0, 7)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 9*WORD_COL) and letter_col(0) >= 9 then
+				elsif (col < col_bases(0) + 9*WORD_COL) and palavras_size(0) >= 9 then
 					print_enable <= letras_atuais(0, 8)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
-				elsif (col < col_bases(0) + 10*WORD_COL) and letter_col(0) >= 10 then
+				elsif (col < col_bases(0) + 10*WORD_COL) and palavras_size(0) >= 10 then
 					print_enable <= letras_atuais(0, 9)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 				else
 					print_enable <= '0';
 				end if;
 		  
 				--print_enable <= alfa( ( palavras(0, (col - col_bases(0)) / WORD_COL) ) - 65);
-		  elsif line >= line_bases(1) and line < line_bases(1) + WORD_LINE and col >= col_bases(1) and col < col_bases(1) + WORD_COL * letter_col(1) then
-				if (col < col_bases(1) + WORD_COL) and letter_col(1) >= 1 then
+		  elsif line >= line_bases(1) and line < line_bases(1) + WORD_LINE and col >= col_bases(1) and col < col_bases(1) + WORD_COL * palavras_size(1) then
+				if (col < col_bases(1) + WORD_COL) and palavras_size(1) >= 1 then
 					print_enable <= letras_atuais(1, 0)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 2*WORD_COL) and letter_col(1) >= 2 then
+				elsif (col < col_bases(1) + 2*WORD_COL) and palavras_size(1) >= 2 then
 					print_enable <= letras_atuais(1, 1)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 3*WORD_COL) and letter_col(1) >= 3 then
+				elsif (col < col_bases(1) + 3*WORD_COL) and palavras_size(1) >= 3 then
 					print_enable <= letras_atuais(1, 2)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 4*WORD_COL) and letter_col(1) >= 4 then
+				elsif (col < col_bases(1) + 4*WORD_COL) and palavras_size(1) >= 4 then
 					print_enable <= letras_atuais(1, 3)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 5*WORD_COL) and letter_col(1) >= 5 then
+				elsif (col < col_bases(1) + 5*WORD_COL) and palavras_size(1) >= 5 then
 					print_enable <= letras_atuais(1, 4)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 6*WORD_COL) and letter_col(1) >= 6 then
+				elsif (col < col_bases(1) + 6*WORD_COL) and palavras_size(1) >= 6 then
 					print_enable <= letras_atuais(1, 5)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 7*WORD_COL) and letter_col(1) >= 7 then
+				elsif (col < col_bases(1) + 7*WORD_COL) and palavras_size(1) >= 7 then
 					print_enable <= letras_atuais(1, 6)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 8*WORD_COL) and letter_col(1) >= 8 then
+				elsif (col < col_bases(1) + 8*WORD_COL) and palavras_size(1) >= 8 then
 					print_enable <= letras_atuais(1, 7)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 9*WORD_COL) and letter_col(1) >= 9 then
+				elsif (col < col_bases(1) + 9*WORD_COL) and palavras_size(1) >= 9 then
 					print_enable <= letras_atuais(1, 8)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
-				elsif (col < col_bases(1) + 10*WORD_COL) and letter_col(1) >= 10 then
+				elsif (col < col_bases(1) + 10*WORD_COL) and palavras_size(1) >= 10 then
 					print_enable <= letras_atuais(1, 9)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
 				else
 					print_enable<= '0';
 				end if;
-		  elsif line >= line_bases(2) and line < line_bases(2) + WORD_LINE and col >= col_bases(2) and col < col_bases(2) + WORD_COL * letter_col(2) then
-				if (col < col_bases(2) + WORD_COL) and letter_col(2) >= 1 then
+		  elsif line >= line_bases(2) and line < line_bases(2) + WORD_LINE and col >= col_bases(2) and col < col_bases(2) + WORD_COL * palavras_size(2) then
+				if (col < col_bases(2) + WORD_COL) and palavras_size(2) >= 1 then
 					print_enable <= letras_atuais(2, 0)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 2*WORD_COL) and letter_col(2) >= 2 then
+				elsif (col < col_bases(2) + 2*WORD_COL) and palavras_size(2) >= 2 then
 					print_enable <= letras_atuais(2, 1)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 3*WORD_COL) and letter_col(2) >= 3 then
+				elsif (col < col_bases(2) + 3*WORD_COL) and palavras_size(2) >= 3 then
 					print_enable <= letras_atuais(2, 2)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 4*WORD_COL) and letter_col(2) >= 4 then
+				elsif (col < col_bases(2) + 4*WORD_COL) and palavras_size(2) >= 4 then
 					print_enable <= letras_atuais(2, 3)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 5*WORD_COL) and letter_col(2) >= 5 then
+				elsif (col < col_bases(2) + 5*WORD_COL) and palavras_size(2) >= 5 then
 					print_enable <= letras_atuais(2, 4)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 6*WORD_COL) and letter_col(2) >= 6 then
+				elsif (col < col_bases(2) + 6*WORD_COL) and palavras_size(2) >= 6 then
 					print_enable <= letras_atuais(2, 5)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 7*WORD_COL) and letter_col(2) >= 7 then
+				elsif (col < col_bases(2) + 7*WORD_COL) and palavras_size(2) >= 7 then
 					print_enable <= letras_atuais(2, 6)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 8*WORD_COL) and letter_col(2) >= 8 then
+				elsif (col < col_bases(2) + 8*WORD_COL) and palavras_size(2) >= 8 then
 					print_enable <= letras_atuais(2, 7)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 9*WORD_COL) and letter_col(2) >= 9 then
+				elsif (col < col_bases(2) + 9*WORD_COL) and palavras_size(2) >= 9 then
 					print_enable <= letras_atuais(2, 8)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(2) + 10*WORD_COL) and letter_col(2) >= 10 then
+				elsif (col < col_bases(2) + 10*WORD_COL) and palavras_size(2) >= 10 then
 					print_enable <= letras_atuais(2, 9)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
 				else
 					print_enable <= '0';
 				end if;
-		  elsif line >= line_bases(3) and line < line_bases(3) + WORD_LINE and col >= col_bases(3) and col < col_bases(3) + WORD_COL * letter_col(3) then
-				if (col < col_bases(3) + WORD_COL) and letter_col(3) >= 1 then
+		  elsif line >= line_bases(3) and line < line_bases(3) + WORD_LINE and col >= col_bases(3) and col < col_bases(3) + WORD_COL * palavras_size(3) then
+				if (col < col_bases(3) + WORD_COL) and palavras_size(3) >= 1 then
 					print_enable <= letras_atuais(3, 0)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 2*WORD_COL) and letter_col(3) >= 2 then
+				elsif (col < col_bases(3) + 2*WORD_COL) and palavras_size(3) >= 2 then
 					print_enable <= letras_atuais(3, 1)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 3*WORD_COL) and letter_col(3) >= 3 then
+				elsif (col < col_bases(3) + 3*WORD_COL) and palavras_size(3) >= 3 then
 					print_enable <= letras_atuais(3, 2)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 4*WORD_COL) and letter_col(3) >= 4 then
+				elsif (col < col_bases(3) + 4*WORD_COL) and palavras_size(3) >= 4 then
 					print_enable <= letras_atuais(3, 3)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 5*WORD_COL) and letter_col(3) >= 5 then
+				elsif (col < col_bases(3) + 5*WORD_COL) and palavras_size(3) >= 5 then
 					print_enable <= letras_atuais(3, 4)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 6*WORD_COL) and letter_col(3) >= 6 then
+				elsif (col < col_bases(3) + 6*WORD_COL) and palavras_size(3) >= 6 then
 					print_enable <= letras_atuais(3, 5)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 7*WORD_COL) and letter_col(3) >= 7 then
+				elsif (col < col_bases(3) + 7*WORD_COL) and palavras_size(3) >= 7 then
 					print_enable <= letras_atuais(3, 6)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 8*WORD_COL) and letter_col(3) >= 8 then
+				elsif (col < col_bases(3) + 8*WORD_COL) and palavras_size(3) >= 8 then
 					print_enable <= letras_atuais(3, 7)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 9*WORD_COL) and letter_col(3) >= 9 then
+				elsif (col < col_bases(3) + 9*WORD_COL) and palavras_size(3) >= 9 then
 					print_enable <= letras_atuais(3, 8)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
-				elsif (col < col_bases(3) + 10*WORD_COL) and letter_col(3) >= 10 then
+				elsif (col < col_bases(3) + 10*WORD_COL) and palavras_size(3) >= 10 then
 					print_enable <= letras_atuais(3, 9)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
 				else
 					print_enable <= '0';
 				end if;
-		  elsif line >= line_bases(4) and line < line_bases(4) + WORD_LINE and col >= col_bases(4) and col < col_bases(4) + WORD_COL * letter_col(4) then
-				if (col < col_bases(4) + WORD_COL) and letter_col(4) >= 1 then
+		  elsif line >= line_bases(4) and line < line_bases(4) + WORD_LINE and col >= col_bases(4) and col < col_bases(4) + WORD_COL * palavras_size(4) then
+				if (col < col_bases(4) + WORD_COL) and palavras_size(4) >= 1 then
 					print_enable <= letras_atuais(4, 0)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));	
-				elsif (col < col_bases(4) + 2*WORD_COL) and letter_col(4) >= 2 then
+				elsif (col < col_bases(4) + 2*WORD_COL) and palavras_size(4) >= 2 then
 					print_enable <= letras_atuais(4, 1)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 3*WORD_COL) and letter_col(4) >= 3 then
+				elsif (col < col_bases(4) + 3*WORD_COL) and palavras_size(4) >= 3 then
 					print_enable <= letras_atuais(4, 2)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 4*WORD_COL) and letter_col(4) >= 4 then
+				elsif (col < col_bases(4) + 4*WORD_COL) and palavras_size(4) >= 4 then
 					print_enable <= letras_atuais(4, 3)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 5*WORD_COL) and letter_col(4) >= 5 then
+				elsif (col < col_bases(4) + 5*WORD_COL) and palavras_size(4) >= 5 then
 					print_enable <= letras_atuais(4, 4)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 6*WORD_COL) and letter_col(4) >= 6 then
+				elsif (col < col_bases(4) + 6*WORD_COL) and palavras_size(4) >= 6 then
 					print_enable <= letras_atuais(4, 5)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 7*WORD_COL) and letter_col(4) >= 7 then
+				elsif (col < col_bases(4) + 7*WORD_COL) and palavras_size(4) >= 7 then
 					print_enable <= letras_atuais(4, 6)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 8*WORD_COL) and letter_col(4) >= 8 then
+				elsif (col < col_bases(4) + 8*WORD_COL) and palavras_size(4) >= 8 then
 					print_enable <= letras_atuais(4, 7)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 9*WORD_COL) and letter_col(4) >= 9 then
+				elsif (col < col_bases(4) + 9*WORD_COL) and palavras_size(4) >= 9 then
 					print_enable <= letras_atuais(4, 8)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
-				elsif (col < col_bases(4) + 10*WORD_COL) and letter_col(4) >= 10 then
+				elsif (col < col_bases(4) + 10*WORD_COL) and palavras_size(4) >= 10 then
 					print_enable <= letras_atuais(4, 9)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
 				else
 					print_enable <= '0';
@@ -476,15 +544,15 @@ GAME_OVER <= local_game_over;
 		  if inic_limpa = '1' then
 				pixel <= "000";
         elsif print_enable = '1' and inic_splash = '0' then
-				if col >= col_bases(0) and col < col_bases(0) + letter_col(0) * WORD_COL and indice = 0 then
+				if col >= col_bases(0) and col < col_bases(0) + palavras_size(0) * WORD_COL and indice_locked = 0 then
 					pixel <= "101";
-				elsif col >= col_bases(1) and col < col_bases(1) + letter_col(1) * WORD_COL and indice = 1 then
+				elsif col >= col_bases(1) and col < col_bases(1) + palavras_size(1) * WORD_COL and indice_locked = 1 then
 					pixel <= "101";
-				elsif col >= col_bases(2) and col < col_bases(2) + letter_col(2) * WORD_COL and indice = 2 then
+				elsif col >= col_bases(2) and col < col_bases(2) + palavras_size(2) * WORD_COL and indice_locked = 2 then
 					pixel <= "101";
-				elsif col >= col_bases(3) and col < col_bases(3) + letter_col(3) * WORD_COL and indice = 3 then
+				elsif col >= col_bases(3) and col < col_bases(3) + palavras_size(3) * WORD_COL and indice_locked = 3 then
 					pixel <= "101";
-				elsif col >= col_bases(4) and col < col_bases(4) + letter_col(4) * WORD_COL and indice = 4 then
+				elsif col >= col_bases(4) and col < col_bases(4) + palavras_size(4) * WORD_COL and indice_locked = 4 then
 					pixel <= "101";
 				else
 					pixel <= "111";
@@ -502,8 +570,7 @@ GAME_OVER <= local_game_over;
     end if;
   end process troca_letra_atual;
 
-	-- se a letra cagar 7 downto 0
-	letras_atuais(0, 0) <= alfa (to_integer(unsigned(palavras(0)(7 downto 0))) - 65);
+  letras_atuais(0, 0) <= alfa (to_integer(unsigned(palavras(0)(7 downto 0))) - 65);
 	letras_atuais(0, 1) <= alfa (to_integer(unsigned(palavras(0)(15 downto 8))) - 65);
 	letras_atuais(0, 2) <= alfa (to_integer(unsigned(palavras(0)(23 downto 16))) - 65);
 	letras_atuais(0, 3) <= alfa (to_integer(unsigned(palavras(0)(31 downto 24))) - 65);
@@ -616,20 +683,20 @@ GAME_OVER <= local_game_over;
   -- inputs : estado, fim_escrita, timer
   -- outputs: proximo_estado, atualiza_pos_y, line_rstn,
   --          line_enable, col_rstn, col_enable, we, timer_enable, timer_rstn
-  logica_mealy: process (estado, fim_escrita, timer, my_play, ja_limpei)
+  logica_mealy: process (estado, fim_escrita, timer, START_GAME, PLAY_AGAIN, ja_limpei)
   begin  -- process logica_mealy
 	 inic_limpa 	  <= '0';
     case estado is
-      when inicio         => if timer = '1' and my_play = '1' and ja_limpei = '0' then              
+      when inicio         => if timer = '1' and (START_GAME = '1' or my_play = '1') and ja_limpei = '0' then              
                                proximo_estado <= limpa_tela;
 										 ja_limpei <= '1';
-									  elsif timer = '1' and my_play = '1' and local_game_over = '0' then
+									  elsif timer = '1' and (START_GAME = '1' or my_play = '1') and local_game_over = '0' then
 									    proximo_estado <= constroi_quadro;
-									  elsif timer ='1' and my_play = '0' and local_game_over = '0' then
+									  elsif timer ='1' and (START_GAME = '0' or my_play = '0') and local_game_over = '0' then
 										 proximo_estado <= show_splash;
-									  elsif timer = '1' and new_game = '0' and local_game_over = '1' then
+									  elsif timer = '1' and (PLAY_AGAIN = '0' or new_game = '0') and local_game_over = '1' then
 										 proximo_estado <= show_over;
-									  elsif timer = '1' and new_game = '1' and local_game_over = '1' then
+									  elsif timer = '1' and (PLAY_AGAIN = '1' or new_game = '1') and local_game_over = '1' then
 									    proximo_estado <= show_splash;
                              else
                                proximo_estado <= inicio;
@@ -648,7 +715,7 @@ GAME_OVER <= local_game_over;
 									  inic_limpa 	  <= '0';
 									  inic_over 	  <= '0';
 
-									  LEDR <= "00001";
+									  --LEDR <= "00001";
 
       when constroi_quadro=> if fim_escrita = '1' then
                                proximo_estado <= desce_palavras;
@@ -668,7 +735,7 @@ GAME_OVER <= local_game_over;
 									  inic_splash    <= '0';
 									  inic_limpa 	  <= '0';
 									  inic_over 	  <= '0';
-									  LEDR <= "00010";
+									  --LEDR <= "00010";
 
 
       when desce_palavras => proximo_estado <= inicio;
@@ -685,7 +752,7 @@ GAME_OVER <= local_game_over;
 									  inic_splash     <= '0';
 									  inic_limpa 	  <= '0';
 									  inic_over 	  <= '0';
-									  LEDR <= "00100";
+									  --LEDR <= "00100";
 
 
       when show_splash    => if fim_escrita = '1' then
@@ -707,7 +774,7 @@ GAME_OVER <= local_game_over;
 									  inic_limpa 	  <= '0';
 									  inic_over 	  <= '0';
 
-									  LEDR <= "01000";
+									  --LEDR <= "01000";
 									  
 		 when limpa_tela       => if fim_escrita = '1' then
 											proximo_estado <= inicio;
@@ -729,7 +796,7 @@ GAME_OVER <= local_game_over;
 									  inic_splash    <= '0';
 									  inic_limpa 	  <= '1';
 									  inic_over 	  <= '0';
-									  LEDR <= "10000";
+									  --LEDR <= "10000";
 									  
 		  when OTHERS 			  => if fim_escrita = '1' then
 											proximo_estado <= inicio;
@@ -749,7 +816,7 @@ GAME_OVER <= local_game_over;
 									  inic_splash    <= '0';
 									  inic_limpa 	  <= '0';
 									  inic_over 	  <= '1';
-									  LEDR <= "10001";
+									  --LEDR <= "10001";
 
     end case;
   end process logica_mealy;
