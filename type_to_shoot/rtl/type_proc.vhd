@@ -188,7 +188,7 @@ begin
 			NEW_WORD_SIZE		=> new_word_size,
 			LOCKED_WORD 		=> locked_word,
 			LOCKED_EVENT		=> locked_event,
-			LETTER_HITS  		=> current_letter_index,
+			LETTER_HITS  		=> current_letter_index_sig,
 			WORD_DESTROYED	=> kill_word,
 			NUM_HITS				=> num_hits,
 			NUM_MISSES			=> num_misses,

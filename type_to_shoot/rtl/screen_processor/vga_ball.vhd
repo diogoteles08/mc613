@@ -115,12 +115,7 @@ architecture comportamento of vga_ball is
   signal inic_screen : std_logic := '0';
   signal over_screen : std_logic := '0';
   signal local_game_over : std_logic := '0';
-
   
-  --signal teste_new_word : word := letter_a&letter_b&no_char&no_char&no_char&no_char&no_char&no_char&no_char&no_char;
-  --signal teste_new_word_size : integer := 2;
-  
-  signal locked_hits : integer range 0 to max_word_length := 0;
   signal my_play : std_logic := '0';
   signal my_start : std_logic := '0';
   constant col_0 : integer := 5;
@@ -284,9 +279,6 @@ begin  -- comportamento
    -- type   : 
    -- inputs :
    -- outputs: 
-	
-	LEDR(1 downto 0) <= my_play & my_start;
-	
 procura_indice: process (INSERT_WORD)
   begin
 		if INSERT_WORD'event and INSERT_WORD = '1' then
@@ -326,13 +318,13 @@ end process procura_empty_position;
    -- type   : 
    -- inputs :
    -- outputs: 
-procura_indice_locked: process (LETTER_HIT)
+procura_indice_locked: process (LOCKED_EVENT)
 	variable trying_to_lock : std_logic;
   begin
-		if LETTER_HIT'event and LETTER_HIT = '1' then
+		if LOCKED_EVENT'event and LOCKED_EVENT = '1' then
 			for i in 0 to max_words-1 loop
 				trying_to_lock := '1';
-				for j in 0 to max_word_length-1 loop
+				for j in 0 to max_word_length*8 -1 loop
 					if palavras(i)(j) /= LOCKED_WORD(j) then
 						trying_to_lock := '0';
 					end if;
@@ -343,16 +335,6 @@ procura_indice_locked: process (LETTER_HIT)
 					indice_locked <= max_words;
 				end if;
 			end loop;
-			
-			if indice_locked /= max_words then
-				if locked_hits < palavras_size(indice_locked) then
-					--palavras(indice_locked)( (8*(locked_hits+1))-1 downto (8*locked_hits) -1) <= no_char;
-					--palavras(indice_locked)(7 downto 0) <= no_char;
-					locked_hits <= locked_hits + 1;
-				else
-					locked_hits <= 0;
-				end if;
-			end if;
 		end if;
 end process procura_indice_locked;
 
@@ -372,61 +354,61 @@ GAME_OVER <= local_game_over;
 		if col_enable = '1' and line_enable = '1' then
 			if line >= line_bases(0) and line < line_bases(0) + WORD_LINE and col >= col_bases(0) and col < col_bases(0) + WORD_COL * palavras_size(0) then
 				if (col < col_bases(0) + WORD_COL) and palavras_size(0) >= 1 then
-					if indice_locked = 0 and locked_hits >= 1 then
+					if indice_locked = 0 and LETTER_HITS >= 1 then
 						print_enable <= '0';
 					else
 						print_enable <= letras_atuais(0, 0)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 					end if;
 				elsif (col < col_bases(0) + 2*WORD_COL) and palavras_size(0) >= 2 then
-                                        if indice_locked = 0 and locked_hits >= 2 then
+                                        if indice_locked = 0 and LETTER_HITS >= 2 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 1)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 3*WORD_COL) and palavras_size(0) >= 3 then
-                                        if indice_locked = 0 and locked_hits >= 3 then
+                                        if indice_locked = 0 and LETTER_HITS >= 3 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 2)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 4*WORD_COL) and palavras_size(0) >= 4 then
-                                        if indice_locked = 0 and locked_hits >= 3 then
+                                        if indice_locked = 0 and LETTER_HITS >= 3 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 3)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
 													 end if;
 				elsif (col < col_bases(0) + 5*WORD_COL) and palavras_size(0) >= 5 then
-                                        if indice_locked = 0 and locked_hits >= 4 then
+                                        if indice_locked = 0 and LETTER_HITS >= 4 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 4)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 6*WORD_COL) and palavras_size(0) >= 6 then
-                                        if indice_locked = 0 and locked_hits >= 5 then
+                                        if indice_locked = 0 and LETTER_HITS >= 5 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 5)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 7*WORD_COL) and palavras_size(0) >= 7 then
-                                        if indice_locked = 0 and locked_hits >= 6 then
+                                        if indice_locked = 0 and LETTER_HITS >= 6 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 6)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 8*WORD_COL) and palavras_size(0) >= 8 then
-                                        if indice_locked = 0 and locked_hits >= 7 then
+                                        if indice_locked = 0 and LETTER_HITS >= 7 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 7)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 9*WORD_COL) and palavras_size(0) >= 9 then
-                                        if indice_locked = 0 and locked_hits >= 8 then
+                                        if indice_locked = 0 and LETTER_HITS >= 8 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 8)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(0) + 10*WORD_COL) and palavras_size(0) >= 10 then
-                                        if indice_locked = 0 and locked_hits >= 9 then
+                                        if indice_locked = 0 and LETTER_HITS >= 9 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(0, 9)((line-line_bases(0)) * WORD_COL + ((col+2) mod WORD_COL));
@@ -438,61 +420,61 @@ GAME_OVER <= local_game_over;
 				--print_enable <= alfa( ( palavras(0, (col - col_bases(0)) / WORD_COL) ) - 65);
 		  elsif line >= line_bases(1) and line < line_bases(1) + WORD_LINE and col >= col_bases(1) and col < col_bases(1) + WORD_COL * palavras_size(1) then
 				if (col < col_bases(1) + WORD_COL) and palavras_size(1) >= 1 then
-                                        if indice_locked = 1 and locked_hits >= 1 then
+                                        if indice_locked = 1 and LETTER_HITS >= 1 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 0)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 2*WORD_COL) and palavras_size(1) >= 2 then
-                                        if indice_locked = 1 and locked_hits >= 2 then
+                                        if indice_locked = 1 and LETTER_HITS >= 2 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 1)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 3*WORD_COL) and palavras_size(1) >= 3 then
-                                        if indice_locked = 1 and locked_hits >= 3 then
+                                        if indice_locked = 1 and LETTER_HITS >= 3 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 2)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 4*WORD_COL) and palavras_size(1) >= 4 then
-                                        if indice_locked = 1 and locked_hits >= 4 then
+                                        if indice_locked = 1 and LETTER_HITS >= 4 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 3)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 5*WORD_COL) and palavras_size(1) >= 5 then
-                                        if indice_locked = 1 and locked_hits >= 5 then
+                                        if indice_locked = 1 and LETTER_HITS >= 5 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 4)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 6*WORD_COL) and palavras_size(1) >= 6 then
-                                        if indice_locked = 1 and locked_hits >= 6 then
+                                        if indice_locked = 1 and LETTER_HITS >= 6 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 5)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 7*WORD_COL) and palavras_size(1) >= 7 then
-                                        if indice_locked = 1 and locked_hits >= 7 then
+                                        if indice_locked = 1 and LETTER_HITS >= 7 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 6)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 8*WORD_COL) and palavras_size(1) >= 8 then
-                                        if indice_locked = 1 and locked_hits >= 8 then
+                                        if indice_locked = 1 and LETTER_HITS >= 8 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 7)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 9*WORD_COL) and palavras_size(1) >= 9 then
-                                        if indice_locked = 1 and locked_hits >= 9 then
+                                        if indice_locked = 1 and LETTER_HITS >= 9 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 8)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(1) + 10*WORD_COL) and palavras_size(1) >= 10 then
-                                        if indice_locked = 1 and locked_hits >= 10 then
+                                        if indice_locked = 1 and LETTER_HITS >= 10 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(1, 9)((line-line_bases(1)) * WORD_COL + ((col+1) mod WORD_COL));
@@ -502,61 +484,61 @@ GAME_OVER <= local_game_over;
 				end if;
 		  elsif line >= line_bases(2) and line < line_bases(2) + WORD_LINE and col >= col_bases(2) and col < col_bases(2) + WORD_COL * palavras_size(2) then
 				if (col < col_bases(2) + WORD_COL) and palavras_size(2) >= 1 then
-                                        if indice_locked = 2 and locked_hits >= 1 then
+                                        if indice_locked = 2 and LETTER_HITS >= 1 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 0)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 2*WORD_COL) and palavras_size(2) >= 2 then
-                                        if indice_locked = 2 and locked_hits >= 2 then
+                                        if indice_locked = 2 and LETTER_HITS >= 2 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 1)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 3*WORD_COL) and palavras_size(2) >= 3 then
-                                        if indice_locked = 2 and locked_hits >= 3 then
+                                        if indice_locked = 2 and LETTER_HITS >= 3 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 2)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 4*WORD_COL) and palavras_size(2) >= 4 then
-                                        if indice_locked = 2 and locked_hits >= 4 then
+                                        if indice_locked = 2 and LETTER_HITS >= 4 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 3)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 5*WORD_COL) and palavras_size(2) >= 5 then
-                                        if indice_locked = 2 and locked_hits >= 5 then
+                                        if indice_locked = 2 and LETTER_HITS >= 5 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 4)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 6*WORD_COL) and palavras_size(2) >= 6 then
-                                        if indice_locked = 2 and locked_hits >= 6 then
+                                        if indice_locked = 2 and LETTER_HITS >= 6 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 5)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 7*WORD_COL) and palavras_size(2) >= 7 then
-                                        if indice_locked = 2 and locked_hits >= 7 then
+                                        if indice_locked = 2 and LETTER_HITS >= 7 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 6)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 8*WORD_COL) and palavras_size(2) >= 8 then
-                                        if indice_locked = 2 and locked_hits >= 8 then
+                                        if indice_locked = 2 and LETTER_HITS >= 8 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 7)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 9*WORD_COL) and palavras_size(2) >= 9 then
-                                        if indice_locked = 2 and locked_hits >= 9 then
+                                        if indice_locked = 2 and LETTER_HITS >= 9 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 8)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(2) + 10*WORD_COL) and palavras_size(2) >= 10 then
-                                        if indice_locked = 2 and locked_hits >= 10 then
+                                        if indice_locked = 2 and LETTER_HITS >= 10 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(2, 9)((line-line_bases(2)) * WORD_COL + (col mod WORD_COL));
@@ -566,61 +548,61 @@ GAME_OVER <= local_game_over;
 				end if;
 		  elsif line >= line_bases(3) and line < line_bases(3) + WORD_LINE and col >= col_bases(3) and col < col_bases(3) + WORD_COL * palavras_size(3) then
 				if (col < col_bases(3) + WORD_COL) and palavras_size(3) >= 1 then
-                                        if indice_locked = 3 and locked_hits >= 1 then
+                                        if indice_locked = 3 and LETTER_HITS >= 1 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 0)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 2*WORD_COL) and palavras_size(3) >= 2 then
-                                        if indice_locked = 3 and locked_hits >= 2 then
+                                        if indice_locked = 3 and LETTER_HITS >= 2 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 1)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 3*WORD_COL) and palavras_size(3) >= 3 then
-                                        if indice_locked = 3 and locked_hits >= 3 then
+                                        if indice_locked = 3 and LETTER_HITS >= 3 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 2)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 4*WORD_COL) and palavras_size(3) >= 4 then
-                                        if indice_locked = 3 and locked_hits >= 4 then
+                                        if indice_locked = 3 and LETTER_HITS >= 4 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 3)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 5*WORD_COL) and palavras_size(3) >= 5 then
-                                        if indice_locked = 3 and locked_hits >= 5 then
+                                        if indice_locked = 3 and LETTER_HITS >= 5 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 4)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 6*WORD_COL) and palavras_size(3) >= 6 then
-                                        if indice_locked = 3 and locked_hits >= 6 then
+                                        if indice_locked = 3 and LETTER_HITS >= 6 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 5)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 7*WORD_COL) and palavras_size(3) >= 7 then
-                                        if indice_locked = 3 and locked_hits >= 7 then
+                                        if indice_locked = 3 and LETTER_HITS >= 7 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 6)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 8*WORD_COL) and palavras_size(3) >= 8 then
-                                        if indice_locked = 3 and locked_hits >= 8 then
+                                        if indice_locked = 3 and LETTER_HITS >= 8 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 7)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 9*WORD_COL) and palavras_size(3) >= 9 then
-                                        if indice_locked = 3 and locked_hits >= 9 then
+                                        if indice_locked = 3 and LETTER_HITS >= 9 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 8)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(3) + 10*WORD_COL) and palavras_size(3) >= 10 then
-                                        if indice_locked = 3 and locked_hits >= 10 then
+                                        if indice_locked = 3 and LETTER_HITS >= 10 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(3, 9)((line-line_bases(3)) * WORD_COL + (col mod WORD_COL));
@@ -630,61 +612,61 @@ GAME_OVER <= local_game_over;
 				end if;
 		  elsif line >= line_bases(4) and line < line_bases(4) + WORD_LINE and col >= col_bases(4) and col < col_bases(4) + WORD_COL * palavras_size(4) then
 				if (col < col_bases(4) + WORD_COL) and palavras_size(4) >= 1 then
-                                        if indice_locked = 4 and locked_hits >= 1 then
+                                        if indice_locked = 4 and LETTER_HITS >= 1 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 0)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));	
                                          end if;
 				elsif (col < col_bases(4) + 2*WORD_COL) and palavras_size(4) >= 2 then
-                                        if indice_locked = 4 and locked_hits >= 2 then
+                                        if indice_locked = 4 and LETTER_HITS >= 2 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 1)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 3*WORD_COL) and palavras_size(4) >= 3 then
-                                        if indice_locked = 4 and locked_hits >= 3 then
+                                        if indice_locked = 4 and LETTER_HITS >= 3 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 2)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 4*WORD_COL) and palavras_size(4) >= 4 then
-                                        if indice_locked = 4 and locked_hits >= 4 then
+                                        if indice_locked = 4 and LETTER_HITS >= 4 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 3)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 5*WORD_COL) and palavras_size(4) >= 5 then
-                                        if indice_locked = 4 and locked_hits >= 5 then
+                                        if indice_locked = 4 and LETTER_HITS >= 5 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 4)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 6*WORD_COL) and palavras_size(4) >= 6 then
-                                        if indice_locked = 4 and locked_hits >= 6 then
+                                        if indice_locked = 4 and LETTER_HITS >= 6 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 5)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 7*WORD_COL) and palavras_size(4) >= 7 then
-                                        if indice_locked = 4 and locked_hits >= 7 then
+                                        if indice_locked = 4 and LETTER_HITS >= 7 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 6)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 8*WORD_COL) and palavras_size(4) >= 8 then
-                                        if indice_locked = 4 and locked_hits >= 8 then
+                                        if indice_locked = 4 and LETTER_HITS >= 8 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 7)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 9*WORD_COL) and palavras_size(4) >= 9 then
-                                        if indice_locked = 4 and locked_hits >= 9 then
+                                        if indice_locked = 4 and LETTER_HITS >= 9 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 8)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
                                          end if;
 				elsif (col < col_bases(4) + 10*WORD_COL) and palavras_size(4) >= 10 then
-                                        if indice_locked = 4 and locked_hits >= 10 then
+                                        if indice_locked = 4 and LETTER_HITS >= 10 then
                                                 print_enable <= '0';
                                         else
                                             print_enable <= letras_atuais(4, 9)((line-line_bases(4)) * WORD_COL + ((col-1) mod WORD_COL));
@@ -719,8 +701,6 @@ GAME_OVER <= local_game_over;
 				line_bases(2) <= 10; 
 				line_bases(3) <= 10;
 				line_bases(4) <= 10;
-			elsif WORD_DESTROYED = '1' then
-				line_bases(indice_locked) <= 10;
 			else
             local_game_over <= '0';
 				line_bases(0) <= line_bases(0) + 1;
@@ -729,6 +709,8 @@ GAME_OVER <= local_game_over;
 				line_bases(3) <= line_bases(3) + 1;
 				line_bases(4) <= line_bases(4) + 1;
 			end if;
+		elsif WORD_DESTROYED = '1' then
+			line_bases(indice_locked) <= 10;
 		end if;
     end if;
   end process desce_linha;
