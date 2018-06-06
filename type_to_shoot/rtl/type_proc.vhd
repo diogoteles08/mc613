@@ -116,8 +116,7 @@ architecture rtl of type_proc is
 		BEGIN_GAME,
 		LOCKED,
 		FREE,
-		HIT_PROCESSING,
-		MISS_PROCESSING,
+		WAIT_RELEASE,		
 		GAME_LOST
 	);
 	signal state: state_t := BEGIN_GAME;
@@ -126,21 +125,20 @@ architecture rtl of type_proc is
 begin
 	
 	-- Leds for testing
---	LEDR(0) <= key_on;
---	LEDR(1) <= letter_hit;
---	LEDR(2) <= letter_miss;
---	LEDR(3) <= kill_word;
---	LEDR(4) <= game_over;
---	LEDR(5) <= get_new_word;
---	LEDR(6) <= '1' when num_active_words = max_words else '0';
---	
---	with state select LEDR(9 downto 7) <= 
---		"111" when BEGIN_GAME,
---		"001" when LOCKED,
---		"010" when FREE,
---		"011" when HIT_PROCESSING,
---		"100" when MISS_PROCESSING,
---		"000" when GAME_LOST;
+	LEDR(0) <= key_on;
+	LEDR(1) <= letter_hit;
+	LEDR(2) <= letter_miss;
+	LEDR(3) <= kill_word;
+	LEDR(4) <= game_over;
+	LEDR(5) <= get_new_word;
+	LEDR(6) <= '1' when num_active_words = max_words else '0';
+	
+	with state select LEDR(9 downto 7) <= 
+		"111" when BEGIN_GAME,
+		"001" when LOCKED,
+		"010" when FREE,
+		"011" when WAIT_RELEASE,		
+		"000" when GAME_LOST;
 
 	bank: word_bank
 		port map (
@@ -194,7 +192,7 @@ begin
 			VGA_CLK					=> VGA_CLK,
 			TIMER_P					=> timer,
 			GAME_OVER				=> game_over,
-			LEDR						=> LEDR(9 downto 5)
+			LEDR						=> open
 		);
 		
 		process (letter_hit)
@@ -225,7 +223,7 @@ begin
 				-- Verifica se nao estamos num estado estatico
 				if state /= BEGIN_GAME AND state /= GAME_LOST then
 					get_new_word <= '0';
-					if timer = '1' then 
+					if timer = '1' then
 						-- TODO: Administrate generation of new words
 						-- Just need to deal with get_new_word
 						if counter /= 20 then
@@ -255,7 +253,7 @@ begin
 
 		-- MAQUINA DE ESTADOS UOU
 		process (CLOCK_50)
-			variable back_to_state: state_t;
+			variable next_state: state_t;
 			variable current_letter_index: integer;
 			variable found_word: std_logic;
 		begin
@@ -264,6 +262,7 @@ begin
 					-- Reset game
 					state <= BEGIN_GAME;
 					start_game <= '0';
+					play_again <= '0';
 					letter_miss <= '0';
 					letter_hit <= '0';
 					kill_word <= '0';
@@ -273,46 +272,38 @@ begin
 					-- It can get here from any state
 					state <= GAME_LOST;
 					start_game <= '0';
+					play_again <= '0';
 					letter_miss <= '0';
 					letter_hit <= '0';
 					kill_word <= '0';
 					stage_end <= '0';
 
-				else					
-				
-					case state is
 
-						-- Estados independentes do teclado
-						-----------------------------------
-						when HIT_PROCESSING =>
+				else										
+					case state is
+											
+						when WAIT_RELEASE =>
 							letter_hit <= '0';
-							if kill_word = '0' then
-								state <= LOCKED;
-							else
-								state <= FREE;
-								kill_word <= '0';
-								stage_end <= '0';
+							letter_miss <= '0';
+							kill_word <= '0';
+							start_game <= '0';
+							play_again <= '0';							
+							stage_end <= '0';
+							if key_on = '0' then
+								state <= next_state;
 							end if;
 
-						when MISS_PROCESSING =>
-							letter_miss <= '0';
-							state <= back_to_state;
-
-						-----------------------------------
-						
-						when BEGIN_GAME =>
-							play_again <= '0';
-							
+						when BEGIN_GAME =>														
 							if key_on = '1' then
 								-- User pressed any key and game will begin
-								state <= FREE;
+								state <= WAIT_RELEASE;
+								next_state := FREE;
 								start_game <= '1';								
 							end if;						
-						
-						when FREE =>
-							start_game <= '0';
-							
-							if key_on = '1' then								
+
+						when FREE =>							
+							if key_on = '1' then
+								state <= WAIT_RELEASE;
 								
 								-- Procura pela palavra comecando com a letra digitada
 								-- Similar a um decodificador de prioridade, os indices menores
@@ -320,8 +311,8 @@ begin
 								found_word := '0';
 								for i in max_words-1 downto 0 loop
 									if i < num_active_words then
-										if active_words(i)(7 downto 0) = char_pressed then
-											state <= HIT_PROCESSING;
+										if active_words(i)(7 downto 0) = char_pressed then											
+											next_state := LOCKED;
 											found_word := '1';
 											letter_hit <= '1';
 											locked_word_index <= i;									
@@ -331,6 +322,7 @@ begin
 											-- Verifica se chegamos no tamanho maximo da palavra
 											if max_word_length = 1 then
 												kill_word <= '1';
+												next_state := FREE;
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -338,8 +330,9 @@ begin
 												end if;
 											
 											-- Verifica se chegamos no fim da palavra
-											elsif active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char then											
+											elsif active_words(i)(15 downto 8) = no_char then											
 												kill_word <= '1';
+												next_state := FREE;
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -351,23 +344,25 @@ begin
 								end loop;
 								
 								if found_word = '0' then
-									state <= MISS_PROCESSING;
-									back_to_state := FREE;
+									next_state := FREE;									
 									letter_miss <= '1';
 								end if;
 							end if;														
 							
 						when LOCKED =>
 							if key_on = '1' then
+								state <= WAIT_RELEASE;
+							
 								-- Verifica se o usuario digitou a letra esperada
 								if active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = char_pressed then
-									state <= HIT_PROCESSING;
+									next_state := LOCKED;
 									letter_hit <= '1';
 									current_letter_index := current_letter_index + 1;
 
 									-- Verifica se chegamos no tamanho maximo da palavra
 									if current_letter_index = max_word_length then
 										kill_word <= '1';
+										next_state := FREE;
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
@@ -377,6 +372,7 @@ begin
 									-- Verifica se chegamos no fim da palavra
 									elsif active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char then
 										kill_word <= '1';
+										next_state := FREE;
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
@@ -385,17 +381,17 @@ begin
 									end if;
 
 								else
-									state <= MISS_PROCESSING;
-									back_to_state := LOCKED;
+									next_state := LOCKED;									
 									letter_miss <= '1';
 								end if;
 							end if;
 							
 						when GAME_LOST =>
 							if key_on = '1' then
+								state <= WAIT_RELEASE;
 								-- Player wants to play again
 								play_again <= '1';
-								state <= BEGIN_GAME;
+								next_state := BEGIN_GAME;
 							end if;
 							
 					end case;								
@@ -409,11 +405,11 @@ begin
   -- outputs: state
   -- seq_fsm: process (CLOCK_50, rstn)
 --  seq_fsm: process (CLOCK_50)
---  begin  -- process seq_fsm
---    -- if rstn = '0' then                  -- asynchronous reset (active low)
---      -- state <= inicio;		
+--  begin  -- process seq_fsm    
 --    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge			
---      state <= next_state;			
+--			if key_on <= '0' then
+--				state <= next_state;
+--			end if;
 --    end if;
 --  end process seq_fsm;
 

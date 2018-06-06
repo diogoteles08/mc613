@@ -12,10 +12,10 @@ entity word_gen is
 	);
 end word_gen;
 
-architecture rtl of word_gen is	
+architecture rtl of word_gen is
+	signal index: integer := 0;
 begin
-	process(get_word)
-		variable index: integer := 0;
+	process(get_word)		
 	begin
 		if get_word'EVENT and get_word = '1' then		
 			if index = num_words-1 then
