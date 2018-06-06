@@ -50,7 +50,8 @@ entity vga_ball is
     NEW_WORD		        : in  word;
     NEW_WORD_SIZE		: in  integer;
     LOCKED_WORD		        : in  word;
-    LETTER_HIT		        : in  std_logic;
+		LOCKED_EVENT					: in std_logic;
+    LETTER_HITS		        : in  integer;
     WORD_DESTROYED		: in  std_logic;
 		NUM_HITS								: in integer;
 		NUM_MISSES							: in integer;

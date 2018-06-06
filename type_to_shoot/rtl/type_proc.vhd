@@ -50,7 +50,8 @@ architecture rtl of type_proc is
 			NEW_WORD								: in word;
 			NEW_WORD_SIZE						: in integer;
 			LOCKED_WORD							: in word;
-			LETTER_HIT							: in std_logic;
+			LOCKED_EVENT						: in std_logic;
+			LETTER_HITS							: in integer;
 			WORD_DESTROYED					: in std_logic;
 			NUM_HITS								: in integer;
 			NUM_MISSES							: in integer;
@@ -76,6 +77,9 @@ architecture rtl of type_proc is
 
 	signal locked_word_index: integer;
 	signal locked_word: word;
+	signal locked_event: std_logic;
+	
+	signal current_letter_index_sig: integer;
 
 	signal get_new_word: std_logic;
 	signal new_word: word;
@@ -183,7 +187,8 @@ begin
 			NEW_WORD				=> new_word,
 			NEW_WORD_SIZE		=> new_word_size,
 			LOCKED_WORD 		=> locked_word,
-			LETTER_HIT  		=> letter_hit,
+			LOCKED_EVENT		=> locked_event,
+			LETTER_HITS  		=> current_letter_index,
 			WORD_DESTROYED	=> kill_word,
 			NUM_HITS				=> num_hits,
 			NUM_MISSES			=> num_misses,
@@ -196,8 +201,8 @@ begin
 			VGA_SYNC_N			=> VGA_SYNC_N,
 			VGA_CLK					=> VGA_CLK,
 			TIMER_P					=> timer,
-			GAME_OVER				=> game_over,			
-			LEDR						=> LEDR(9 downto 0)
+			GAME_OVER				=> game_over,
+			LEDR						=> open
 		);
 		
 		process (letter_hit)
@@ -283,10 +288,9 @@ begin
 					kill_word <= '0';
 					stage_end <= '0';
 
-
 				else										
 					case state is
-											
+
 						when WAIT_RELEASE =>
 							letter_hit <= '0';
 							letter_miss <= '0';
@@ -294,6 +298,7 @@ begin
 							start_game <= '0';
 							play_again <= '0';							
 							stage_end <= '0';
+							locked_event <= '0';
 							if key_on = '0' then
 								state <= next_state;
 							end if;
@@ -320,7 +325,8 @@ begin
 											next_state := LOCKED;
 											found_word := '1';
 											letter_hit <= '1';
-											locked_word_index <= i;									
+											locked_word_index <= i;
+											locked_event <= '1';
 											locked_word <= active_words(i);
 											current_letter_index := 1;
 											
@@ -401,7 +407,9 @@ begin
 							
 					end case;								
 				end if;				
-			end if;			
+			end if;
+			
+			current_letter_index_sig <= current_letter_index;
 		end process;
 
   -- purpose: Avança a FSM para o próximo state
