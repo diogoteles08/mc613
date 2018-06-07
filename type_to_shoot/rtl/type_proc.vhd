@@ -95,6 +95,7 @@ architecture rtl of type_proc is
 
 	signal letter_miss: std_logic; -- Internal signal
 	signal letter_hit: std_logic; -- Internal signal
+	signal update_ponctuation: std_logic; -- Internal signal
 	
 	signal num_hits		: integer;
 	signal num_misses	: integer;
@@ -214,21 +215,16 @@ begin
 			LEDR						=> open
 		);
 		
-		process (letter_hit)
+		update_ponctuation <= letter_hit or letter_miss;
+		process (update_ponctuation)
 		begin
+			-- TODO: Update ponctuation
 			if letter_hit = '1' then
-				num_hits <= num_hits + 1;
-				-- TODO: Update ponctuation					
+				-- Conta acerto
+			else
+				-- Conta erro
 			end if;
-		end process;
-
-		process (letter_miss)
-		begin
-			if letter_miss = '1' then
-				num_misses <= num_misses + 1;
-				-- TODO: Update ponctuation
-			end if;
-		end process;
+		end process;	
 		
 		process (current_stage)
 		begin
