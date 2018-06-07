@@ -315,12 +315,11 @@ procura_indice: process (CLOCK_50)
 				empty_positions(empty_position) <= 0;
 			elsif WORD_DESTROYED = '1' then
 				words_aux := words_destroyed + 1;
-				
+					
+				if words_aux = words_in_stage(stage_atual) then
 				if stage_atual < 9 then
 						stage_atual <= stage_atual + 1;
 				end if;
-					
-				if words_aux = words_in_stage(stage_atual) then
 					words_destroyed <= 0;
 				else
 					words_destroyed <= words_destroyed + 1;

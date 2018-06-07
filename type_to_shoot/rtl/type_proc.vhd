@@ -1,6 +1,7 @@
 library ieee;
 library work;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 use work.main_pack.all;
 
 entity type_proc is
@@ -13,15 +14,24 @@ entity type_proc is
     VGA_HS, VGA_VS            : out std_logic;
     VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
     VGA_CLK                   : out std_logic;
-		LEDR											: out std_logic_vector(9 downto 0)
+		LEDR											: out std_logic_vector(9 downto 0);
+	HEX0, HEX1, HEX2, HEX3, HEX4, HEX, HEX5 : out std_logic_vector(6 downto 0)	
   );
 end type_proc;
 
 architecture rtl of type_proc is
+	
+	component bin2dec is
+		port (
+			SW: in std_logic_vector(3 downto 0);
+			HEX0: out std_logic_vector(6 downto 0)
+		);
+	end component;
 
 	component word_bank		
 		port (
 			reset							: in std_logic;
+			game_over					: in std_logic;
 			clock							: in std_logic;
 			kill_word 				: in std_logic;
 			word_to_kill_index: in integer;
@@ -61,7 +71,7 @@ architecture rtl of type_proc is
 			VGA_HS, VGA_VS          : out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
 			VGA_CLK                 : out std_logic;
-			VELOCIDADE					: out integer;
+			VELOCIDADE								: out integer;
 			TIMER_P									: out std_logic;
 			GAME_OVER								: out std_logic;
 			LEDR										: out std_logic_vector(9 downto 0)
@@ -100,11 +110,14 @@ architecture rtl of type_proc is
 	
 	signal num_hits		: integer;
 	signal num_misses	: integer;
+	
+	signal score_vector : std_logic_vector (16 downto 0);
 	signal score : integer;
 	signal kill_word: std_logic;
 
 	signal key_on: std_logic;
 	signal char_pressed: char;
+	signal valor : std_logic_vector(3 downto 0); 
 
 	signal current_stage: integer;
 	signal start_game: std_logic;
@@ -157,10 +170,15 @@ begin
 
 	reset <= KEY(0);
 
+	velocidade_hex : bin2dec 
+		port map (
+			SW 				=> valor,
+			HEX0				=> HEX5
+		);
 	bank: word_bank
 		port map (
-			-- Reseta com game over ou com reset
 			reset								=> reset,
+			game_over					   => game_over,
 			clock								=> CLOCK_50,
 			kill_word 					=> kill_word,
 			word_to_kill_index 	=> locked_word_index,
@@ -218,6 +236,8 @@ begin
 		);
 		
 		update_ponctuation <= letter_hit or letter_miss;
+		valor <= std_logic_vector(to_unsigned(velocidade, valor'length));
+		
 		process (update_ponctuation)
 		begin
 			-- TODO: Update ponctuation
@@ -226,7 +246,9 @@ begin
 				score <= score + 1;
 			else
 				-- Conta erro
-				score <= score - 1;
+				if score > 0  then
+					score <= score - 1;
+				end if;
 			end if;
 		end process;	
 		
