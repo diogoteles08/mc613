@@ -16,7 +16,7 @@ end word_gen;
 architecture rtl of word_gen is
 	signal index: integer := 0;
 begin
-	process(get_word, reset)		
+	process(get_word, reset)
 	begin
 		if reset = '0' then
 			index <= 0;
