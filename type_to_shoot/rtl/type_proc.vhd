@@ -178,7 +178,7 @@ begin
 	bank: word_bank
 		port map (
 			reset								=> reset,
-			game_over					   => game_over,
+			game_over					  => game_over,
 			clock								=> CLOCK_50,
 			kill_word 					=> kill_word,
 			word_to_kill_index 	=> locked_word_index,
