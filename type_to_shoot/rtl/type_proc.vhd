@@ -61,6 +61,7 @@ architecture rtl of type_proc is
 			VGA_HS, VGA_VS          : out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
 			VGA_CLK                 : out std_logic;
+			VELOCIDADE					: out integer;
 			TIMER_P									: out std_logic;
 			GAME_OVER								: out std_logic;
 			LEDR										: out std_logic_vector(9 downto 0)
@@ -99,7 +100,7 @@ architecture rtl of type_proc is
 	
 	signal num_hits		: integer;
 	signal num_misses	: integer;
-
+	signal score : integer;
 	signal kill_word: std_logic;
 
 	signal key_on: std_logic;
@@ -110,7 +111,7 @@ architecture rtl of type_proc is
 	signal stage_end: std_logic;
 	signal game_over: std_logic;
 	signal play_again: std_logic;
-	
+	signal velocidade : integer;
 	signal reset: std_logic;
 	
 	-- Sinais para um contador utilizado para atrasar a atualização da
@@ -138,28 +139,28 @@ architecture rtl of type_proc is
 	signal r_lost : std_logic := '0';
 begin
 	
---	-- Leds for testing
---	LEDR(0) <= key_on;
---	LEDR(1) <= letter_hit;
---	LEDR(2) <= letter_miss;
---	LEDR(3) <= kill_word;
---	LEDR(4) <= game_over;
---	LEDR(5) <= get_new_word;
---	LEDR(6) <= '1' when num_active_words = max_words else '0';
---	
---	with state select LEDR(9 downto 7) <= 
---		"111" when BEGIN_GAME,
---		"001" when LOCKED,
---		"010" when FREE,
---		"011" when WAIT_RELEASE,		
---		"000" when GAME_LOST;
+	-- Leds for testing
+	LEDR(0) <= key_on;
+	LEDR(1) <= letter_hit;
+	LEDR(2) <= letter_miss;
+	LEDR(3) <= kill_word;
+	LEDR(4) <= game_over;
+	LEDR(5) <= get_new_word;
+	LEDR(6) <= '1' when num_active_words = max_words else '0';
+	
+	with state select LEDR(9 downto 7) <= 
+		"111" when BEGIN_GAME,
+		"001" when LOCKED,
+		"010" when FREE,
+		"011" when WAIT_RELEASE,		
+		"000" when GAME_LOST;
 
 	reset <= KEY(0);
 
 	bank: word_bank
 		port map (
 			-- Reseta com game over ou com reset
-			reset								=> (not game_over) and reset,
+			reset								=> reset,
 			clock								=> CLOCK_50,
 			kill_word 					=> kill_word,
 			word_to_kill_index 	=> locked_word_index,
@@ -211,6 +212,7 @@ begin
 			VGA_SYNC_N			=> VGA_SYNC_N,
 			VGA_CLK					=> VGA_CLK,
 			TIMER_P					=> timer,
+			VELOCIDADE				=> velocidade,
 			GAME_OVER				=> game_over,
 			LEDR						=> open
 		);
@@ -221,8 +223,10 @@ begin
 			-- TODO: Update ponctuation
 			if letter_hit = '1' then
 				-- Conta acerto
+				score <= score + 1;
 			else
 				-- Conta erro
+				score <= score - 1;
 			end if;
 		end process;	
 		

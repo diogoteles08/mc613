@@ -60,6 +60,7 @@ entity vga_ball is
     VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
     VGA_CLK                 	: out std_logic;
 	 LEDR								: out std_logic_vector(9 downto 0);
+	 VELOCIDADE						: out integer;
     TIMER_P			: out std_logic;
     GAME_OVER		        : out std_logic
     );
@@ -397,6 +398,7 @@ end process procura_indice_locked;
 
 TIMER_P <= timer;
 GAME_OVER <= local_game_over;
+VELOCIDADE <= stage_atual;
   -----------------------------------------------------------------------------
   -- PROCESS PARA VERIFICAR ONDE ESTAMOS E IMPRIMIR NA TELA
   -----------------------------------------------------------------------------
@@ -753,26 +755,23 @@ GAME_OVER <= local_game_over;
 		if WORD_DESTROYED = '1' then
 			line_bases(indice_locked) <= 10;
 		elsif reset = '0' or estado = inicio then
-			line_bases(0) <= 10;
-			line_bases(1) <= 10;
-			line_bases(2) <= 10; 
-			line_bases(3) <= 10;
-			line_bases(4) <= 10;
+			for i in 0 to max_words-1 loop
+				line_bases(i) <= 10;
+			end loop;
+			
 		elsif atualiza_pos_y = '1' then
 			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
             local_game_over <= '1';
-				line_bases(0) <= 10;
-				line_bases(1) <= 10;
-				line_bases(2) <= 10; 
-				line_bases(3) <= 10;
-				line_bases(4) <= 10;
+				for i in 0 to max_words-1 loop
+					line_bases(i) <= 10;
+				end loop;
 			else
             local_game_over <= '0';
-				line_bases(0) <= line_bases(0) + 1;
-				line_bases(1) <= line_bases(1) + 1;
-				line_bases(2) <= line_bases(2) + 1;
-				line_bases(3) <= line_bases(3) + 1;
-				line_bases(4) <= line_bases(4) + 1;
+				for i in 0 to max_words-1 loop
+					if empty_positions(i) = 0 then
+						line_bases(i) <= line_bases(i) + 1;
+					end if;
+				end loop;
 			end if;
 		end if;
 	 end if;
@@ -1053,23 +1052,6 @@ GAME_OVER <= local_game_over;
 	 
   end process logica_mealy;
   
-
---  verifica_tecla: process (CLOCK_50)
---  begin  -- process seq_fsm
---		if CLOCK_50'EVENT and CLOCK_50 = '1' then
---			if PLAY_AGAIN = '1' then
---				my_play <= '1';
---			else
---				my_play <= '0';
---			end if;
---			if START_GAME = '1' then
---				my_start <= '1';
---			else 
---				my_start <= '0';
---			end if;
---		end if;
---  end process verifica_tecla;
-  
   -----------------------------------------------------------------------------
   -- Processos do contador utilizado para atrasar a animação (evitar
   -- que a atualização de quadros fique excessivamente veloz).
@@ -1124,14 +1106,6 @@ GAME_OVER <= local_game_over;
 		temp := reset;
     end if;
   end process build_rstn;
-  
---  start_button : process (CLOCK_50)
---  begin
---		if CLOCK_50'event and CLOCK_50 = '1' then
---			my_play <= my_play or not(KEY(2));
---			my_start <= my_start or not(KEY(1));
---		end if;
---	end process start_button;
 	
 end comportamento;
 
