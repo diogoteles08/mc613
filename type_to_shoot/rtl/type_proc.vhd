@@ -22,7 +22,6 @@ architecture rtl of type_proc is
 	component word_bank		
 		port (
 			reset							: in std_logic;
-			game_over					: in std_logic;
 			clock							: in std_logic;
 			kill_word 				: in std_logic;
 			word_to_kill_index: in integer;
@@ -158,8 +157,8 @@ begin
 
 	bank: word_bank
 		port map (
-			reset								=> reset,
-			game_over					   => game_over,
+			-- Reseta com game over ou com reset
+			reset								=> (not game_over) and reset,
 			clock								=> CLOCK_50,
 			kill_word 					=> kill_word,
 			word_to_kill_index 	=> locked_word_index,
