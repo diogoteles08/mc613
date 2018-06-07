@@ -136,11 +136,17 @@ architecture comportamento of vga_ball is
   constant stage_8 : integer := 34;
   constant stage_9 : integer := 55;
   
+  type stage_words is array (0 to 9) of integer;
+  signal words_in_stage : stage_words := (stage_0, stage_1, stage_2, stage_3, stage_4, stage_5, stage_6, stage_7, stage_8, stage_9);
+  
+  signal stage_atual : integer := 0;
+  signal num_words_stage : integer := 0;
+  
   signal line_bases : array5 := (10, 10, 10, 10, 10);
   signal col_bases : array5 := (col_0, col_1, col_2, col_3, col_4);
   
   signal empty_positions :  array5 := (1, 1, 1, 1, 1);
-  signal empty_position :  integer range 0 to max_words-1;
+  signal empty_position :  integer range 0 to max_words;
 
   signal print_enable : std_logic := '0';
   
@@ -295,6 +301,8 @@ procura_indice: process (CLOCK_50)
 		if CLOCK_50'event and CLOCK_50 = '1' then
 			if local_game_over = '1' or reset = '0' or estado = inicio then
 				for i in 0 to max_words-1 loop
+					palavras(i) <= no_word;
+					palavras_size(i) <= 0;
 					empty_positions(i) <= 1;
 				end loop;
 			elsif INSERT_WORD = '1' then
