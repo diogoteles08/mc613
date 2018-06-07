@@ -27,7 +27,7 @@ begin
 			if reset = '0' then
 				num_words_aux := 0;
 				words_aux := no_table;
-			elsif
+			else
 				if insert_new_word = '1' then
 					words_aux(num_words_aux) := new_word;
 					num_words_aux := num_words_aux + 1;

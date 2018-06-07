@@ -105,7 +105,7 @@ architecture comportamento of vga_ball is
   -- veloz. Aqui utilizamos um contador de 0 a 1250000, de modo que quando
   -- alimentado com um clock de 50MHz, ele demore 25ms (40fps) para contar até o final.
   
-  signal contador : integer range 0 to 1250000 - 1;  -- contador
+  signal contador : integer range 0 to 2500000 - 1;  -- contador
   signal timer : std_logic;        -- vale '1' quando o contador chegar ao fim
   signal timer_rstn, timer_enable : std_logic;
   
@@ -136,11 +136,11 @@ architecture comportamento of vga_ball is
   constant stage_8 : integer := 34;
   constant stage_9 : integer := 55;
   
-  type stage_words is array (0 to 9) of integer;
-  signal words_in_stage : stage_words := (stage_0, stage_1, stage_2, stage_3, stage_4, stage_5, stage_6, stage_7, stage_8, stage_9);
-  
+  type stage_integer is array (0 to 9) of integer;
+  signal words_in_stage : stage_integer := (stage_0, stage_1, stage_2, stage_3, stage_4, stage_5, stage_6, stage_7, stage_8, stage_9);
+  signal contador_in_stage : stage_integer := (2500000 - 1, 2000000 - 1, 1500000 - 1, 1250000 - 1, 1000000 - 1, 900000 - 1, 800000 - 1, 750000 - 1, 700000 - 1, 650000 - 1);
   signal stage_atual : integer := 0;
-  signal num_words_stage : integer := 0;
+  signal words_destroyed : integer := 0;
   
   signal line_bases : array5 := (10, 10, 10, 10, 10);
   signal col_bases : array5 := (col_0, col_1, col_2, col_3, col_4);
@@ -297,9 +297,12 @@ begin  -- comportamento
    -- inputs :
    -- outputs: 
 procura_indice: process (CLOCK_50)
+	variable words_aux : integer;
   begin
 		if CLOCK_50'event and CLOCK_50 = '1' then
 			if local_game_over = '1' or reset = '0' or estado = inicio then
+				stage_atual <= 0;
+				words_destroyed <= 0;
 				for i in 0 to max_words-1 loop
 					palavras(i) <= no_word;
 					palavras_size(i) <= 0;
@@ -310,6 +313,18 @@ procura_indice: process (CLOCK_50)
 				palavras_size(empty_position) <= NEW_WORD_SIZE;
 				empty_positions(empty_position) <= 0;
 			elsif WORD_DESTROYED = '1' then
+				words_aux := words_destroyed + 1;
+				
+				if stage_atual < 9 then
+						stage_atual <= stage_atual + 1;
+				end if;
+					
+				if words_aux = words_in_stage(stage_atual) then
+					words_destroyed <= 0;
+				else
+					words_destroyed <= words_destroyed + 1;
+				end if;
+				
 				empty_positions(indice_locked) <= 1;
 				palavras(indice_locked) <= no_word;
 				palavras_size(indice_locked) <= 0;
@@ -1069,7 +1084,7 @@ GAME_OVER <= local_game_over;
       contador <= 0;
     elsif CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
       if timer_enable = '1' then       
-        if contador = 1250000 - 1 then
+        if contador = contador_in_stage(stage_atual) then
           contador <= 0;
         else
           contador <=  contador + 1;        
@@ -1085,7 +1100,7 @@ GAME_OVER <= local_game_over;
   -- outputs: timer
   p_timer: process (contador)
   begin  -- process p_timer
-    if contador = 1250000 - 1 then
+    if contador = contador_in_stage(stage_atual) then
 	   timer <= '1';
 	 else
       timer <= '0';
