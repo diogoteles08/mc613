@@ -71,9 +71,9 @@ architecture comportamento of vga_ball is
    type splash is array (0 to NUM_LINE * NUM_COL - 1) of std_logic_vector(2 downto 0);
 	signal tela_inicial: splash;
 	attribute ram_init_file : string;
-	attribute ram_init_file of tela_inicial : signal is "start_1.mif";
+	attribute ram_init_file of tela_inicial : signal is "inic_screen.mif";
 	signal tela_over : splash;
-	attribute ram_init_file of tela_over : signal is "over.mif";
+	attribute ram_init_file of tela_over : signal is "end_screen.mif";
 	
   signal rstn : std_logic;              -- reset active low para nossos
                                         -- circuitos sequenciais.

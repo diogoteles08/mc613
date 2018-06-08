@@ -20,7 +20,7 @@ architecture rtl of word_bank is
 begin
 	-- insercao e remocao podem ser feitos ao mesmo tempo, soh da erro quando
 	-- o numero de palavras jah eh o maximo e se tenta excluir e inserir ao mesmo tempo
-	process(clock, reset)
+	process(clock, reset, game_over)
 		variable words_aux: word_table := no_table;
 		variable num_words_aux: integer := 0;
 	begin

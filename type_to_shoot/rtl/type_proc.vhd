@@ -15,7 +15,7 @@ entity type_proc is
     VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
     VGA_CLK                   : out std_logic;
 		LEDR											: out std_logic_vector(9 downto 0);
-	HEX0, HEX1, HEX2, HEX3, HEX4, HEX, HEX5 : out std_logic_vector(6 downto 0)	
+	HEX0, HEX1, HEX2, HEX3, HEX4, HEX5 : out std_logic_vector(6 downto 0)	
   );
 end type_proc;
 
@@ -106,18 +106,22 @@ architecture rtl of type_proc is
 
 	signal letter_miss: std_logic; -- Internal signal
 	signal letter_hit: std_logic; -- Internal signal
-	signal update_ponctuation: std_logic; -- Internal signal
 	
 	signal num_hits		: integer;
 	signal num_misses	: integer;
 	
-	signal score_vector : std_logic_vector (16 downto 0);
-	signal score : integer;
+	signal digit0: std_logic_vector(3 downto 0);
+	signal digit1: std_logic_vector(3 downto 0);
+	signal digit2: std_logic_vector(3 downto 0);
+	signal digit3: std_logic_vector(3 downto 0);
+	signal digit4: std_logic_vector(3 downto 0);
+	
+	signal score : integer := 0;
 	signal kill_word: std_logic;
 
 	signal key_on: std_logic;
 	signal char_pressed: char;
-	signal valor : std_logic_vector(3 downto 0); 
+	signal digit5 : std_logic_vector(3 downto 0); 
 
 	signal current_stage: integer;
 	signal start_game: std_logic;
@@ -172,9 +176,36 @@ begin
 
 	velocidade_hex : bin2dec 
 		port map (
-			SW 				=> valor,
+			SW 				=> digit5,
 			HEX0				=> HEX5
 		);
+		
+	un_hex : bin2dec
+		port map (
+			SW 				=> digit4,
+			HEX0				=> HEX0
+		);
+	dez_hex : bin2dec
+		port map (
+			SW 				=> digit3,
+			HEX0				=> HEX1
+		);
+	cen_hex : bin2dec
+		port map (
+			SW 				=> digit2,
+			HEX0				=> HEX2
+		);
+	mil_hex : bin2dec
+		port map (
+			SW 				=> digit1,
+			HEX0				=> HEX3
+		);
+	dezmil_hex : bin2dec
+		port map (
+			SW 				=> digit0,
+			HEX0				=> HEX4
+		);
+		
 	bank: word_bank
 		port map (
 			reset								=> reset,
@@ -234,24 +265,34 @@ begin
 			GAME_OVER				=> game_over,
 			LEDR						=> open
 		);
-		
-		update_ponctuation <= letter_hit or letter_miss;
-		valor <= std_logic_vector(to_unsigned(velocidade, valor'length));
-		
-		process (update_ponctuation)
+			
+
+		process (CLOCK_50)
 		begin
-			-- TODO: Update ponctuation
-			if letter_hit = '1' then
-				-- Conta acerto
-				score <= score + 1;
-			else
-				-- Conta erro
-				if score > 0  then
-					score <= score - 1;
+		
+			if CLOCK_50'event and CLOCK_50 = '1' then
+				-- TODO: Update ponctuation
+				if letter_hit = '1' then
+					-- Conta acerto
+					score <= score + 1;
+				elsif letter_miss = '1' then
+					-- Conta erro
+					if score > 0  then
+						score <= score - 1;
+					end if;
+				elsif reset = '0' or game_over = '1' then
+						score <= 0;
 				end if;
 			end if;
 		end process;	
 		
+		digit0 <= std_logic_vector(to_unsigned(score / 10000, digit0'length));
+		digit1 <= std_logic_vector(to_unsigned((score / 1000) mod 10, digit1'length));
+		digit2 <= std_logic_vector(to_unsigned((score / 100) mod 10, digit2'length));
+		digit3 <= std_logic_vector(to_unsigned((score / 10) mod 10, digit3'length));
+		digit4 <= std_logic_vector(to_unsigned(score mod 10, digit4'length));
+		digit5 <= std_logic_vector(to_unsigned(velocidade, digit5'length));		
+
 		process (current_stage)
 		begin
 			-- TODO: Update stage data		
