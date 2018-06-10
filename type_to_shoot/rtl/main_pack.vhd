@@ -18,32 +18,35 @@ package main_pack is
 	type array5 is array (0 to max_words-1) of integer;	
 	
 	-- asc values on std_vector
-	constant letter_a: char := x"41"; -- A
-	constant letter_b: char := x"42"; -- B
-	constant letter_c: char := x"43"; -- C
-	constant letter_d: char := x"44"; -- D
-	constant letter_e: char := x"45"; -- E
-	constant letter_f: char := x"46"; -- F
-	constant letter_g: char := x"47"; -- G
-	constant letter_h: char := x"48"; -- H
-	constant letter_i: char := x"49"; -- I
-	constant letter_j: char := x"4A"; -- J
-	constant letter_k: char := x"4B"; -- K
-	constant letter_l: char := x"4C"; -- L
-	constant letter_m: char := x"4D"; -- M
-	constant letter_n: char := x"4E"; -- N
-	constant letter_o: char := x"4F"; -- O
-	constant letter_p: char := x"50"; -- P
-	constant letter_q: char := x"51"; -- Q
-	constant letter_r: char := x"52"; -- R
-	constant letter_s: char := x"53"; -- S
-	constant letter_t: char := x"54"; -- T
-	constant letter_u: char := x"55"; -- U
-	constant letter_v: char := x"56"; -- V
-	constant letter_w: char := x"57"; -- W
-	constant letter_x: char := x"58"; -- X
-	constant letter_y: char := x"59"; -- Y
-	constant letter_z: char := x"5A"; -- Z
+	constant asc_A		: std_logic_vector(7 downto 0) := x"41";
+	constant asc_B		: std_logic_vector(7 downto 0) := x"42";
+	constant asc_C		: std_logic_vector(7 downto 0) := x"43";
+	constant asc_D		: std_logic_vector(7 downto 0) := x"44";
+	constant asc_E		: std_logic_vector(7 downto 0) := x"45";
+	constant asc_F		: std_logic_vector(7 downto 0) := x"46";
+	constant asc_G		: std_logic_vector(7 downto 0) := x"47";
+	constant asc_H		: std_logic_vector(7 downto 0) := x"48";
+	constant asc_I		: std_logic_vector(7 downto 0) := x"49";
+	constant asc_J		: std_logic_vector(7 downto 0) := x"4A";
+	constant asc_K		: std_logic_vector(7 downto 0) := x"4B";
+	constant asc_L		: std_logic_vector(7 downto 0) := x"4C";
+	constant asc_M		: std_logic_vector(7 downto 0) := x"4D";
+	constant asc_N		: std_logic_vector(7 downto 0) := x"4E";
+	constant asc_O		: std_logic_vector(7 downto 0) := x"4F";
+	constant asc_P		: std_logic_vector(7 downto 0) := x"50";
+	constant asc_Q		: std_logic_vector(7 downto 0) := x"51";
+	constant asc_R		: std_logic_vector(7 downto 0) := x"52";
+	constant asc_S		: std_logic_vector(7 downto 0) := x"53";
+	constant asc_T		: std_logic_vector(7 downto 0) := x"54";
+	constant asc_U		: std_logic_vector(7 downto 0) := x"55";
+	constant asc_V		: std_logic_vector(7 downto 0) := x"56";
+	constant asc_W		: std_logic_vector(7 downto 0) := x"57";
+	constant asc_X		: std_logic_vector(7 downto 0) := x"58";
+	constant asc_Y		: std_logic_vector(7 downto 0) := x"59";
+	constant asc_Z		: std_logic_vector(7 downto 0) := x"5A";
+	constant asc_enter	: std_logic_vector(7 downto 0) := x"0A";
+	constant asc_space	: std_logic_vector(7 downto 0) := x"20";
+	constant asc_escape	: std_logic_vector(7 downto 0) := x"1B";
 	
 	-- Conversion functions
 	function str_to_std(s: string) return std_logic_vector;

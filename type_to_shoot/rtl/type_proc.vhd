@@ -83,7 +83,7 @@ architecture rtl of type_proc is
 			ps2_dat	: inout std_logic;
 			ps2_clk		:	inout	std_logic;
 			clock 		: in std_logic;
-			key_on		: out std_logic;
+			has_pressed		: out std_logic;
 			asc_code	: out char
 		);
 	end component;	
@@ -119,7 +119,7 @@ architecture rtl of type_proc is
 	signal score : integer := 0;
 	signal kill_word: std_logic;
 
-	signal key_on: std_logic;
+	signal has_pressed: std_logic;
 	signal char_pressed: char;
 	signal digit5 : std_logic_vector(3 downto 0); 
 
@@ -157,7 +157,7 @@ architecture rtl of type_proc is
 begin
 	
 	-- Leds for testing
-	LEDR(0) <= key_on;
+	LEDR(0) <= has_pressed;
 	LEDR(1) <= letter_hit;
 	LEDR(2) <= letter_miss;
 	LEDR(3) <= kill_word;
@@ -231,8 +231,8 @@ begin
 		port map (
 			ps2_dat 	=> PS2_DAT,
 			ps2_clk 	=> PS2_CLk,
-			clock			=> CLOCK_50,
-			key_on		=> key_on,
+			clock		=> CLOCK_50,
+			has_pressed	=> has_pressed,
 			asc_code	=> char_pressed
 		);
 
@@ -364,6 +364,7 @@ begin
 				else										
 					case state is
 
+						-- Not necessary anymore
 						when WAIT_RELEASE =>
 							letter_hit <= '0';
 							letter_miss <= '0';
@@ -372,12 +373,12 @@ begin
 							play_again <= '0';							
 							stage_end <= '0';
 							locked_event <= '0';
-							if key_on = '0' then
+							if has_pressed = '0' then
 								state <= next_state;
 							end if;
 
 						when BEGIN_GAME =>														
-							if key_on = '1' then
+							if has_pressed = '1' then
 								-- User pressed any key and game will begin
 								state <= WAIT_RELEASE;
 								next_state := FREE;
@@ -385,7 +386,7 @@ begin
 							end if;						
 							
 						when FREE =>							
-							if key_on = '1' then
+							if has_pressed = '1' then
 								state <= WAIT_RELEASE;
 								
 								-- Procura pela palavra comecando com a letra digitada
@@ -436,7 +437,7 @@ begin
 							end if;														
 							
 						when LOCKED =>
-							if key_on = '1' then
+							if has_pressed = '1' then
 								state <= WAIT_RELEASE;
 							
 								-- Verifica se o usuario digitou a letra esperada
@@ -475,7 +476,7 @@ begin
 							end if;
 							
 						when GAME_LOST =>
-							if key_on = '1' then
+							if has_pressed = '1' then
 								state <= WAIT_RELEASE;
 								-- Player wants to play again
 								play_again <= '1';
@@ -488,19 +489,4 @@ begin
 			
 			current_letter_index_sig <= current_letter_index;
 		end process;
-
-  -- purpose: Avança a FSM para o próximo state
-  -- type   : sequential
-  -- inputs : CLOCK_50, rstn, next_state
-  -- outputs: state
-  -- seq_fsm: process (CLOCK_50, rstn)
---  seq_fsm: process (CLOCK_50)
---  begin  -- process seq_fsm    
---    if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge			
---			if key_on <= '0' then
---				state <= next_state;
---			end if;
---    end if;
---  end process seq_fsm;
-
 end rtl;
