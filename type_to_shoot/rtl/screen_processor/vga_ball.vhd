@@ -139,7 +139,7 @@ architecture comportamento of vga_ball is
   
   type stage_integer is array (0 to 9) of integer;
   signal words_in_stage : stage_integer := (stage_0, stage_1, stage_2, stage_3, stage_4, stage_5, stage_6, stage_7, stage_8, stage_9);
-  signal contador_in_stage : stage_integer := (2500000 - 1, 2000000 - 1, 1500000 - 1, 1250000 - 1, 1000000 - 1, 900000 - 1, 800000 - 1, 750000 - 1, 700000 - 1, 650000 - 1);
+  signal contador_in_stage : stage_integer := (2500000 - 1, 2000000 - 1, 1500000 - 1, 1250000 - 1, 1000000 - 1, 900000 - 1, 800000 - 1, 700000 - 1, 600000- 1, 500000- 1);
   signal stage_atual : integer := 0;
   signal words_destroyed : integer := 0;
   
@@ -724,21 +724,6 @@ VELOCIDADE <= stage_atual;
 					end if;
 				end loop;
 			end if;
-			
-			--OLD_CODE
---			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
---            local_game_over <= '1';
---				for i in 0 to max_words-1 loop
---					line_bases(i) <= 10;
---				end loop;
---			else
---            local_game_over <= '0';
---				for i in 0 to max_words-1 loop
---					if empty_positions(i) = 0 then
---						line_bases(i) <= line_bases(i) + 1;
---					end if;
---				end loop;
---			end if;
 		end if;
 	 end if;
   end process desce_linha;
