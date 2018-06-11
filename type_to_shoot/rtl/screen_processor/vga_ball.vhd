@@ -202,61 +202,6 @@ architecture comportamento of vga_ball is
 	"00000000000000001111111111000011100001100000110000011000001100000110000011000001110000111111111100000000000000000000000000000000", -- 'Z'
 	"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"); --' '
 	
---  signal letra_A : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000000001000000111000011011001100011011000110111111101100011011000110110001101100011000000000000000000000000000000000");
---  signal letra_B : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
---   "00000000000000001111110001100110011001100110011001111100011001100110011001100110011001101111110000000000000000000000000000000000");
---  signal letra_C : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
---   "00000000000000000011110001100110110000101100000011000000110000001100000011000010011001100011110000000000000000000000000000000000");
---  signal letra_D : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001111100001101100011001100110011001100110011001100110011001100110011011001111100000000000000000000000000000000000");
---  signal letra_E : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001111111001100110011000100110100001111000011010000110000001100010011001101111111000000000000000000000000000000000");
---  signal letra_F : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001111111001100110011000100110100001111000011010000110000001100000011000001111000000000000000000000000000000000000");
---  signal letra_G : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000000011110001100110110000101100000011000000110111101100011011000110011001100011101000000000000000000000000000000000");
---  signal letra_H : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001100011011000110110001101100011011111110110001101100011011000110110001101100011000000000000000000000000000000000");
---  signal letra_I : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000000011110000011000000110000001100000011000000110000001100000011000000110000011110000000000000000000000000000000000");
---  signal letra_J : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000000001111000001100000011000000110000001100000011001100110011001100110011000111100000000000000000000000000000000000");
---  signal letra_K : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000001110011001100110011001100110110001111000011110000110110001100110011001101110011000000000000000000000000000000000");
---  signal letra_L : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001111000001100000011000000110000001100000011000000110000001100010011001101111111000000000000000000000000000000000");
---  signal letra_M : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001100001111100111111111111111111111011011110000111100001111000011110000111100001100000000000000000000000000000000");
---  signal letra_N : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001100011011100110111101101111111011011110110011101100011011000110110001101100011000000000000000000000000000000000");
---  signal letra_O : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000000111110011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000");
---  signal letra_P : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001111110001100110011001100110011001111100011000000110000001100000011000001111000000000000000000000000000000000000");
---  signal letra_Q : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000000111110011000110110001101100011011000110110001101100011011010110110111100111110000001100000011100000000000000000");
---  signal letra_R : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000001111110001100110011001100110011001111100011011000110011001100110011001101110011000000000000000000000000000000000");
---  signal letra_S : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (  
---   "00000000000000000111110011000110110001100110000000111000000011000000011011000110110001100111110000000000000000000000000000000000");
---  signal letra_T : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000001111111111011011100110010001100000011000000110000001100000011000000110000011110000000000000000000000000000000000");
---  signal letra_U : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000001100011011000110110001101100011011000110110001101100011011000110110001100111110000000000000000000000000000000000");
---  signal letra_V : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000001100001111000011110000111100001111000011110000111100001101100110001111000001100000000000000000000000000000000000");
---  signal letra_W : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001100001111000011110000111100001111000011110110111101101111111111011001100110011000000000000000000000000000000000");
---  signal letra_X : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001100001111000011011001100011110000011000000110000011110001100110110000111100001100000000000000000000000000000000");
---  signal letra_Y : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := ( 
---   "00000000000000001100001111000011110000110110011000111100000110000001100000011000000110000011110000000000000000000000000000000000");
---  signal letra_Z : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---   "00000000000000001111111111000011100001100000110000011000001100000110000011000001110000111111111100000000000000000000000000000000");
-	
---  signal letra_atual : std_logic_vector(0 to WORD_COL * WORD_LINE - 1 ) := (
---	"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
 begin  -- comportamento
 
 
@@ -475,7 +420,6 @@ VELOCIDADE <= stage_atual;
 					print_enable <= '0';
 				end if;
 		  
-				--print_enable <= alfa( ( palavras(0, (col - col_bases(0)) / WORD_COL) ) - 65);
 		  elsif line >= line_bases(1) and line < line_bases(1) + WORD_LINE and col >= col_bases(1) and col < col_bases(1) + WORD_COL * palavras_size(1) then
 				if (col < col_bases(1) + WORD_COL) and palavras_size(1) >= 1 then
                                         if indice_locked = 1 and LETTER_HITS >= 1 then
@@ -748,9 +692,11 @@ VELOCIDADE <= stage_atual;
   -- inputs :
   -- outputs: 
   desce_linha: process (CLOCK_50)
+	variable find_end : std_logic;
   begin  -- process conta_coluna
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
 		local_game_over <= '0';
+		find_end := '0';
 		if WORD_DESTROYED = '1' then
 			line_bases(indice_locked) <= 10;
 		elsif reset = '0' or estado = inicio then
@@ -759,19 +705,40 @@ VELOCIDADE <= stage_atual;
 			end loop;
 			
 		elsif atualiza_pos_y = '1' then
-			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
-            local_game_over <= '1';
+			for i in 0 to max_words -1 loop
+				if line_bases(i) >= 467 then
+					find_end := '1';
+				end if;
+			end loop;
+			
+			if find_end = '1' then
+				local_game_over <= '1';
 				for i in 0 to max_words-1 loop
 					line_bases(i) <= 10;
 				end loop;
 			else
-            local_game_over <= '0';
+				local_game_over <= '0';
 				for i in 0 to max_words-1 loop
 					if empty_positions(i) = 0 then
 						line_bases(i) <= line_bases(i) + 1;
 					end if;
 				end loop;
 			end if;
+			
+			--OLD_CODE
+--			if line_bases(0) >= 467 or line_bases(1) >= 467 or line_bases(2) >= 467 or line_bases(3) >= 467 or line_bases (4) >= 467 then
+--            local_game_over <= '1';
+--				for i in 0 to max_words-1 loop
+--					line_bases(i) <= 10;
+--				end loop;
+--			else
+--            local_game_over <= '0';
+--				for i in 0 to max_words-1 loop
+--					if empty_positions(i) = 0 then
+--						line_bases(i) <= line_bases(i) + 1;
+--					end if;
+--				end loop;
+--			end if;
 		end if;
 	 end if;
   end process desce_linha;
@@ -785,21 +752,19 @@ VELOCIDADE <= stage_atual;
   -- inputs : CLOCK_50,
   -- outputs: col
   troca_letra_atual: process (CLOCK_50)
-  begin  -- process conta_coluna
-    --letra_atual <= alfa( ( palavras(0)((col - col_bases(0)) / WORD_COL) ) - 65);
+	variable colored : std_logic;
+  begin  -- troca_letra_atual
     if CLOCK_50'event and CLOCK_50 = '1' then  -- rising clock edge
+		  colored := '0';
 		  if print_enable = '1' and inic_screen = '0' and over_screen = '0' then
-				if col >= col_bases(0) and col < col_bases(0) + palavras_size(0) * WORD_COL and indice_locked = 0 then
-					pixel <= "101";
-				elsif col >= col_bases(1) and col < col_bases(1) + palavras_size(1) * WORD_COL and indice_locked = 1 then
-					pixel <= "101";
-				elsif col >= col_bases(2) and col < col_bases(2) + palavras_size(2) * WORD_COL and indice_locked = 2 then
-					pixel <= "101";
-				elsif col >= col_bases(3) and col < col_bases(3) + palavras_size(3) * WORD_COL and indice_locked = 3 then
-					pixel <= "101";
-				elsif col >= col_bases(4) and col < col_bases(4) + palavras_size(4) * WORD_COL and indice_locked = 4 then
-					pixel <= "101";
-				else
+				for i in 0 to max_words-1 loop
+					if col >= col_bases(i) and col <= col_bases(i) + palavras_size(i) * WORD_COL and indice_locked = i then
+						pixel <= "101";
+						colored := '1';
+					end if;
+				end loop;
+				
+				if colored = '0' then
 					pixel <= "111";
 				end if;
 			elsif inic_screen = '1' and over_screen = '0' then
@@ -809,6 +774,7 @@ VELOCIDADE <= stage_atual;
 			elsif print_enable = '0' then
 				pixel <= "000";
 			end if;
+			
 		  -- O endereço de memória pode ser construído com essa fórmula simples,
 		  -- a partir da linha e coluna atual
 		  addr  <= col + (NUM_COL * line);   
