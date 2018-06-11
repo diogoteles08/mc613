@@ -33,7 +33,7 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 USE ieee.numeric_std.ALL;
 
 
-entity vga_ball is
+entity screen_proc is
 	generic (
 		NUM_LINE : integer := 480;
 		NUM_COL : integer := 640;
@@ -64,9 +64,9 @@ entity vga_ball is
     TIMER_P			: out std_logic;
     GAME_OVER		        : out std_logic
     );
-end vga_ball;
+end screen_proc;
 
-architecture comportamento of vga_ball is
+architecture comportamento of screen_proc is
   
    type splash is array (0 to NUM_LINE * NUM_COL - 1) of std_logic_vector(2 downto 0);
 	signal tela_inicial: splash;

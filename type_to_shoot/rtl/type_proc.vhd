@@ -51,7 +51,7 @@ architecture rtl of type_proc is
 		);
 	end component;
 
-	component vga_ball
+	component screen_proc
 		port (
 			CLOCK_50                : in  std_logic;
 			RESET                   : in  std_logic;
@@ -236,7 +236,7 @@ begin
 			asc_code	=> char_pressed
 		);
 
-	screen_processor: vga_ball
+	screen_processor: screen_proc
 		port map (
 			CLOCK_50				=> CLOCK_50,
 			RESET						=> reset,
