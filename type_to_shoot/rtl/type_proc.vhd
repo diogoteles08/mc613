@@ -55,8 +55,7 @@ architecture rtl of type_proc is
 		port (
 			CLOCK_50                : in  std_logic;
 			RESET                   : in  std_logic; -- Active low
-			START_GAME							: in std_logic;
-			STAGE_END								: in std_logic;
+			START_GAME							: in std_logic;			
 			PLAY_AGAIN							: in std_logic;
 			INSERT_WORD							: in std_logic;
 			NEW_WORD								: in word;
@@ -64,9 +63,7 @@ architecture rtl of type_proc is
 			LOCKED_WORD							: in word;
 			LOCKED_EVENT						: in std_logic;
 			LETTER_HITS							: in integer;
-			WORD_DESTROYED					: in std_logic;
-			NUM_HITS								: in integer;
-			NUM_MISSES							: in integer;
+			WORD_DESTROYED					: in std_logic;			
 			VGA_R, VGA_G, VGA_B     : out std_logic_vector(7 downto 0);
 			VGA_HS, VGA_VS          : out std_logic;
 			VGA_BLANK_N, VGA_SYNC_N	: out std_logic;
@@ -99,16 +96,10 @@ architecture rtl of type_proc is
 	signal new_word_size: integer;
 
 	signal active_words: word_table;
-	signal num_active_words: integer;
-
-	-- Sinal dizendo se na fase atual nao surgirao novas palavras mais
-	signal no_more_words: std_logic; -- Internal signal
+	signal num_active_words: integer;	
 
 	signal letter_miss: std_logic; -- Internal signal
-	signal letter_hit: std_logic; -- Internal signal
-	
-	signal num_hits		: integer;
-	signal num_misses	: integer;
+	signal letter_hit: std_logic; -- Internal signal	
 	
 	signal digit0: std_logic_vector(3 downto 0);
 	signal digit1: std_logic_vector(3 downto 0);
@@ -124,8 +115,7 @@ architecture rtl of type_proc is
 	signal digit5 : std_logic_vector(3 downto 0); 
 
 	signal current_stage: integer;
-	signal start_game: std_logic;
-	signal stage_end: std_logic;
+	signal start_game: std_logic;	
 	signal game_over: std_logic;
 	signal play_again: std_logic;
 	
@@ -241,8 +231,7 @@ begin
 		port map (
 			CLOCK_50				=> CLOCK_50,
 			RESET						=> reset, -- Active low
-			START_GAME			=> start_game,
-			STAGE_END				=> stage_end,
+			START_GAME			=> start_game,			
 			PLAY_AGAIN			=> play_again,
 			INSERT_WORD			=> get_new_word,
 			NEW_WORD				=> new_word,
@@ -250,9 +239,7 @@ begin
 			LOCKED_WORD 		=> locked_word,
 			LOCKED_EVENT		=> locked_event,
 			LETTER_HITS  		=> current_letter_index_sig,
-			WORD_DESTROYED	=> kill_word,
-			NUM_HITS				=> num_hits,
-			NUM_MISSES			=> num_misses,
+			WORD_DESTROYED	=> kill_word,			
 			VGA_R						=> VGA_R,
 			VGA_G						=> VGA_G,
 			VGA_B						=> VGA_B,
@@ -292,17 +279,13 @@ begin
 		digit2 <= std_logic_vector(to_unsigned((score / 100) mod 10, digit2'length));
 		digit3 <= std_logic_vector(to_unsigned((score / 10) mod 10, digit3'length));
 		digit4 <= std_logic_vector(to_unsigned(score mod 10, digit4'length));
-		digit5 <= std_logic_vector(to_unsigned(velocidade, digit5'length));		
-
-		process (current_stage)
-		begin
-			-- TODO: Update stage data		
-		end process;
+		digit5 <= std_logic_vector(to_unsigned(velocidade, digit5'length));				
 		
 		process (CLOCK_50)
 			variable counter: integer := 0;
 		begin
 			if CLOCK_50'event and CLOCK_50 = '1' then
+			
 				-- Verifica se nao estamos num estado estatico
 				if state /= BEGIN_GAME AND state /= GAME_LOST then
 					get_new_word <= '0';
@@ -318,23 +301,12 @@ begin
 							end if;
 						end if;
 					end if;
-				end if;
+				end if;										
 				
-				if start_game = '1' then
-					current_stage <= 0;
-					-- On the new stage we start generating new words
-					no_more_words <= '0';
-				end if;
-			
-				if stage_end = '1' then
-					current_stage <= current_stage + 1;
-					-- On the new stage we start generating new words
-					no_more_words <= '0';
-				end if;				
 			end if;			
 		end process;
 
-		-- MAQUINA DE ESTADOS UOU
+		-- MAQUINA DE ESTADOS
 		process (CLOCK_50)
 			variable next_state: state_t;
 			variable current_letter_index: integer;
@@ -348,8 +320,7 @@ begin
 					play_again <= '0';
 					letter_miss <= '0';
 					letter_hit <= '0';
-					kill_word <= '0';
-					stage_end <= '0';				
+					kill_word <= '0';					
 					current_letter_index := 0;
 
 				elsif game_over = '1' and state /= GAME_LOST then
@@ -359,8 +330,7 @@ begin
 					play_again <= '0';
 					letter_miss <= '0';
 					letter_hit <= '0';
-					kill_word <= '0';
-					stage_end <= '0';
+					kill_word <= '0';					
 					current_letter_index := 0;
 				else										
 					case state is
@@ -371,8 +341,7 @@ begin
 							letter_miss <= '0';
 							kill_word <= '0';
 							start_game <= '0';
-							play_again <= '0';							
-							stage_end <= '0';
+							play_again <= '0';														
 							locked_event <= '0';
 							if has_pressed = '0' then
 								state <= next_state;
@@ -383,7 +352,7 @@ begin
 								-- User pressed any key and game will begin
 								state <= WAIT_RELEASE;
 								next_state := FREE;
-								start_game <= '1';								
+								start_game <= '1';
 							end if;						
 							
 						when FREE =>							
@@ -409,23 +378,13 @@ begin
 											if max_word_length = 1 then
 												kill_word <= '1';
 												current_letter_index := 0;
-												next_state := FREE;												
-
-												-- Verifica se acabaram as palavras da fase
-												if num_active_words = 1 and no_more_words = '1' then
-													stage_end <= '1';
-												end if;
+												next_state := FREE;																								
 											
 											-- Verifica se chegamos no fim da palavra
 											elsif active_words(i)(15 downto 8) = no_char then											
 												kill_word <= '1';
 												current_letter_index := 0;
 												next_state := FREE;												
-
-												-- Verifica se acabaram as palavras da fase
-												if num_active_words = 1 and no_more_words = '1' then
-													stage_end <= '1';
-												end if;
 											end if;
 										end if;
 									end if;
@@ -452,22 +411,12 @@ begin
 										kill_word <= '1';
 										current_letter_index := 0;
 										next_state := FREE;										
-
-										-- Verifica se acabaram as palavras da fase
-										if num_active_words = 1 and no_more_words = '1' then
-											stage_end <= '1';
-										end if;
 									
 									-- Verifica se chegamos no fim da palavra
 									elsif active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char then
 										kill_word <= '1';
 										current_letter_index := 0;
 										next_state := FREE;
-
-										-- Verifica se acabaram as palavras da fase
-										if num_active_words = 1 and no_more_words = '1' then
-											stage_end <= '1';
-										end if;
 									end if;
 
 								else
