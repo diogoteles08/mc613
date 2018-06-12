@@ -13,10 +13,6 @@ package word_base is
 	constant word_base: word_base_t :=
 	(
 		(
-			"[[[[[[[[[D",			
-			"[[[[[[[[[G"
-		),
-		(
 			"[[[[[[[[CU",			
 			"[[[[[[[[TU"
 		),

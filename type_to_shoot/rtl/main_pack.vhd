@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 package main_pack is
 	constant max_words: integer := 5; -- Defines the max number of words simultaneously on screen
-	constant min_word_length: integer := 1;
+	constant min_word_length: integer := 2;
 	constant max_word_length: integer := 10; -- Defines the max length of any word on the game	
 		
 	subtype char is std_logic_vector(7 downto 0);
