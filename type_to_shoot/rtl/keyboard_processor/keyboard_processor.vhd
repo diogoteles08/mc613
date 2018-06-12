@@ -8,7 +8,7 @@ entity keyboard_processor is
 		ps2_dat		: inout std_logic;
 		ps2_clk		: inout std_logic;
 		clock		: in std_logic;
-		has_pressed	: out std_logic;
+		has_pressed	: out std_logic;		
 		asc_code	: out char
   );
 end keyboard_processor;
@@ -43,12 +43,14 @@ architecture rtl of keyboard_processor is
 		);
 	end component;
 
-	constant not_used_key: std_logic_vector(7 downto 0);
+	constant not_used_key: std_logic_vector(7 downto 0) := (others => '0');
 	
 	signal kbdex_key_codes	: std_logic_vector(47 downto 0);
 	signal kbdex_key_on		: std_logic_vector(2 downto 0);
-	signal key_code			: std_logic_vector(7 downto 0);
-	signal key_on			: std_logic;
+	signal key_code				: std_logic_vector(7 downto 0);
+	signal key_on					: std_logic;
+	signal key_on_aux			: std_logic;
+	
 	signal asc_code_aux		: char;
 	signal n_pressed_keys	: integer := 0;
 begin
@@ -65,28 +67,30 @@ begin
 			lights => "000",
 			key_on => kbdex_key_on,
 			key_code => kbdex_key_codes
-		);
+		);		
 
 		process (clock)
 		begin
-			n_pressed_keys <= 0;
-			key_on_aux <= 0;
+			if clock'event and clock = '1' then
+				n_pressed_keys <= 0;
+				key_on_aux <= '0';
 
-			-- Decodificador de prioridade para capturar a ultima tecla pressionada
-			for i in 0 to 2 loop
-				if kbdex_key_on(i) then
-					n_pressed_keys <= i+1;
-					key_code <= kbdex_key_codes(16*i+7 downto 16*i);
-					if n_pressed_keys < i+1 then
-						key_on_aux <= 1;
+				-- Decodificador de prioridade para capturar a ultima tecla pressionada
+				for i in 0 to 2 loop
+					if kbdex_key_on(i) = '1' then
+						n_pressed_keys <= i+1;
+						key_code <= kbdex_key_codes(16*i+7 downto 16*i);
+						if n_pressed_keys < i+1 then
+							key_on_aux <= '1';
+						end if;
 					end if;
-				end if;
-			end loop;
+				end loop;
+			end if;
 		end process;
 	
 		-- key_on eh ativado quando alguma tecla eh pressionada e
 		-- quando essa tecla e uma letra
-		key_on <= key_on_aux and to_std_logic(asc_code_aux /= not_used_key);
+		has_pressed <= key_on_aux and to_std_logic(asc_code_aux /= not_used_key);
 		
 		-- Converte o codigo do kbdex_ctrl para asc
 		with key_code select asc_code_aux <=

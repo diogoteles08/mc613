@@ -4,37 +4,53 @@ use ieee.std_logic_1164.all;
 use work.main_pack.all;
 
 package word_base is
-	constant num_words: integer := 26;
+	constant words_by_num_letter: integer := 2;
 	
-	type word_arr is array(integer range 0 to num_words-1) of string(max_word_length downto 1);
+	type word_arr is array(integer range 0 to words_by_num_letter-1) of string(max_word_length downto 1);
+	type word_base_t is array (integer range min_word_length to max_word_length) of word_arr;
 
 	-- ONLY UPPER CASE
-	constant word_base: word_arr := (
-		"[[[[[[DCBA",
-		"[[[[[[EFGB",
-		"[[[[[[TDEC",
-		"[[[[[[ZGHD",
-		"[[[[[[TEQE",
-		"[[[[[[ETAF",
-		"[[[[[[ETAG",
-		"[[[[[[TATH",
-		"[[[[[[TAGI",
-		"[[[[[[AAGJ",
-		"[[[[[[AAAK",
-		"[[[[[[TTTL",
-		"[[[[[[GAGM",
-		"[[[[[[GAAN",
-		"[[[[[[TATO",
-		"[[[[[[AGAP",
-		"[[[[[[TQQQ",
-		"[[[[[[GTAR",
-		"[[[[[[TQQS",
-		"[[[[[[BCDT",
-		"[[[[[[FEAU",
-		"[[[[[[ETAV",
-		"[[[[[[AFAW",
-		"[[[[[[ETEX",
-		"[[[[[[UFAY",
-		"[[[[[[ATAZ"				
+	constant word_base: word_base_t :=
+	(
+		(
+			"[[[[[[[[[D",			
+			"[[[[[[[[[G"
+		),
+		(
+			"[[[[[[[[CU",			
+			"[[[[[[[[TU"
+		),
+		(
+			"[[[[[[[BLA",
+			"[[[[[[[XUA"
+		),
+		(
+			"[[[[[[BALA",
+			"[[[[[[COCA"
+		),
+		(
+			"[[[[[SHOYO",
+			"[[[[[BOLON"
+		),
+		(
+			"[[[[PYTHON",
+			"[[[[BLABLA"
+		),
+		(
+			"[[[BLABLOU",
+			"[[[BLABLEI"
+		),
+		(
+			"[[COMILAOS",
+			"[[CHIMPALO"
+		),
+		(
+			"[COMANDOAD",
+			"[BLABLABLE"
+		),
+		(
+			"COMANDANTE",
+			"CHIMPANZEO"
+		)										
 	);
 end word_base;

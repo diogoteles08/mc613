@@ -15,7 +15,7 @@ entity type_proc is
     VGA_BLANK_N, VGA_SYNC_N   : out std_logic;
     VGA_CLK                   : out std_logic;
 		LEDR											: out std_logic_vector(9 downto 0);
-	HEX0, HEX1, HEX2, HEX3, HEX4, HEX5 : out std_logic_vector(6 downto 0)	
+		HEX0, HEX1, HEX2, HEX3, HEX4, HEX5 : out std_logic_vector(6 downto 0)	
   );
 end type_proc;
 
@@ -44,17 +44,17 @@ architecture rtl of type_proc is
 
 	component word_gen
 		port (
-			reset				: in std_logic;
+			reset				: in std_logic; -- Active low
 			get_word		: in std_logic;
 			new_word		: out word;
 			new_word_size	: out integer
 		);
 	end component;
 
-	component vga_ball
+	component screen_proc
 		port (
 			CLOCK_50                : in  std_logic;
-			RESET                   : in  std_logic;
+			RESET                   : in  std_logic; -- Active low
 			START_GAME							: in std_logic;
 			STAGE_END								: in std_logic;
 			PLAY_AGAIN							: in std_logic;
@@ -82,9 +82,9 @@ architecture rtl of type_proc is
 		port (
 			ps2_dat	: inout std_logic;
 			ps2_clk		:	inout	std_logic;
-			clock 		: in std_logic;
-			has_pressed		: out std_logic;
-			asc_code	: out char
+			clock 		: in std_logic;			
+			has_pressed		: out std_logic;			
+			asc_code	: out char			
 		);
 	end component;	
 
@@ -128,6 +128,7 @@ architecture rtl of type_proc is
 	signal stage_end: std_logic;
 	signal game_over: std_logic;
 	signal play_again: std_logic;
+	
 	signal velocidade : integer;
 	signal reset: std_logic;
 	
@@ -172,9 +173,9 @@ begin
 		"011" when WAIT_RELEASE,		
 		"000" when GAME_LOST;
 
-	reset <= KEY(0);
+	reset <= KEY(0); -- Active low	
 
-	velocidade_hex : bin2dec 
+	velocidade_hex : bin2dec
 		port map (
 			SW 				=> digit5,
 			HEX0				=> HEX5
@@ -221,7 +222,7 @@ begin
 
 	generator: word_gen
 		port map (
-			reset					=> reset,
+			reset					=> reset, -- Active low
 			get_word			=> get_new_word,
 			new_word			=> new_word,
 			new_word_size	=> new_word_size
@@ -231,15 +232,15 @@ begin
 		port map (
 			ps2_dat 	=> PS2_DAT,
 			ps2_clk 	=> PS2_CLk,
-			clock		=> CLOCK_50,
-			has_pressed	=> has_pressed,
+			clock		=> CLOCK_50,			
+			has_pressed	=> has_pressed,			
 			asc_code	=> char_pressed
 		);
 
-	screen_processor: vga_ball
+	screen_processor: screen_proc
 		port map (
 			CLOCK_50				=> CLOCK_50,
-			RESET						=> reset,
+			RESET						=> reset, -- Active low
 			START_GAME			=> start_game,
 			STAGE_END				=> stage_end,
 			PLAY_AGAIN			=> play_again,
@@ -338,11 +339,11 @@ begin
 			variable next_state: state_t;
 			variable current_letter_index: integer;
 			variable found_word: std_logic;
-		begin
-			if CLOCK_50'event and CLOCK_50 = '1' then
+		begin		
+			if CLOCK_50'event and CLOCK_50 = '1' then								
 				if reset = '0' then
 					-- Reset game
-					state <= BEGIN_GAME;
+					state <= BEGIN_GAME;					
 					start_game <= '0';
 					play_again <= '0';
 					letter_miss <= '0';
@@ -353,7 +354,7 @@ begin
 
 				elsif game_over = '1' and state /= GAME_LOST then
 					-- It can get here from any state
-					state <= GAME_LOST;
+					state <= GAME_LOST;					
 					start_game <= '0';
 					play_again <= '0';
 					letter_miss <= '0';
@@ -365,7 +366,7 @@ begin
 					case state is
 
 						-- Not necessary anymore
-						when WAIT_RELEASE =>
+						when WAIT_RELEASE =>												
 							letter_hit <= '0';
 							letter_miss <= '0';
 							kill_word <= '0';
@@ -407,8 +408,8 @@ begin
 											-- Verifica se chegamos no tamanho maximo da palavra
 											if max_word_length = 1 then
 												kill_word <= '1';
-												next_state := FREE;
 												current_letter_index := 0;
+												next_state := FREE;												
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -418,8 +419,8 @@ begin
 											-- Verifica se chegamos no fim da palavra
 											elsif active_words(i)(15 downto 8) = no_char then											
 												kill_word <= '1';
-												next_state := FREE;
 												current_letter_index := 0;
+												next_state := FREE;												
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -449,8 +450,8 @@ begin
 									-- Verifica se chegamos no tamanho maximo da palavra
 									if current_letter_index = max_word_length then
 										kill_word <= '1';
-										next_state := FREE;
 										current_letter_index := 0;
+										next_state := FREE;										
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
@@ -460,8 +461,8 @@ begin
 									-- Verifica se chegamos no fim da palavra
 									elsif active_words(locked_word_index)((current_letter_index+1)*8 - 1 downto current_letter_index*8) = no_char then
 										kill_word <= '1';
-										next_state := FREE;
 										current_letter_index := 0;
+										next_state := FREE;
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
