@@ -6,47 +6,47 @@ use work.main_pack.all;
 package word_base is
 	constant words_by_num_letter: integer := 2;
 	
-	type word_arr is array(integer range 0 to words_by_num_letter-1) of string(1 to max_word_length);
+	type word_arr is array(integer range 0 to words_by_num_letter-1) of string(max_word_length downto 1);
 	type word_base_t is array (integer range min_word_length to max_word_length) of word_arr;
 
 	-- ONLY UPPER CASE
 	constant word_base: word_base_t :=
 	(
 		(
-			"D[[[[[[[[[",			
-			"G[[[[[[[[["
+			"[[[[[[[[[D",			
+			"[[[[[[[[[G"
 		),
 		(
-			"CU[[[[[[[[",			
-			"TU[[[[[[[["
+			"[[[[[[[[CU",			
+			"[[[[[[[[TU"
 		),
 		(
-			"BLA[[[[[[[",
-			"XUA[[[[[[["
+			"[[[[[[[BLA",
+			"[[[[[[[XUA"
 		),
 		(
-			"BALA[[[[[[",
-			"COCA[[[[[["
+			"[[[[[[BALA",
+			"[[[[[[COCA"
 		),
 		(
-			"SHOYO[[[[[",
-			"BOLON[[[[["
+			"[[[[[SHOYO",
+			"[[[[[BOLON"
 		),
 		(
-			"PYTHON[[[[",
-			"BLABLA[[[["
+			"[[[[PYTHON",
+			"[[[[BLABLA"
 		),
 		(
-			"BLABLOU[[[",
-			"BLABLEI[[["
+			"[[[BLABLOU",
+			"[[[BLABLEI"
 		),
 		(
-			"COMILAOS[[",
-			"CHIMPALO[["
+			"[[COMILAOS",
+			"[[CHIMPALO"
 		),
 		(
-			"COMANDOAD[",
-			"BLABLABLE["
+			"[COMANDOAD",
+			"[BLABLABLE"
 		),
 		(
 			"COMANDANTE",

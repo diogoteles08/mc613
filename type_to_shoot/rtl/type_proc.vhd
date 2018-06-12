@@ -342,8 +342,7 @@ begin
 			if CLOCK_50'event and CLOCK_50 = '1' then								
 				if reset = '0' then
 					-- Reset game
-					state <= WAIT_RELEASE;
-					next_state := BEGIN_GAME;
+					state <= BEGIN_GAME;					
 					start_game <= '0';
 					play_again <= '0';
 					letter_miss <= '0';
@@ -354,9 +353,7 @@ begin
 
 				elsif game_over = '1' and state /= GAME_LOST then
 					-- It can get here from any state
-					state <= WAIT_RELEASE;
-					next_state := GAME_LOST;
-					reset_word_bank <= '0'; -- Active low
+					state <= GAME_LOST;					
 					start_game <= '0';
 					play_again <= '0';
 					letter_miss <= '0';
@@ -367,8 +364,7 @@ begin
 				else										
 					case state is
 
-						when WAIT_RELEASE =>
-							reset_word_bank <= '1'; -- Active low
+						when WAIT_RELEASE =>							
 							letter_hit <= '0';
 							letter_miss <= '0';
 							kill_word <= '0';
@@ -411,8 +407,7 @@ begin
 											if max_word_length = 1 then
 												kill_word <= '1';
 												current_letter_index := 0;
-												next_state := FREE;
-												current_letter_index := 0;
+												next_state := FREE;												
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -423,8 +418,7 @@ begin
 											elsif active_words(i)(15 downto 8) = no_char then											
 												kill_word <= '1';
 												current_letter_index := 0;
-												next_state := FREE;
-												current_letter_index := 0;
+												next_state := FREE;												
 
 												-- Verifica se acabaram as palavras da fase
 												if num_active_words = 1 and no_more_words = '1' then
@@ -455,8 +449,7 @@ begin
 									if current_letter_index = max_word_length then
 										kill_word <= '1';
 										current_letter_index := 0;
-										next_state := FREE;
-										current_letter_index := 0;
+										next_state := FREE;										
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
@@ -468,7 +461,6 @@ begin
 										kill_word <= '1';
 										current_letter_index := 0;
 										next_state := FREE;
-										current_letter_index := 0;
 
 										-- Verifica se acabaram as palavras da fase
 										if num_active_words = 1 and no_more_words = '1' then
