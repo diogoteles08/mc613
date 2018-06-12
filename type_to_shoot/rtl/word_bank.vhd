@@ -4,8 +4,10 @@ use work.main_pack.all;
 
 entity word_bank is	
   port (
+		reset							: in std_logic;
+		game_over					: in std_logic;
 		clock							: in std_logic;
-    kill_word					: in std_logic;
+		kill_word					: in std_logic;
 		word_to_kill_index: in integer;
 		insert_new_word		: in std_logic;
 		new_word					: in word;
@@ -15,31 +17,36 @@ entity word_bank is
 end word_bank;
 
 architecture rtl of word_bank is
-	signal words_aux: word_table;
-	signal num_words_aux: integer := 0;
 begin
-	process(clock)
+	-- insercao e remocao podem ser feitos ao mesmo tempo, soh da erro quando
+	-- o numero de palavras jah eh o maximo e se tenta excluir e inserir ao mesmo tempo
+	process(clock, reset, game_over)
+		variable words_aux: word_table := no_table;
+		variable num_words_aux: integer := 0;
 	begin
-		if clock'event and clock = '1' then
+		if reset = '0' or game_over = '1' then
+			num_words_aux := 0;
+			words_aux := no_table;
+		elsif clock'event and clock = '1' then
 			if insert_new_word = '1' then
-				words_aux(num_words_aux) <= new_word;
-				num_words_aux <= num_words_aux + 1;
+				words_aux(num_words_aux) := new_word;
+				num_words_aux := num_words_aux + 1;
 			end if;
 		
 			if kill_word = '1' then
 				-- Does the shift
 				for i in 0 to max_words-2 loop
 					if i >= word_to_kill_index and i <= num_words_aux-2 then
-						words_aux(i) <= words_aux(i+1);
+						words_aux(i) := words_aux(i+1);
 					end if;
 				end loop;
-				
-				num_words_aux <= num_words_aux - 1;
-				words_aux(num_words_aux) <= no_word; -- Limpa o espaco no fim da lista
+
+				num_words_aux := num_words_aux - 1;
+				words_aux(num_words_aux) := no_word; -- Limpa o espaco no fim da lista
 			end if;		
 		end if;
+
+		words <= words_aux;
+		num_words <= num_words_aux;
 	end process;
-	
-	words <= words_aux;
-	num_words <= num_words_aux;
 end rtl;
