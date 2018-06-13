@@ -1,8 +1,8 @@
 /*<simulation_settings>
-<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra172358/mc613/lab9/project/jujubinha.vwf" --testbench_file="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/jujubinha.vwf.vht"</ftestbench_cmd>
-<ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra172358/mc613/lab9/project/jujubinha.vwf" --testbench_file="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/jujubinha.vwf.vht"</ttestbench_cmd>
-<fnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=on --flatten_buses=off --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/" lab9 -c lab9</fnetlist_cmd>
-<tnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=off --flatten_buses=off --timescale=1ps --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra172358/mc613/lab9/project/simulation/qsim/" lab9 -c lab9</tnetlist_cmd>
+<ftestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra169966/Documents/613mc/lab9/project/jujubinha.vwf" --testbench_file="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/jujubinha.vwf.vht"</ftestbench_cmd>
+<ttestbench_cmd>quartus_eda --gen_testbench --tool=modelsim_oem --format=vhdl --write_settings_files=off lab9 -c lab9 --vector_source="/home/ec2016/ra169966/Documents/613mc/lab9/project/jujubinha.vwf" --testbench_file="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/jujubinha.vwf.vht"</ttestbench_cmd>
+<fnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=on --flatten_buses=off --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/" lab9 -c lab9</fnetlist_cmd>
+<tnetlist_cmd>quartus_eda --write_settings_files=off --simulation --functional=off --flatten_buses=off --timescale=1ps --tool=modelsim_oem --format=vhdl --output_directory="/home/ec2016/ra169966/Documents/613mc/lab9/project/simulation/qsim/" lab9 -c lab9</tnetlist_cmd>
 <modelsim_script>onerror {exit -code 1}
 vlib work
 vcom -work work lab9.vho
