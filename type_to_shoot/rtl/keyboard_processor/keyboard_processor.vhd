@@ -8,7 +8,7 @@ entity keyboard_processor is
 		ps2_dat		: inout std_logic;
 		ps2_clk		: inout std_logic;
 		clock		: in std_logic;
-		has_pressed	: out std_logic;		
+		new_key_pressed	: out std_logic;
 		asc_code	: out char
   );
 end keyboard_processor;
@@ -88,9 +88,9 @@ begin
 			end if;
 		end process;
 	
-		-- key_on eh ativado quando alguma tecla eh pressionada e
-		-- quando essa tecla e uma letra
-		has_pressed <= key_on_aux and to_std_logic(asc_code_aux /= not_used_key);
+		-- New key pressed eh ativado quando alguma nova tecla e pressionada e esta tecla
+		-- e valida no nosso sistema
+		new_key_pressed <= key_on_aux and to_std_logic(asc_code_aux /= not_used_key);
 		
 		-- Converte o codigo do kbdex_ctrl para asc
 		with key_code select asc_code_aux <=

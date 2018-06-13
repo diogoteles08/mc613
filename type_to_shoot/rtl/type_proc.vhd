@@ -80,7 +80,7 @@ architecture rtl of type_proc is
 			ps2_dat	: inout std_logic;
 			ps2_clk		:	inout	std_logic;
 			clock 		: in std_logic;			
-			has_pressed		: out std_logic;			
+			new_key_pressed		: out std_logic;
 			asc_code	: out char			
 		);
 	end component;	
@@ -110,7 +110,7 @@ architecture rtl of type_proc is
 	signal score : integer := 0;
 	signal kill_word: std_logic;
 
-	signal has_pressed: std_logic;
+	signal new_key_pressed: std_logic;
 	signal char_pressed: char;
 	signal digit5 : std_logic_vector(3 downto 0); 
 
@@ -148,7 +148,7 @@ architecture rtl of type_proc is
 begin
 	
 	-- Leds for testing
-	LEDR(0) <= has_pressed;
+	LEDR(0) <= new_key_pressed;
 	LEDR(1) <= letter_hit;
 	LEDR(2) <= letter_miss;
 	LEDR(3) <= kill_word;
@@ -223,7 +223,7 @@ begin
 			ps2_dat 	=> PS2_DAT,
 			ps2_clk 	=> PS2_CLk,
 			clock		=> CLOCK_50,			
-			has_pressed	=> has_pressed,			
+			new_key_pressed	=> new_key_pressed,			
 			asc_code	=> char_pressed
 		);
 
@@ -343,12 +343,12 @@ begin
 							start_game <= '0';
 							play_again <= '0';														
 							locked_event <= '0';
-							if has_pressed = '0' then
+							if new_key_pressed = '0' then
 								state <= next_state;
 							end if;
 
 						when BEGIN_GAME =>														
-							if has_pressed = '1' then
+							if new_key_pressed = '1' then
 								-- User pressed any key and game will begin
 								state <= WAIT_RELEASE;
 								next_state := FREE;
@@ -356,7 +356,7 @@ begin
 							end if;						
 							
 						when FREE =>							
-							if has_pressed = '1' then
+							if new_key_pressed = '1' then
 								state <= WAIT_RELEASE;
 								
 								-- Procura pela palavra comecando com a letra digitada
@@ -397,7 +397,7 @@ begin
 							end if;														
 							
 						when LOCKED =>
-							if has_pressed = '1' then
+							if new_key_pressed = '1' then
 								state <= WAIT_RELEASE;
 							
 								-- Verifica se o usuario digitou a letra esperada
@@ -426,7 +426,7 @@ begin
 							end if;
 							
 						when GAME_LOST =>
-							if has_pressed = '1' then
+							if new_key_pressed = '1' then
 								state <= WAIT_RELEASE;
 								-- Player wants to play again
 								play_again <= '1';
