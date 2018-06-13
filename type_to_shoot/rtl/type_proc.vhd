@@ -338,11 +338,11 @@ begin
 
 					case state is
 						when BEGIN_GAME =>														
-							if new_key_pressed = '1' then
-								-- User pressed any key and game will begin
+							if new_key_pressed = '1' and char_pressed = asc_enter then
+								-- User pressed enter and game will begin
 								state <= FREE;
 								start_game <= '1';
-							end if;						
+							end if;
 							
 						when FREE =>							
 							if new_key_pressed = '1' then
@@ -415,9 +415,9 @@ begin
 							end if;
 							
 						when GAME_LOST =>
-							if new_key_pressed = '1' then
-								state <= BEGIN_GAME;
+							if new_key_pressed = '1' and char_pressed = asc_enter then
 								-- Player wants to play again
+								state <= BEGIN_GAME;
 								play_again <= '1';
 							end if;
 							
