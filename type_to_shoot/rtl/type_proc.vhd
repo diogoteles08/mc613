@@ -268,7 +268,7 @@ begin
 					if score > 0  then
 						score <= score - 1;
 					end if;
-				elsif reset = '0' or game_over = '1' then
+				elsif reset = '0' or play_again = '1' then
 						score <= 0;
 				end if;
 			end if;
