@@ -246,8 +246,9 @@ procura_indice: process (CLOCK_50)
 	variable words_aux : integer;
   begin
 		if CLOCK_50'event and CLOCK_50 = '1' then
-			if local_game_over = '1' or reset = '0' or estado = inicio then
+			if play_again = '1' then
 				stage_atual <= 0;
+			elsif local_game_over = '1' or reset = '0' or estado = inicio then
 				words_destroyed <= 0;
 				for i in 0 to max_words-1 loop
 					palavras(i) <= no_word;

@@ -4,49 +4,67 @@ use ieee.std_logic_1164.all;
 use work.main_pack.all;
 
 package word_base is
-	constant words_by_num_letter: integer := 2;
+	constant words_by_num_letter: integer := 4;
 	
 	type word_arr is array(integer range 0 to words_by_num_letter-1) of string(max_word_length downto 1);
 	type word_base_t is array (integer range min_word_length to max_word_length) of word_arr;
 
 	-- ONLY UPPER CASE
 	constant word_base: word_base_t :=
-	(
-		(
-			"[[[[[[[[UC",
-			"[[[[[[[[UT"
+	 (
+	 (
+"[[[[[[[[OG",
+"[[[[[[[[CM",
+"[[[[[[[[EF",
+"[[[[[[[[AL"
     ),
     (
-			"[[[[[[[ALB",
-			"[[[[[[[AUX"
+"[[[[[[[AUL",
+"[[[[[[[PHP",
+"[[[[[[[TIG",
+"[[[[[[[ADA"
     ),
     (
-			"[[[[[[ALAB",
-			"[[[[[[ACOC"
+"[[[[[[LDHV",
+"[[[[[[AVAJ",
+"[[[[[[ORIC",
+"[[[[[[PSIL"
     ),
     (
-			"[[[[[OYOHS",
-			"[[[[[NOLOB"
+"[[[[[LLEHS",
+"[[[[[ODIUG",
+"[[[[[CISAB",
+"[[[[[AILUJ",
     ),
     (
-			"[[[[NOHTYP",
-			"[[[[ALBALB"
+"[[[[NOHTYP",
+"[[[[LEKSAH",
+"[[[[NARTOF",
+"[[[[EVATCO"
     ),
     (
-			"[[[UOLBALB",
-			"[[[IELBALB"
+"[[[GOLIREV",
+"[[[IKAAKAT",
+"[[[ODLANRA",
+"[[[ENIHCAM"
     ),
     (
-			"[[SOALIMOC",
-			"[[OLAPMIHC"
+"[[YLBMESSA",
+"[[ENIAVILO",
+"[[SAIRACAZ",
+"[[ENILEPIP"
     ),
     (
-			"[DAODNAMOC",
-			"[ELBALBALB"
+"[RAMARGORP",
+"[SOLELARAP",
+"[KLATLLAMS",
+"[ELBATHSAH",
     ),
     (
-			"ETNADNAMOC",
-			"OEZNAPMIHC"
-    ) 			
+"CEVITCEJBO",
+"TPIRCSAVAJ",
+"ORIETUPMOC",
+"TSILDEKNIL"
+    ) 	
 	);
 end word_base;
