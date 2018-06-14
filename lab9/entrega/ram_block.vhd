@@ -22,7 +22,7 @@ use ieee.numeric_std.all;
 				 Q		: out std_logic_vector((DATA_WIDTH -1) downto 0)
 			);
 
- end entity;
+ end ram_block;
 
  architecture rtl of ram_block is
 
